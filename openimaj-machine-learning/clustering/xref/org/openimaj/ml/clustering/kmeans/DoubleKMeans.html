@@ -99,7 +99,7 @@
 <a class="jxr_linenumber" name="89" href="#89">89</a>  <em class="jxr_javadoccomment"> * @author Sina Samangooei (ss@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="90" href="#90">90</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="91" href="#91">91</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/DoubleKMeans.html">DoubleKMeans</a> <strong class="jxr_keyword">implements</strong> SpatialClusterer&lt;DoubleCentroidsResult, <strong class="jxr_keyword">double</strong>[]&gt; {
-<a class="jxr_linenumber" name="92" href="#92">92</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/ShortKMeans.html">CentroidAssignmentJob</a> <strong class="jxr_keyword">implements</strong> Callable&lt;Boolean&gt; {
+<a class="jxr_linenumber" name="92" href="#92">92</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/FloatKMeans.html">CentroidAssignmentJob</a> <strong class="jxr_keyword">implements</strong> Callable&lt;Boolean&gt; {
 <a class="jxr_linenumber" name="93" href="#93">93</a>  		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> DataSource&lt;<strong class="jxr_keyword">double</strong>[]&gt; ds;
 <a class="jxr_linenumber" name="94" href="#94">94</a>  		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> startRow;
 <a class="jxr_linenumber" name="95" href="#95">95</a>  		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> stopRow;
@@ -107,7 +107,7 @@
 <a class="jxr_linenumber" name="97" href="#97">97</a>  		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> [][] centroids_accum;
 <a class="jxr_linenumber" name="98" href="#98">98</a>  		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> [] counts;
 <a class="jxr_linenumber" name="99" href="#99">99</a>  
-<a class="jxr_linenumber" name="100" href="#100">100</a> 		<strong class="jxr_keyword">public</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/ShortKMeans.html">CentroidAssignmentJob</a>(DataSource&lt;<strong class="jxr_keyword">double</strong>[]&gt; ds, <strong class="jxr_keyword">int</strong> startRow, <strong class="jxr_keyword">int</strong> stopRow, DoubleNearestNeighbours nno, <strong class="jxr_keyword">double</strong> [][] centroids_accum, <strong class="jxr_keyword">int</strong> [] counts) {
+<a class="jxr_linenumber" name="100" href="#100">100</a> 		<strong class="jxr_keyword">public</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/FloatKMeans.html">CentroidAssignmentJob</a>(DataSource&lt;<strong class="jxr_keyword">double</strong>[]&gt; ds, <strong class="jxr_keyword">int</strong> startRow, <strong class="jxr_keyword">int</strong> stopRow, DoubleNearestNeighbours nno, <strong class="jxr_keyword">double</strong> [][] centroids_accum, <strong class="jxr_keyword">int</strong> [] counts) {
 <a class="jxr_linenumber" name="101" href="#101">101</a> 			<strong class="jxr_keyword">this</strong>.ds = ds; 
 <a class="jxr_linenumber" name="102" href="#102">102</a> 			<strong class="jxr_keyword">this</strong>.startRow = startRow;
 <a class="jxr_linenumber" name="103" href="#103">103</a> 			<strong class="jxr_keyword">this</strong>.stopRow = stopRow;
@@ -152,7 +152,7 @@
 <a class="jxr_linenumber" name="142" href="#142">142</a> <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="143" href="#143">143</a> <em class="jxr_javadoccomment">	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="144" href="#144">144</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="145" href="#145">145</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/ShortKMeans.html">Result</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/ml/clustering/DoubleCentroidsResult.html">DoubleCentroidsResult</a> <strong class="jxr_keyword">implements</strong> DoubleNearestNeighboursProvider {
+<a class="jxr_linenumber" name="145" href="#145">145</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/FloatKMeans.html">Result</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/ml/clustering/DoubleCentroidsResult.html">DoubleCentroidsResult</a> <strong class="jxr_keyword">implements</strong> DoubleNearestNeighboursProvider {
 <a class="jxr_linenumber" name="146" href="#146">146</a> 		<strong class="jxr_keyword">protected</strong> DoubleNearestNeighbours nn;
 <a class="jxr_linenumber" name="147" href="#147">147</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> iterations;
 <a class="jxr_linenumber" name="148" href="#148">148</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> changedCentroidCount;
@@ -239,7 +239,7 @@
 <a class="jxr_linenumber" name="229" href="#229">229</a> 	}
 <a class="jxr_linenumber" name="230" href="#230">230</a> 		
 <a class="jxr_linenumber" name="231" href="#231">231</a> 	@Override
-<a class="jxr_linenumber" name="232" href="#232">232</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/ShortKMeans.html">Result</a> cluster(<strong class="jxr_keyword">double</strong>[][] data) {
+<a class="jxr_linenumber" name="232" href="#232">232</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/FloatKMeans.html">Result</a> cluster(<strong class="jxr_keyword">double</strong>[][] data) {
 <a class="jxr_linenumber" name="233" href="#233">233</a> 		DataSource&lt;<strong class="jxr_keyword">double</strong>[]&gt; ds = <strong class="jxr_keyword">new</strong> DoubleArrayBackedDataSource(data, rng);
 <a class="jxr_linenumber" name="234" href="#234">234</a> 		
 <a class="jxr_linenumber" name="235" href="#235">235</a> 		<strong class="jxr_keyword">try</strong> {
@@ -267,10 +267,10 @@
 <a class="jxr_linenumber" name="257" href="#257">257</a> <em class="jxr_javadoccomment">	 * @param K number of clusters to find</em>
 <a class="jxr_linenumber" name="258" href="#258">258</a> <em class="jxr_javadoccomment">	 * @return cluster centroids</em>
 <a class="jxr_linenumber" name="259" href="#259">259</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="260" href="#260">260</a> 	<strong class="jxr_keyword">protected</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/ShortKMeans.html">Result</a> cluster(DataSource&lt;<strong class="jxr_keyword">double</strong>[]&gt; data, <strong class="jxr_keyword">int</strong> K) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="260" href="#260">260</a> 	<strong class="jxr_keyword">protected</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/FloatKMeans.html">Result</a> cluster(DataSource&lt;<strong class="jxr_keyword">double</strong>[]&gt; data, <strong class="jxr_keyword">int</strong> K) <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="261" href="#261">261</a> 		<strong class="jxr_keyword">int</strong> D = data.numDimensions();
 <a class="jxr_linenumber" name="262" href="#262">262</a> 		
-<a class="jxr_linenumber" name="263" href="#263">263</a> 		Result result = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/ShortKMeans.html">Result</a>();
+<a class="jxr_linenumber" name="263" href="#263">263</a> 		Result result = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/FloatKMeans.html">Result</a>();
 <a class="jxr_linenumber" name="264" href="#264">264</a> 		result.centroids = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[K][D];
 <a class="jxr_linenumber" name="265" href="#265">265</a> 	
 <a class="jxr_linenumber" name="266" href="#266">266</a> 		init.initKMeans(data, result.centroids);
@@ -299,7 +299,7 @@
 <a class="jxr_linenumber" name="289" href="#289">289</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException if interrupted while waiting, in</em>
 <a class="jxr_linenumber" name="290" href="#290">290</a> <em class="jxr_javadoccomment">     *         which case unfinished tasks are cancelled.</em>
 <a class="jxr_linenumber" name="291" href="#291">291</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="292" href="#292">292</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> cluster(<strong class="jxr_keyword">double</strong>[][] data, <a href="../../../../../org/openimaj/ml/clustering/kmeans/ShortKMeans.html">Result</a> result) <strong class="jxr_keyword">throws</strong> InterruptedException {
+<a class="jxr_linenumber" name="292" href="#292">292</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> cluster(<strong class="jxr_keyword">double</strong>[][] data, <a href="../../../../../org/openimaj/ml/clustering/kmeans/FloatKMeans.html">Result</a> result) <strong class="jxr_keyword">throws</strong> InterruptedException {
 <a class="jxr_linenumber" name="293" href="#293">293</a> 		DataSource&lt;<strong class="jxr_keyword">double</strong>[]&gt; ds = <strong class="jxr_keyword">new</strong> DoubleArrayBackedDataSource(data, rng);
 <a class="jxr_linenumber" name="294" href="#294">294</a> 		
 <a class="jxr_linenumber" name="295" href="#295">295</a> 		cluster(ds, result);
@@ -324,7 +324,7 @@
 <a class="jxr_linenumber" name="314" href="#314">314</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException if interrupted while waiting, in</em>
 <a class="jxr_linenumber" name="315" href="#315">315</a> <em class="jxr_javadoccomment">     *         which case unfinished tasks are cancelled.</em>
 <a class="jxr_linenumber" name="316" href="#316">316</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="317" href="#317">317</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> cluster(DataSource&lt;<strong class="jxr_keyword">double</strong>[]&gt; data, <a href="../../../../../org/openimaj/ml/clustering/kmeans/ShortKMeans.html">Result</a> result) <strong class="jxr_keyword">throws</strong> InterruptedException {
+<a class="jxr_linenumber" name="317" href="#317">317</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> cluster(DataSource&lt;<strong class="jxr_keyword">double</strong>[]&gt; data, <a href="../../../../../org/openimaj/ml/clustering/kmeans/FloatKMeans.html">Result</a> result) <strong class="jxr_keyword">throws</strong> InterruptedException {
 <a class="jxr_linenumber" name="318" href="#318">318</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong>[][] centroids = result.centroids;
 <a class="jxr_linenumber" name="319" href="#319">319</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> K = centroids.length;
 <a class="jxr_linenumber" name="320" href="#320">320</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> D = centroids[0].length;
@@ -346,7 +346,7 @@
 <a class="jxr_linenumber" name="336" href="#336">336</a> 			List&lt;CentroidAssignmentJob&gt; jobs = <strong class="jxr_keyword">new</strong> ArrayList&lt;CentroidAssignmentJob&gt;();
 <a class="jxr_linenumber" name="337" href="#337">337</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> bl = 0; bl &lt; N; bl += conf.blockSize) {
 <a class="jxr_linenumber" name="338" href="#338">338</a> 				<strong class="jxr_keyword">int</strong> br = Math.min(bl + conf.blockSize, N);
-<a class="jxr_linenumber" name="339" href="#339">339</a> 				jobs.add(<strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/ShortKMeans.html">CentroidAssignmentJob</a>(data, bl, br, nno, centroids_accum, <strong class="jxr_keyword">new</strong>_counts));
+<a class="jxr_linenumber" name="339" href="#339">339</a> 				jobs.add(<strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/FloatKMeans.html">CentroidAssignmentJob</a>(data, bl, br, nno, centroids_accum, <strong class="jxr_keyword">new</strong>_counts));
 <a class="jxr_linenumber" name="340" href="#340">340</a> 			}
 <a class="jxr_linenumber" name="341" href="#341">341</a> 
 <a class="jxr_linenumber" name="342" href="#342">342</a> 			service.invokeAll(jobs);
@@ -390,7 +390,7 @@
 <a class="jxr_linenumber" name="380" href="#380">380</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> roundInt(<strong class="jxr_keyword">double</strong> value) { <strong class="jxr_keyword">return</strong> (<strong class="jxr_keyword">int</strong>)Math.round(value); }
 <a class="jxr_linenumber" name="381" href="#381">381</a> 	
 <a class="jxr_linenumber" name="382" href="#382">382</a> 	@Override
-<a class="jxr_linenumber" name="383" href="#383">383</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/ShortKMeans.html">Result</a> cluster(DataSource&lt;<strong class="jxr_keyword">double</strong>[]&gt; ds) {
+<a class="jxr_linenumber" name="383" href="#383">383</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/openimaj/ml/clustering/kmeans/FloatKMeans.html">Result</a> cluster(DataSource&lt;<strong class="jxr_keyword">double</strong>[]&gt; ds) {
 <a class="jxr_linenumber" name="384" href="#384">384</a> 		<strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="385" href="#385">385</a> 			Result result = cluster(ds, conf.K);
 <a class="jxr_linenumber" name="386" href="#386">386</a> 			result.nn = conf.factory.create(result.centroids);

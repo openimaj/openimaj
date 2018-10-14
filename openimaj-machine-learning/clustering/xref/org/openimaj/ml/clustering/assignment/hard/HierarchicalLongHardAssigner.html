@@ -65,7 +65,7 @@
 <a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment">	 * </em>
 <a class="jxr_linenumber" name="56" href="#56">56</a>  <em class="jxr_javadoccomment">	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="58" href="#58">58</a>  	<strong class="jxr_keyword">public</strong> enum <a href="../../../../../../org/openimaj/ml/clustering/assignment/hard/HierarchicalShortHardAssigner.html">ScoringScheme</a> {
+<a class="jxr_linenumber" name="58" href="#58">58</a>  	<strong class="jxr_keyword">public</strong> enum <a href="../../../../../../org/openimaj/ml/clustering/assignment/hard/HierarchicalDoubleHardAssigner.html">ScoringScheme</a> {
 <a class="jxr_linenumber" name="59" href="#59">59</a>  		<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment">		 * Sum distances down the tree.</em>
 <a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">		 * </em>
@@ -156,7 +156,7 @@
 <a class="jxr_linenumber" name="146" href="#146">146</a> 	
 <a class="jxr_linenumber" name="147" href="#147">147</a> 	<strong class="jxr_keyword">protected</strong> <a href="../../../../../../org/openimaj/ml/clustering/kmeans/HierarchicalLongKMeansResult.html">HierarchicalLongKMeansResult</a> result;
 <a class="jxr_linenumber" name="148" href="#148">148</a> 	<strong class="jxr_keyword">protected</strong> <a href="../../../../../../org/openimaj/ml/clustering/assignment/soft/HierarchicalLongPathAssigner.html">HierarchicalLongPathAssigner</a> path;
-<a class="jxr_linenumber" name="149" href="#149">149</a> 	<strong class="jxr_keyword">protected</strong> <a href="../../../../../../org/openimaj/ml/clustering/assignment/hard/HierarchicalShortHardAssigner.html">ScoringScheme</a> scorer;
+<a class="jxr_linenumber" name="149" href="#149">149</a> 	<strong class="jxr_keyword">protected</strong> <a href="../../../../../../org/openimaj/ml/clustering/assignment/hard/HierarchicalDoubleHardAssigner.html">ScoringScheme</a> scorer;
 <a class="jxr_linenumber" name="150" href="#150">150</a> 	
 <a class="jxr_linenumber" name="151" href="#151">151</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="152" href="#152">152</a> <em class="jxr_javadoccomment">	 * Construct with the given hierarchical KMeans clusterer</em>
@@ -165,7 +165,7 @@
 <a class="jxr_linenumber" name="155" href="#155">155</a> <em class="jxr_javadoccomment">	 * @param result the hierarchical KMeans clusterer</em>
 <a class="jxr_linenumber" name="156" href="#156">156</a> <em class="jxr_javadoccomment">	 * @param scorer the scoring scheme</em>
 <a class="jxr_linenumber" name="157" href="#157">157</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="158" href="#158">158</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../../org/openimaj/ml/clustering/assignment/hard/HierarchicalLongHardAssigner.html">HierarchicalLongHardAssigner</a>(<a href="../../../../../../org/openimaj/ml/clustering/kmeans/HierarchicalLongKMeansResult.html">HierarchicalLongKMeansResult</a> result, <a href="../../../../../../org/openimaj/ml/clustering/assignment/hard/HierarchicalShortHardAssigner.html">ScoringScheme</a> scorer) {
+<a class="jxr_linenumber" name="158" href="#158">158</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../../org/openimaj/ml/clustering/assignment/hard/HierarchicalLongHardAssigner.html">HierarchicalLongHardAssigner</a>(<a href="../../../../../../org/openimaj/ml/clustering/kmeans/HierarchicalLongKMeansResult.html">HierarchicalLongKMeansResult</a> result, <a href="../../../../../../org/openimaj/ml/clustering/assignment/hard/HierarchicalDoubleHardAssigner.html">ScoringScheme</a> scorer) {
 <a class="jxr_linenumber" name="159" href="#159">159</a> 		<strong class="jxr_keyword">this</strong>.result = result;
 <a class="jxr_linenumber" name="160" href="#160">160</a> 		<strong class="jxr_keyword">this</strong>.scorer = scorer;
 <a class="jxr_linenumber" name="161" href="#161">161</a> 		<strong class="jxr_keyword">this</strong>.path = <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/ml/clustering/assignment/soft/HierarchicalLongPathAssigner.html">HierarchicalLongPathAssigner</a>(result);

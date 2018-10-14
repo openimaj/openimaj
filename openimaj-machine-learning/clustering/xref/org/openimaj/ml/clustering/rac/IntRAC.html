@@ -101,12 +101,12 @@
 <a class="jxr_linenumber" name="91" href="#91">91</a>  		CentroidsProvider&lt;<strong class="jxr_keyword">int</strong>[]&gt;,
 <a class="jxr_linenumber" name="92" href="#92">92</a>  		HardAssigner&lt;<strong class="jxr_keyword">int</strong>[], <strong class="jxr_keyword">float</strong>[], IntFloatPair&gt;
 <a class="jxr_linenumber" name="93" href="#93">93</a>  {
-<a class="jxr_linenumber" name="94" href="#94">94</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/ml/clustering/rac/IntRAC.html">ClusterMinimisationFunction</a> <strong class="jxr_keyword">implements</strong> UnivariateRealFunction {
+<a class="jxr_linenumber" name="94" href="#94">94</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/ml/clustering/rac/ClusterLimitedIntRAC.html">ClusterMinimisationFunction</a> <strong class="jxr_keyword">implements</strong> UnivariateRealFunction {
 <a class="jxr_linenumber" name="95" href="#95">95</a>  		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong>[][] distances;
 <a class="jxr_linenumber" name="96" href="#96">96</a>  		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong>[][] samples;
 <a class="jxr_linenumber" name="97" href="#97">97</a>  		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> nClusters;
 <a class="jxr_linenumber" name="98" href="#98">98</a>  
-<a class="jxr_linenumber" name="99" href="#99">99</a>  		<strong class="jxr_keyword">public</strong> <a href="../../../../../org/openimaj/ml/clustering/rac/IntRAC.html">ClusterMinimisationFunction</a>(<strong class="jxr_keyword">int</strong>[][] samples, <strong class="jxr_keyword">int</strong>[][] distances, <strong class="jxr_keyword">int</strong> nClusters) {
+<a class="jxr_linenumber" name="99" href="#99">99</a>  		<strong class="jxr_keyword">public</strong> <a href="../../../../../org/openimaj/ml/clustering/rac/ClusterLimitedIntRAC.html">ClusterMinimisationFunction</a>(<strong class="jxr_keyword">int</strong>[][] samples, <strong class="jxr_keyword">int</strong>[][] distances, <strong class="jxr_keyword">int</strong> nClusters) {
 <a class="jxr_linenumber" name="100" href="#100">100</a> 			<strong class="jxr_keyword">this</strong>.distances = distances;
 <a class="jxr_linenumber" name="101" href="#101">101</a> 			<strong class="jxr_keyword">this</strong>.samples = samples;
 <a class="jxr_linenumber" name="102" href="#102">102</a> 			<strong class="jxr_keyword">this</strong>.nClusters = nClusters;
@@ -202,7 +202,7 @@
 <a class="jxr_linenumber" name="192" href="#192">192</a> 		System.out.println(<span class="jxr_string">"Distance matrix calculated"</span>);
 <a class="jxr_linenumber" name="193" href="#193">193</a> 		<strong class="jxr_keyword">final</strong> BisectionSolver b = <strong class="jxr_keyword">new</strong> BisectionSolver();
 <a class="jxr_linenumber" name="194" href="#194">194</a> 		b.setAbsoluteAccuracy(100.0);
-<a class="jxr_linenumber" name="195" href="#195">195</a> 		<strong class="jxr_keyword">return</strong> b.solve(100, <strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/ml/clustering/rac/IntRAC.html">ClusterMinimisationFunction</a>(samples, distances, nClusters), 0, maxDistance);
+<a class="jxr_linenumber" name="195" href="#195">195</a> 		<strong class="jxr_keyword">return</strong> b.solve(100, <strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/ml/clustering/rac/ClusterLimitedIntRAC.html">ClusterMinimisationFunction</a>(samples, distances, nClusters), 0, maxDistance);
 <a class="jxr_linenumber" name="196" href="#196">196</a> 	}
 <a class="jxr_linenumber" name="197" href="#197">197</a> 
 <a class="jxr_linenumber" name="198" href="#198">198</a> 	<strong class="jxr_keyword">int</strong> train(<strong class="jxr_keyword">int</strong>[][] samples, <strong class="jxr_keyword">int</strong>[][] distances) {
