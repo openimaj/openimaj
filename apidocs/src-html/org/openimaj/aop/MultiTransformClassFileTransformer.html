@@ -44,98 +44,99 @@
 <span class="sourceLineNo">036</span>import java.util.ArrayList;<a name="line.36"></a>
 <span class="sourceLineNo">037</span>import java.util.List;<a name="line.37"></a>
 <span class="sourceLineNo">038</span><a name="line.38"></a>
-<span class="sourceLineNo">039</span>import javassist.CannotCompileException;<a name="line.39"></a>
-<span class="sourceLineNo">040</span>import javassist.ClassPool;<a name="line.40"></a>
-<span class="sourceLineNo">041</span>import javassist.CtClass;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>import javassist.NotFoundException;<a name="line.42"></a>
-<span class="sourceLineNo">043</span>import javassist.Translator;<a name="line.43"></a>
-<span class="sourceLineNo">044</span><a name="line.44"></a>
-<span class="sourceLineNo">045</span>import org.apache.log4j.Logger;<a name="line.45"></a>
-<span class="sourceLineNo">046</span><a name="line.46"></a>
-<span class="sourceLineNo">047</span>/**<a name="line.47"></a>
-<span class="sourceLineNo">048</span> * A {@link ClassFileTransformer} that applies one or more<a name="line.48"></a>
-<span class="sourceLineNo">049</span> * {@link ClassTransformer}s to a class before it is loaded.<a name="line.49"></a>
-<span class="sourceLineNo">050</span> * <a name="line.50"></a>
-<span class="sourceLineNo">051</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.51"></a>
-<span class="sourceLineNo">052</span> */<a name="line.52"></a>
-<span class="sourceLineNo">053</span>public class MultiTransformClassFileTransformer implements ClassFileTransformer, Translator {<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        private static Logger logger = Logger.getLogger(MultiTransformClassFileTransformer.class);<a name="line.54"></a>
-<span class="sourceLineNo">055</span><a name="line.55"></a>
-<span class="sourceLineNo">056</span>        private ClassPool classPool;<a name="line.56"></a>
-<span class="sourceLineNo">057</span>        private List&lt;ClassTransformer&gt; transformers = new ArrayList&lt;ClassTransformer&gt;();<a name="line.57"></a>
-<span class="sourceLineNo">058</span><a name="line.58"></a>
-<span class="sourceLineNo">059</span>        /**<a name="line.59"></a>
-<span class="sourceLineNo">060</span>         * Construct with the given {@link ClassTransformer}s.<a name="line.60"></a>
-<span class="sourceLineNo">061</span>         * <a name="line.61"></a>
-<span class="sourceLineNo">062</span>         * @param t1<a name="line.62"></a>
-<span class="sourceLineNo">063</span>         *            the first transformer<a name="line.63"></a>
-<span class="sourceLineNo">064</span>         * @param transformers<a name="line.64"></a>
-<span class="sourceLineNo">065</span>         *            any additional transformers<a name="line.65"></a>
-<span class="sourceLineNo">066</span>         */<a name="line.66"></a>
-<span class="sourceLineNo">067</span>        public MultiTransformClassFileTransformer(ClassTransformer t1, ClassTransformer... transformers) {<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                this.transformers.add(t1);<a name="line.68"></a>
-<span class="sourceLineNo">069</span><a name="line.69"></a>
-<span class="sourceLineNo">070</span>                for (final ClassTransformer ct : transformers)<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                        this.transformers.add(ct);<a name="line.71"></a>
-<span class="sourceLineNo">072</span>        }<a name="line.72"></a>
-<span class="sourceLineNo">073</span><a name="line.73"></a>
-<span class="sourceLineNo">074</span>        @Override<a name="line.74"></a>
-<span class="sourceLineNo">075</span>        public byte[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined,<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                        ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException<a name="line.76"></a>
-<span class="sourceLineNo">077</span>        {<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                return transform(className, classfileBuffer);<a name="line.78"></a>
-<span class="sourceLineNo">079</span>        }<a name="line.79"></a>
-<span class="sourceLineNo">080</span><a name="line.80"></a>
-<span class="sourceLineNo">081</span>        /**<a name="line.81"></a>
-<span class="sourceLineNo">082</span>         * Transform the given class.<a name="line.82"></a>
-<span class="sourceLineNo">083</span>         * <a name="line.83"></a>
-<span class="sourceLineNo">084</span>         * @param className<a name="line.84"></a>
-<span class="sourceLineNo">085</span>         *            the name of the class<a name="line.85"></a>
-<span class="sourceLineNo">086</span>         * @param classfileBuffer<a name="line.86"></a>
-<span class="sourceLineNo">087</span>         *            the class bytes<a name="line.87"></a>
-<span class="sourceLineNo">088</span>         * @return the transformed bytes<a name="line.88"></a>
-<span class="sourceLineNo">089</span>         */<a name="line.89"></a>
-<span class="sourceLineNo">090</span>        public byte[] transform(String className, byte[] classfileBuffer) {<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                if (classPool == null)<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                        classPool = ClassPool.getDefault();<a name="line.92"></a>
-<span class="sourceLineNo">093</span><a name="line.93"></a>
-<span class="sourceLineNo">094</span>                try {<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                        final CtClass ctclz = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));<a name="line.95"></a>
-<span class="sourceLineNo">096</span><a name="line.96"></a>
-<span class="sourceLineNo">097</span>                        transform(className, ctclz);<a name="line.97"></a>
-<span class="sourceLineNo">098</span><a name="line.98"></a>
-<span class="sourceLineNo">099</span>                        return ctclz.toBytecode();<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                } catch (final Exception e) {<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                        e.printStackTrace();<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                        logger.error("Error transforming class " + className);<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                        return classfileBuffer;<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                }<a name="line.104"></a>
-<span class="sourceLineNo">105</span>        }<a name="line.105"></a>
-<span class="sourceLineNo">106</span><a name="line.106"></a>
-<span class="sourceLineNo">107</span>        private void transform(String className, CtClass ctclz) throws Exception {<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                for (final ClassTransformer ct : transformers)<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                        ct.transform(className, ctclz);<a name="line.109"></a>
-<span class="sourceLineNo">110</span>        }<a name="line.110"></a>
-<span class="sourceLineNo">111</span><a name="line.111"></a>
-<span class="sourceLineNo">112</span>        @Override<a name="line.112"></a>
-<span class="sourceLineNo">113</span>        public void start(ClassPool pool) throws NotFoundException, CannotCompileException {<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                this.classPool = pool;<a name="line.114"></a>
-<span class="sourceLineNo">115</span>        }<a name="line.115"></a>
-<span class="sourceLineNo">116</span><a name="line.116"></a>
-<span class="sourceLineNo">117</span>        @Override<a name="line.117"></a>
-<span class="sourceLineNo">118</span>        public void onLoad(ClassPool pool, String classname) throws NotFoundException, CannotCompileException {<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                if (classname.endsWith(".package-info"))<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                        return;<a name="line.120"></a>
-<span class="sourceLineNo">121</span><a name="line.121"></a>
-<span class="sourceLineNo">122</span>                final CtClass clz = pool.get(classname);<a name="line.122"></a>
-<span class="sourceLineNo">123</span><a name="line.123"></a>
-<span class="sourceLineNo">124</span>                try {<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                        transform(classname, clz);<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                } catch (final Exception e) {<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                        throw new CannotCompileException(e);<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                }<a name="line.128"></a>
-<span class="sourceLineNo">129</span>        }<a name="line.129"></a>
-<span class="sourceLineNo">130</span>}<a name="line.130"></a>
+<span class="sourceLineNo">039</span>import org.apache.logging.log4j.Logger;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.apache.logging.log4j.LogManager;<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>import javassist.CannotCompileException;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import javassist.ClassPool;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import javassist.CtClass;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import javassist.NotFoundException;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import javassist.Translator;<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>/**<a name="line.48"></a>
+<span class="sourceLineNo">049</span> * A {@link ClassFileTransformer} that applies one or more<a name="line.49"></a>
+<span class="sourceLineNo">050</span> * {@link ClassTransformer}s to a class before it is loaded.<a name="line.50"></a>
+<span class="sourceLineNo">051</span> *<a name="line.51"></a>
+<span class="sourceLineNo">052</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.52"></a>
+<span class="sourceLineNo">053</span> */<a name="line.53"></a>
+<span class="sourceLineNo">054</span>public class MultiTransformClassFileTransformer implements ClassFileTransformer, Translator {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        private static Logger logger = LogManager.getLogger(MultiTransformClassFileTransformer.class);<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        private ClassPool classPool;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        private List&lt;ClassTransformer&gt; transformers = new ArrayList&lt;ClassTransformer&gt;();<a name="line.58"></a>
+<span class="sourceLineNo">059</span><a name="line.59"></a>
+<span class="sourceLineNo">060</span>        /**<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         * Construct with the given {@link ClassTransformer}s.<a name="line.61"></a>
+<span class="sourceLineNo">062</span>         *<a name="line.62"></a>
+<span class="sourceLineNo">063</span>         * @param t1<a name="line.63"></a>
+<span class="sourceLineNo">064</span>         *            the first transformer<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * @param transformers<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         *            any additional transformers<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        public MultiTransformClassFileTransformer(ClassTransformer t1, ClassTransformer... transformers) {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                this.transformers.add(t1);<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>                for (final ClassTransformer ct : transformers)<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                        this.transformers.add(ct);<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        }<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>        @Override<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        public byte[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined,<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                        ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                return transform(className, classfileBuffer);<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        }<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>        /**<a name="line.82"></a>
+<span class="sourceLineNo">083</span>         * Transform the given class.<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         *<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * @param className<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         *            the name of the class<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * @param classfileBuffer<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         *            the class bytes<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         * @return the transformed bytes<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         */<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        public byte[] transform(String className, byte[] classfileBuffer) {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                if (classPool == null)<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        classPool = ClassPool.getDefault();<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>                try {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        final CtClass ctclz = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));<a name="line.96"></a>
+<span class="sourceLineNo">097</span><a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        transform(className, ctclz);<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>                        return ctclz.toBytecode();<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                } catch (final Exception e) {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                        e.printStackTrace();<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                        logger.error("Error transforming class " + className);<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                        return classfileBuffer;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                }<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        }<a name="line.106"></a>
+<span class="sourceLineNo">107</span><a name="line.107"></a>
+<span class="sourceLineNo">108</span>        private void transform(String className, CtClass ctclz) throws Exception {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                for (final ClassTransformer ct : transformers)<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                        ct.transform(className, ctclz);<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span><a name="line.112"></a>
+<span class="sourceLineNo">113</span>        @Override<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        public void start(ClassPool pool) throws NotFoundException, CannotCompileException {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                this.classPool = pool;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        }<a name="line.116"></a>
+<span class="sourceLineNo">117</span><a name="line.117"></a>
+<span class="sourceLineNo">118</span>        @Override<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        public void onLoad(ClassPool pool, String classname) throws NotFoundException, CannotCompileException {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                if (classname.endsWith(".package-info"))<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        return;<a name="line.121"></a>
+<span class="sourceLineNo">122</span><a name="line.122"></a>
+<span class="sourceLineNo">123</span>                final CtClass clz = pool.get(classname);<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>                try {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                        transform(classname, clz);<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                } catch (final Exception e) {<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                        throw new CannotCompileException(e);<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                }<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        }<a name="line.130"></a>
+<span class="sourceLineNo">131</span>}<a name="line.131"></a>
 
 
 

@@ -42,101 +42,99 @@
 <span class="sourceLineNo">034</span>import java.io.FileOutputStream;<a name="line.34"></a>
 <span class="sourceLineNo">035</span>import java.io.IOException;<a name="line.35"></a>
 <span class="sourceLineNo">036</span><a name="line.36"></a>
-<span class="sourceLineNo">037</span>import org.apache.log4j.ConsoleAppender;<a name="line.37"></a>
-<span class="sourceLineNo">038</span>import org.apache.log4j.FileAppender;<a name="line.38"></a>
-<span class="sourceLineNo">039</span>import org.apache.log4j.Level;<a name="line.39"></a>
-<span class="sourceLineNo">040</span>import org.apache.log4j.Logger;<a name="line.40"></a>
-<span class="sourceLineNo">041</span>import org.apache.log4j.PatternLayout;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>import org.openimaj.io.IOUtils;<a name="line.42"></a>
-<span class="sourceLineNo">043</span>import org.openimaj.ml.linear.learner.BilinearLearnerParameters;<a name="line.43"></a>
-<span class="sourceLineNo">044</span><a name="line.44"></a>
-<span class="sourceLineNo">045</span>public abstract class BilinearExperiment {<a name="line.45"></a>
-<span class="sourceLineNo">046</span>        private static final String EXPERIMENT_NAME = "%s/%s/%s_%s";<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        private static final String PARAMS_NAME = ".paramsascii";<a name="line.47"></a>
-<span class="sourceLineNo">048</span>        private static final String PARAMS_DATA_NAME = ".params";<a name="line.48"></a>
-<span class="sourceLineNo">049</span><a name="line.49"></a>
-<span class="sourceLineNo">050</span>        private static final String BILL_DATA_ROOT = "%s/TrendMiner/deliverables/year2-18month/Austrian Data/";<a name="line.50"></a>
-<span class="sourceLineNo">051</span>        private static final String BILL_DATA = "%s/data.mat";<a name="line.51"></a>
-<span class="sourceLineNo">052</span>        <a name="line.52"></a>
-<span class="sourceLineNo">053</span>        Logger logger = Logger.getLogger(getClass());<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        private static long experimentTime = -1;<a name="line.54"></a>
-<span class="sourceLineNo">055</span>        <a name="line.55"></a>
-<span class="sourceLineNo">056</span>        protected void prepareExperimentLog(BilinearLearnerParameters params) throws IOException {<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                ConsoleAppender console = new ConsoleAppender(); //create appender<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                //configure the appender<a name="line.58"></a>
-<span class="sourceLineNo">059</span>                String PATTERN = "[%p-&gt;%C{1}] %m%n";<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                console.setLayout(new PatternLayout(PATTERN)); <a name="line.60"></a>
-<span class="sourceLineNo">061</span>                console.setThreshold(Level.DEBUG);<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                console.activateOptions();<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                // add appender to any Logger (here is root)<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                Logger.getRootLogger().addAppender(console);<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                File expRoot = prepareExperimentRoot();<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                <a name="line.66"></a>
-<span class="sourceLineNo">067</span>                IOUtils.write(params, new DataOutputStream(new FileOutputStream(new File(expRoot,PARAMS_DATA_NAME))));<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                IOUtils.writeASCII(new File(expRoot,PARAMS_NAME), params);<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                <a name="line.69"></a>
-<span class="sourceLineNo">070</span>                File logFile = new File(expRoot,"log");<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                if(logFile.exists())logFile.delete();<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                FileAppender file = new FileAppender(new PatternLayout(PATTERN), logFile.getAbsolutePath()); <a name="line.72"></a>
-<span class="sourceLineNo">073</span>                file.setThreshold(Level.DEBUG);<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                file.activateOptions();<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                Logger.getRootLogger().addAppender(file );<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                <a name="line.76"></a>
-<span class="sourceLineNo">077</span>        }<a name="line.77"></a>
-<span class="sourceLineNo">078</span>        <a name="line.78"></a>
-<span class="sourceLineNo">079</span>        public File prepareExperimentRoot() throws IOException {<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                String experimentRoot = String.format(EXPERIMENT_NAME,DATA_ROOT(),getExperimentSetName(),getExperimentName(),""+currentExperimentTime());<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                File expRoot = new File(experimentRoot);<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                if(expRoot.exists() &amp;&amp; expRoot.isDirectory()) return expRoot;<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                logger.debug("Experiment root: " + expRoot);<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                if(!expRoot.mkdirs()) throw new IOException("Couldn't prepare experiment output");<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                return expRoot;<a name="line.85"></a>
-<span class="sourceLineNo">086</span>        }<a name="line.86"></a>
-<span class="sourceLineNo">087</span><a name="line.87"></a>
-<span class="sourceLineNo">088</span>        private long currentExperimentTime() {<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                if(experimentTime==-1){<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                        experimentTime = System.currentTimeMillis();<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                }<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                return experimentTime;<a name="line.92"></a>
-<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
-<span class="sourceLineNo">094</span>        protected String FOLD_ROOT(int fold) throws IOException {<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                File foldRoot = new File(prepareExperimentRoot(),String.format("fold_%d",fold));<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                if(!foldRoot.exists() &amp;&amp; !foldRoot.mkdirs()) <a name="line.96"></a>
-<span class="sourceLineNo">097</span>                        throw new IOException("Failed creating the fold directory: " + foldRoot);<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                return foldRoot.getAbsolutePath();<a name="line.98"></a>
-<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
-<span class="sourceLineNo">100</span>        <a name="line.100"></a>
-<span class="sourceLineNo">101</span>        protected String MATLAB_DATA() {<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                <a name="line.102"></a>
-<span class="sourceLineNo">103</span>                return String.format(BILL_DATA,DATA_ROOT());<a name="line.103"></a>
-<span class="sourceLineNo">104</span>        }<a name="line.104"></a>
-<span class="sourceLineNo">105</span>        <a name="line.105"></a>
-<span class="sourceLineNo">106</span>        protected String MATLAB_DATA(String data) {<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                <a name="line.107"></a>
-<span class="sourceLineNo">108</span>                return String.format(data,DATA_ROOT());<a name="line.108"></a>
-<span class="sourceLineNo">109</span>        }<a name="line.109"></a>
-<span class="sourceLineNo">110</span>        <a name="line.110"></a>
-<span class="sourceLineNo">111</span>        protected String DATA_ROOT() {<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                <a name="line.112"></a>
-<span class="sourceLineNo">113</span>                return String.format(BILL_DATA_ROOT,DROPBOX_HOME());<a name="line.113"></a>
-<span class="sourceLineNo">114</span>        }<a name="line.114"></a>
-<span class="sourceLineNo">115</span>        <a name="line.115"></a>
-<span class="sourceLineNo">116</span>        private String DROPBOX_HOME() {<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                String home = System.getProperty("user.home");<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                <a name="line.118"></a>
-<span class="sourceLineNo">119</span>                return String.format("%s/Dropbox",home);<a name="line.119"></a>
-<span class="sourceLineNo">120</span>        }<a name="line.120"></a>
-<span class="sourceLineNo">121</span>        <a name="line.121"></a>
-<span class="sourceLineNo">122</span>        public abstract void performExperiment() throws Exception;<a name="line.122"></a>
-<span class="sourceLineNo">123</span><a name="line.123"></a>
-<span class="sourceLineNo">124</span>        public String getExperimentName() {<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                return "experiment";<a name="line.125"></a>
-<span class="sourceLineNo">126</span>        }<a name="line.126"></a>
-<span class="sourceLineNo">127</span>        <a name="line.127"></a>
-<span class="sourceLineNo">128</span>        public String getExperimentSetName() {<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                return "streamingExperiments";<a name="line.129"></a>
-<span class="sourceLineNo">130</span>        }<a name="line.130"></a>
-<span class="sourceLineNo">131</span>}<a name="line.131"></a>
+<span class="sourceLineNo">037</span>import org.apache.logging.log4j.Logger;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.apache.logging.log4j.LogManager;<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.openimaj.io.IOUtils;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.ml.linear.learner.BilinearLearnerParameters;<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>public abstract class BilinearExperiment {<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        private static final String EXPERIMENT_NAME = "%s/%s/%s_%s";<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        private static final String PARAMS_NAME = ".paramsascii";<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        private static final String PARAMS_DATA_NAME = ".params";<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>        private static final String BILL_DATA_ROOT = "%s/TrendMiner/deliverables/year2-18month/Austrian Data/";<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        private static final String BILL_DATA = "%s/data.mat";<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        <a name="line.50"></a>
+<span class="sourceLineNo">051</span>        Logger logger = LogManager.getLogger(getClass());<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        private static long experimentTime = -1;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        <a name="line.53"></a>
+<span class="sourceLineNo">054</span>        protected void prepareExperimentLog(BilinearLearnerParameters params) throws IOException {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                // ConsoleAppender console = new ConsoleAppender(); //create appender<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                // //configure the appender<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                // String PATTERN = "[%p-&gt;%C{1}] %m%n";<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                // console.setLayout(new PatternLayout(PATTERN)); <a name="line.58"></a>
+<span class="sourceLineNo">059</span>                // console.setThreshold(Level.DEBUG);<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                // console.activateOptions();<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         //     // add appender to any Logger (here is root)<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                // Logger.getRootLogger().addAppender(console);<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                // File expRoot = prepareExperimentRoot();<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                <a name="line.64"></a>
+<span class="sourceLineNo">065</span>                // IOUtils.write(params, new DataOutputStream(new FileOutputStream(new File(expRoot,PARAMS_DATA_NAME))));<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                // IOUtils.writeASCII(new File(expRoot,PARAMS_NAME), params);<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                <a name="line.67"></a>
+<span class="sourceLineNo">068</span>                // File logFile = new File(expRoot,"log");<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                // if(logFile.exists())logFile.delete();<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                // FileAppender file = new FileAppender(new PatternLayout(PATTERN), logFile.getAbsolutePath()); <a name="line.70"></a>
+<span class="sourceLineNo">071</span>                // file.setThreshold(Level.DEBUG);<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                // file.activateOptions();<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                // Logger.getRootLogger().addAppender(file );<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                <a name="line.74"></a>
+<span class="sourceLineNo">075</span>        }<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        <a name="line.76"></a>
+<span class="sourceLineNo">077</span>        public File prepareExperimentRoot() throws IOException {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                String experimentRoot = String.format(EXPERIMENT_NAME,DATA_ROOT(),getExperimentSetName(),getExperimentName(),""+currentExperimentTime());<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                File expRoot = new File(experimentRoot);<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                if(expRoot.exists() &amp;&amp; expRoot.isDirectory()) return expRoot;<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                logger.debug("Experiment root: " + expRoot);<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                if(!expRoot.mkdirs()) throw new IOException("Couldn't prepare experiment output");<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                return expRoot;<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        }<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>        private long currentExperimentTime() {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                if(experimentTime==-1){<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        experimentTime = System.currentTimeMillis();<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                }<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                return experimentTime;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        protected String FOLD_ROOT(int fold) throws IOException {<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                File foldRoot = new File(prepareExperimentRoot(),String.format("fold_%d",fold));<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                if(!foldRoot.exists() &amp;&amp; !foldRoot.mkdirs()) <a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        throw new IOException("Failed creating the fold directory: " + foldRoot);<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                return foldRoot.getAbsolutePath();<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        }<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        <a name="line.98"></a>
+<span class="sourceLineNo">099</span>        protected String MATLAB_DATA() {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                <a name="line.100"></a>
+<span class="sourceLineNo">101</span>                return String.format(BILL_DATA,DATA_ROOT());<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        }<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        <a name="line.103"></a>
+<span class="sourceLineNo">104</span>        protected String MATLAB_DATA(String data) {<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                <a name="line.105"></a>
+<span class="sourceLineNo">106</span>                return String.format(data,DATA_ROOT());<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        }<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        <a name="line.108"></a>
+<span class="sourceLineNo">109</span>        protected String DATA_ROOT() {<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                <a name="line.110"></a>
+<span class="sourceLineNo">111</span>                return String.format(BILL_DATA_ROOT,DROPBOX_HOME());<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        }<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        <a name="line.113"></a>
+<span class="sourceLineNo">114</span>        private String DROPBOX_HOME() {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                String home = System.getProperty("user.home");<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                <a name="line.116"></a>
+<span class="sourceLineNo">117</span>                return String.format("%s/Dropbox",home);<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        }<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        <a name="line.119"></a>
+<span class="sourceLineNo">120</span>        public abstract void performExperiment() throws Exception;<a name="line.120"></a>
+<span class="sourceLineNo">121</span><a name="line.121"></a>
+<span class="sourceLineNo">122</span>        public String getExperimentName() {<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                return "experiment";<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        }<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        <a name="line.125"></a>
+<span class="sourceLineNo">126</span>        public String getExperimentSetName() {<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                return "streamingExperiments";<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        }<a name="line.128"></a>
+<span class="sourceLineNo">129</span>}<a name="line.129"></a>
 
 
 

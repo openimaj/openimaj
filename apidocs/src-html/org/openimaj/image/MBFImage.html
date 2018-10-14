@@ -364,9 +364,9 @@
 <span class="sourceLineNo">356</span><a name="line.356"></a>
 <span class="sourceLineNo">357</span>                for (int i = 0, y = 0; y &lt; height; y++) {<a name="line.357"></a>
 <span class="sourceLineNo">358</span>                        for (int x = 0; x &lt; width; x++) {<a name="line.358"></a>
-<span class="sourceLineNo">359</span>                                final int blue = bytes[i++] &amp; 0xff;<a name="line.359"></a>
+<span class="sourceLineNo">359</span>                                final int red = (bytes[i++]) &amp; 0xff;<a name="line.359"></a>
 <span class="sourceLineNo">360</span>                                final int green = (bytes[i++]) &amp; 0xff;<a name="line.360"></a>
-<span class="sourceLineNo">361</span>                                final int red = (bytes[i++]) &amp; 0xff;<a name="line.361"></a>
+<span class="sourceLineNo">361</span>                                final int blue = bytes[i++] &amp; 0xff;<a name="line.361"></a>
 <span class="sourceLineNo">362</span>                                br[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[red];<a name="line.362"></a>
 <span class="sourceLineNo">363</span>                                bg[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[green];<a name="line.363"></a>
 <span class="sourceLineNo">364</span>                                bb[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[blue];<a name="line.364"></a>
@@ -580,56 +580,52 @@
 <span class="sourceLineNo">572</span>        }<a name="line.572"></a>
 <span class="sourceLineNo">573</span><a name="line.573"></a>
 <span class="sourceLineNo">574</span>        @Override<a name="line.574"></a>
-<span class="sourceLineNo">575</span>        public MBFImage fill(final Float[] colour)<a name="line.575"></a>
-<span class="sourceLineNo">576</span>        {<a name="line.576"></a>
-<span class="sourceLineNo">577</span>                return super.fill(this.colourSpace.sanitise(colour));<a name="line.577"></a>
-<span class="sourceLineNo">578</span>        }<a name="line.578"></a>
-<span class="sourceLineNo">579</span><a name="line.579"></a>
-<span class="sourceLineNo">580</span>        @Override<a name="line.580"></a>
-<span class="sourceLineNo">581</span>        public void setPixel(final int x, final int y, final Float[] val)<a name="line.581"></a>
-<span class="sourceLineNo">582</span>        {<a name="line.582"></a>
-<span class="sourceLineNo">583</span>                // Check if we have an alpha channel. If we do, we'll use alpha<a name="line.583"></a>
-<span class="sourceLineNo">584</span>                // compositing, otherwise, we'll simply copy the pixel colour into<a name="line.584"></a>
-<span class="sourceLineNo">585</span>                // the pixel position.<a name="line.585"></a>
-<span class="sourceLineNo">586</span>                if (this.colourSpace == ColourSpace.RGBA &amp;&amp; this.numBands() &gt;= 4 &amp;&amp; val.length &gt;= 4<a name="line.586"></a>
-<span class="sourceLineNo">587</span>                                &amp;&amp; x &gt;= 0 &amp;&amp; x &lt; this.getWidth() &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; this.getHeight())<a name="line.587"></a>
-<span class="sourceLineNo">588</span>                {<a name="line.588"></a>
-<span class="sourceLineNo">589</span>                        final float[] p = ImageUtilities.alphaCompositePixel(this.getPixel(x, y), val);<a name="line.589"></a>
-<span class="sourceLineNo">590</span>                        this.getBand(0).pixels[y][x] = p[0];<a name="line.590"></a>
-<span class="sourceLineNo">591</span>                        this.getBand(1).pixels[y][x] = p[1];<a name="line.591"></a>
-<span class="sourceLineNo">592</span>                        this.getBand(2).pixels[y][x] = p[2];<a name="line.592"></a>
-<span class="sourceLineNo">593</span>                        if (this.numBands() &gt;= 4)<a name="line.593"></a>
-<span class="sourceLineNo">594</span>                                this.getBand(3).pixels[y][x] = p[3];<a name="line.594"></a>
-<span class="sourceLineNo">595</span>                }<a name="line.595"></a>
-<span class="sourceLineNo">596</span>                else<a name="line.596"></a>
-<span class="sourceLineNo">597</span>                        super.setPixel(x, y, val);<a name="line.597"></a>
-<span class="sourceLineNo">598</span>        }<a name="line.598"></a>
-<span class="sourceLineNo">599</span><a name="line.599"></a>
-<span class="sourceLineNo">600</span>        @Override<a name="line.600"></a>
-<span class="sourceLineNo">601</span>        protected Float[] createPixelArray(int n) {<a name="line.601"></a>
-<span class="sourceLineNo">602</span>                return new Float[n];<a name="line.602"></a>
-<span class="sourceLineNo">603</span>        }<a name="line.603"></a>
-<span class="sourceLineNo">604</span><a name="line.604"></a>
-<span class="sourceLineNo">605</span>        /**<a name="line.605"></a>
-<span class="sourceLineNo">606</span>         * Returns the pixels of the image as a vector (array) of doubles.<a name="line.606"></a>
-<span class="sourceLineNo">607</span>         *<a name="line.607"></a>
-<span class="sourceLineNo">608</span>         * @return the pixels of the image as a vector (array) of doubles.<a name="line.608"></a>
-<span class="sourceLineNo">609</span>         */<a name="line.609"></a>
-<span class="sourceLineNo">610</span>        public double[] getDoublePixelVector()<a name="line.610"></a>
-<span class="sourceLineNo">611</span>        {<a name="line.611"></a>
-<span class="sourceLineNo">612</span>                final int height = getHeight();<a name="line.612"></a>
-<span class="sourceLineNo">613</span>                final int width = getWidth();<a name="line.613"></a>
-<span class="sourceLineNo">614</span>                final double f[] = new double[width * height * this.numBands()];<a name="line.614"></a>
-<span class="sourceLineNo">615</span>                for (int i = 0; i &lt; this.bands.size(); i++) {<a name="line.615"></a>
-<span class="sourceLineNo">616</span>                        final float[][] pixels = bands.get(i).pixels;<a name="line.616"></a>
-<span class="sourceLineNo">617</span><a name="line.617"></a>
-<span class="sourceLineNo">618</span>                        for (int y = 0; y &lt; height; y++)<a name="line.618"></a>
-<span class="sourceLineNo">619</span>                                for (int x = 0; x &lt; width; x++)<a name="line.619"></a>
-<span class="sourceLineNo">620</span>                                        f[x + y * width + i * height * width] = pixels[y][x];<a name="line.620"></a>
-<span class="sourceLineNo">621</span>                }<a name="line.621"></a>
-<span class="sourceLineNo">622</span>                return f;<a name="line.622"></a>
-<span class="sourceLineNo">623</span>        }<a name="line.623"></a>
-<span class="sourceLineNo">624</span>}<a name="line.624"></a>
+<span class="sourceLineNo">575</span>        public MBFImage fill(final Float[] colour) {<a name="line.575"></a>
+<span class="sourceLineNo">576</span>                return super.fill(this.colourSpace.sanitise(colour));<a name="line.576"></a>
+<span class="sourceLineNo">577</span>        }<a name="line.577"></a>
+<span class="sourceLineNo">578</span><a name="line.578"></a>
+<span class="sourceLineNo">579</span>        @Override<a name="line.579"></a>
+<span class="sourceLineNo">580</span>        public void setPixel(final int x, final int y, final Float[] val) {<a name="line.580"></a>
+<span class="sourceLineNo">581</span>                // Check if we have an alpha channel. If we do, we'll use alpha<a name="line.581"></a>
+<span class="sourceLineNo">582</span>                // compositing, otherwise, we'll simply copy the pixel colour into<a name="line.582"></a>
+<span class="sourceLineNo">583</span>                // the pixel position.<a name="line.583"></a>
+<span class="sourceLineNo">584</span>                if (this.colourSpace == ColourSpace.RGBA &amp;&amp; this.numBands() &gt;= 4 &amp;&amp; val.length &gt;= 4<a name="line.584"></a>
+<span class="sourceLineNo">585</span>                                &amp;&amp; x &gt;= 0 &amp;&amp; x &lt; this.getWidth() &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; this.getHeight())<a name="line.585"></a>
+<span class="sourceLineNo">586</span>                {<a name="line.586"></a>
+<span class="sourceLineNo">587</span>                        final float[] p = ImageUtilities.alphaCompositePixel(this.getPixel(x, y), val);<a name="line.587"></a>
+<span class="sourceLineNo">588</span>                        this.getBand(0).pixels[y][x] = p[0];<a name="line.588"></a>
+<span class="sourceLineNo">589</span>                        this.getBand(1).pixels[y][x] = p[1];<a name="line.589"></a>
+<span class="sourceLineNo">590</span>                        this.getBand(2).pixels[y][x] = p[2];<a name="line.590"></a>
+<span class="sourceLineNo">591</span>                        if (this.numBands() &gt;= 4)<a name="line.591"></a>
+<span class="sourceLineNo">592</span>                                this.getBand(3).pixels[y][x] = p[3];<a name="line.592"></a>
+<span class="sourceLineNo">593</span>                } else<a name="line.593"></a>
+<span class="sourceLineNo">594</span>                        super.setPixel(x, y, val);<a name="line.594"></a>
+<span class="sourceLineNo">595</span>        }<a name="line.595"></a>
+<span class="sourceLineNo">596</span><a name="line.596"></a>
+<span class="sourceLineNo">597</span>        @Override<a name="line.597"></a>
+<span class="sourceLineNo">598</span>        protected Float[] createPixelArray(int n) {<a name="line.598"></a>
+<span class="sourceLineNo">599</span>                return new Float[n];<a name="line.599"></a>
+<span class="sourceLineNo">600</span>        }<a name="line.600"></a>
+<span class="sourceLineNo">601</span><a name="line.601"></a>
+<span class="sourceLineNo">602</span>        /**<a name="line.602"></a>
+<span class="sourceLineNo">603</span>         * Returns the pixels of the image as a vector (array) of doubles.<a name="line.603"></a>
+<span class="sourceLineNo">604</span>         *<a name="line.604"></a>
+<span class="sourceLineNo">605</span>         * @return the pixels of the image as a vector (array) of doubles.<a name="line.605"></a>
+<span class="sourceLineNo">606</span>         */<a name="line.606"></a>
+<span class="sourceLineNo">607</span>        public double[] getDoublePixelVector() {<a name="line.607"></a>
+<span class="sourceLineNo">608</span>                final int height = getHeight();<a name="line.608"></a>
+<span class="sourceLineNo">609</span>                final int width = getWidth();<a name="line.609"></a>
+<span class="sourceLineNo">610</span>                final double f[] = new double[width * height * this.numBands()];<a name="line.610"></a>
+<span class="sourceLineNo">611</span>                for (int i = 0; i &lt; this.bands.size(); i++) {<a name="line.611"></a>
+<span class="sourceLineNo">612</span>                        final float[][] pixels = bands.get(i).pixels;<a name="line.612"></a>
+<span class="sourceLineNo">613</span><a name="line.613"></a>
+<span class="sourceLineNo">614</span>                        for (int y = 0; y &lt; height; y++)<a name="line.614"></a>
+<span class="sourceLineNo">615</span>                                for (int x = 0; x &lt; width; x++)<a name="line.615"></a>
+<span class="sourceLineNo">616</span>                                        f[x + y * width + i * height * width] = pixels[y][x];<a name="line.616"></a>
+<span class="sourceLineNo">617</span>                }<a name="line.617"></a>
+<span class="sourceLineNo">618</span>                return f;<a name="line.618"></a>
+<span class="sourceLineNo">619</span>        }<a name="line.619"></a>
+<span class="sourceLineNo">620</span>}<a name="line.620"></a>
 
 
 

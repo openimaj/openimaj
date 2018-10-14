@@ -52,55 +52,54 @@
 <span class="sourceLineNo">044</span>import org.openimaj.image.colour.RGBColour;<a name="line.44"></a>
 <span class="sourceLineNo">045</span>import org.openimaj.image.feature.local.engine.DoGSIFTEngine;<a name="line.45"></a>
 <span class="sourceLineNo">046</span>import org.openimaj.image.feature.local.keypoints.Keypoint;<a name="line.46"></a>
-<span class="sourceLineNo">047</span>import org.openimaj.math.geometry.transforms.HomographyRefinement;<a name="line.47"></a>
-<span class="sourceLineNo">048</span>import org.openimaj.math.geometry.transforms.estimation.RobustHomographyEstimator;<a name="line.48"></a>
-<span class="sourceLineNo">049</span>import org.openimaj.math.model.fit.RANSAC;<a name="line.49"></a>
-<span class="sourceLineNo">050</span><a name="line.50"></a>
-<span class="sourceLineNo">051</span>/**<a name="line.51"></a>
-<span class="sourceLineNo">052</span> * OpenIMAJ Hello world!<a name="line.52"></a>
-<span class="sourceLineNo">053</span> * <a name="line.53"></a>
-<span class="sourceLineNo">054</span> */<a name="line.54"></a>
-<span class="sourceLineNo">055</span>public class App {<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        /**<a name="line.56"></a>
-<span class="sourceLineNo">057</span>         * Main method<a name="line.57"></a>
-<span class="sourceLineNo">058</span>         * <a name="line.58"></a>
-<span class="sourceLineNo">059</span>         * @param args<a name="line.59"></a>
-<span class="sourceLineNo">060</span>         * @throws IOException<a name="line.60"></a>
-<span class="sourceLineNo">061</span>         */<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        public static void main(String[] args) throws IOException {<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                final MBFImage query = ImageUtilities.readMBF(new URL("http://static.openimaj.org/media/tutorial/query.jpg"));<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                final MBFImage target = ImageUtilities.readMBF(new URL("http://static.openimaj.org/media/tutorial/target.jpg"));<a name="line.64"></a>
-<span class="sourceLineNo">065</span><a name="line.65"></a>
-<span class="sourceLineNo">066</span>                final DoGSIFTEngine engine = new DoGSIFTEngine();<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                final LocalFeatureList&lt;Keypoint&gt; queryKeypoints = engine.findFeatures(query.flatten());<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                final LocalFeatureList&lt;Keypoint&gt; targetKeypoints = engine.findFeatures(target.flatten());<a name="line.68"></a>
-<span class="sourceLineNo">069</span><a name="line.69"></a>
-<span class="sourceLineNo">070</span>                LocalFeatureMatcher&lt;Keypoint&gt; matcher = new BasicMatcher&lt;Keypoint&gt;(80);<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                matcher.setModelFeatures(queryKeypoints);<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                matcher.findMatches(targetKeypoints);<a name="line.72"></a>
-<span class="sourceLineNo">073</span><a name="line.73"></a>
-<span class="sourceLineNo">074</span>                final MBFImage basicMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                DisplayUtilities.display(basicMatches);<a name="line.75"></a>
-<span class="sourceLineNo">076</span><a name="line.76"></a>
-<span class="sourceLineNo">077</span>                // final RobustAffineTransformEstimator modelFitter = new<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                // RobustAffineTransformEstimator(5.0, 1500,<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                // new RANSAC.PercentageInliersStoppingCondition(0.5));<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                final RobustHomographyEstimator modelFitter = new<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                                RobustHomographyEstimator(5.0, 1500,<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                                                new RANSAC.PercentageInliersStoppingCondition(0.5),<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                                                HomographyRefinement.NONE);<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                matcher = new ConsistentLocalFeatureMatcher2d&lt;Keypoint&gt;(new FastBasicKeypointMatcher&lt;Keypoint&gt;(8), modelFitter);<a name="line.84"></a>
-<span class="sourceLineNo">085</span><a name="line.85"></a>
-<span class="sourceLineNo">086</span>                matcher.setModelFeatures(queryKeypoints);<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                matcher.findMatches(targetKeypoints);<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                final MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target,<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                                matcher.getMatches(), RGBColour.RED);<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                DisplayUtilities.display(consistentMatches);<a name="line.90"></a>
-<span class="sourceLineNo">091</span><a name="line.91"></a>
-<span class="sourceLineNo">092</span>                target.drawShape(query.getBounds().transform(modelFitter.getModel().getTransform().inverse()), 3, RGBColour.BLUE);<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                DisplayUtilities.display(target);<a name="line.93"></a>
-<span class="sourceLineNo">094</span>        }<a name="line.94"></a>
-<span class="sourceLineNo">095</span>}<a name="line.95"></a>
+<span class="sourceLineNo">047</span>import org.openimaj.math.geometry.transforms.estimation.RobustAffineTransformEstimator;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.math.model.fit.RANSAC;<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>/**<a name="line.50"></a>
+<span class="sourceLineNo">051</span> * OpenIMAJ Hello world!<a name="line.51"></a>
+<span class="sourceLineNo">052</span> *<a name="line.52"></a>
+<span class="sourceLineNo">053</span> */<a name="line.53"></a>
+<span class="sourceLineNo">054</span>public class App {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        /**<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         * Main method<a name="line.56"></a>
+<span class="sourceLineNo">057</span>         *<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         * @param args<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         * @throws IOException<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         */<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        public static void main(String[] args) throws IOException {<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                final MBFImage query = ImageUtilities.readMBF(new URL("http://static.openimaj.org/media/tutorial/query.jpg"));<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                final MBFImage target = ImageUtilities.readMBF(new URL("http://static.openimaj.org/media/tutorial/target.jpg"));<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>                final DoGSIFTEngine engine = new DoGSIFTEngine();<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                final LocalFeatureList&lt;Keypoint&gt; queryKeypoints = engine.findFeatures(query.flatten());<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                final LocalFeatureList&lt;Keypoint&gt; targetKeypoints = engine.findFeatures(target.flatten());<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>                LocalFeatureMatcher&lt;Keypoint&gt; matcher = new BasicMatcher&lt;Keypoint&gt;(80);<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                matcher.setModelFeatures(queryKeypoints);<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                matcher.findMatches(targetKeypoints);<a name="line.71"></a>
+<span class="sourceLineNo">072</span><a name="line.72"></a>
+<span class="sourceLineNo">073</span>                final MBFImage basicMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                DisplayUtilities.display(basicMatches);<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>                final RobustAffineTransformEstimator modelFitter = new RobustAffineTransformEstimator(50.0, 1500,<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                                new RANSAC.PercentageInliersStoppingCondition(0.5));<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>                // final RobustHomographyEstimator modelFitter = new<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                // RobustHomographyEstimator(5.0, 1500,<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                // new RANSAC.PercentageInliersStoppingCondition(0.5),<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                // HomographyRefinement.NONE);<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                matcher = new ConsistentLocalFeatureMatcher2d&lt;Keypoint&gt;(new FastBasicKeypointMatcher&lt;Keypoint&gt;(8), modelFitter);<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>                matcher.setModelFeatures(queryKeypoints);<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                matcher.findMatches(targetKeypoints);<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                final MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target,<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                                matcher.getMatches(), RGBColour.RED);<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                DisplayUtilities.display(consistentMatches);<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>                target.drawShape(query.getBounds().transform(modelFitter.getModel().getTransform().inverse()), 3, RGBColour.BLUE);<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                DisplayUtilities.display(target);<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span>}<a name="line.94"></a>
 
 
 

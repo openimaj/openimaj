@@ -56,191 +56,198 @@
 <span class="sourceLineNo">048</span>import java.util.jar.JarEntry;<a name="line.48"></a>
 <span class="sourceLineNo">049</span>import java.util.jar.JarOutputStream;<a name="line.49"></a>
 <span class="sourceLineNo">050</span><a name="line.50"></a>
-<span class="sourceLineNo">051</span>import org.apache.log4j.Logger;<a name="line.51"></a>
-<span class="sourceLineNo">052</span><a name="line.52"></a>
-<span class="sourceLineNo">053</span>/**<a name="line.53"></a>
-<span class="sourceLineNo">054</span> * Dynamic agent loader. Provides methods to extract an agent jar with<a name="line.54"></a>
-<span class="sourceLineNo">055</span> * a specific agent class, and to attempt to dynamically load agents<a name="line.55"></a>
-<span class="sourceLineNo">056</span> * on Oracle JVMs (including OpenJDK). Dynamic loading won't work on<a name="line.56"></a>
-<span class="sourceLineNo">057</span> * all JVMs (i.e. IBMs), but the standard "-javaagent" commandline option<a name="line.57"></a>
-<span class="sourceLineNo">058</span> * can be used instead. If dynamic loading fails, instructions on using <a name="line.58"></a>
-<span class="sourceLineNo">059</span> * the command line flag will be printed to stderr.<a name="line.59"></a>
-<span class="sourceLineNo">060</span> * <a name="line.60"></a>
-<span class="sourceLineNo">061</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.61"></a>
-<span class="sourceLineNo">062</span> */<a name="line.62"></a>
-<span class="sourceLineNo">063</span>public class AgentLoader {<a name="line.63"></a>
-<span class="sourceLineNo">064</span>        private static final Logger logger = Logger.getLogger(AgentLoader.class);<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        private static final String VMCLASS = "com.sun.tools.attach.VirtualMachine"; <a name="line.65"></a>
-<span class="sourceLineNo">066</span><a name="line.66"></a>
-<span class="sourceLineNo">067</span>        private static long copy(InputStream input, OutputStream output) throws IOException {<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                long count = 0;<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                int n = 0;<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                byte[] buffer = new byte[4096];<a name="line.70"></a>
-<span class="sourceLineNo">071</span><a name="line.71"></a>
-<span class="sourceLineNo">072</span>                while (-1 != (n = input.read(buffer))) {<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                        output.write(buffer, 0, n);<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                        count += n;<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                }<a name="line.75"></a>
-<span class="sourceLineNo">076</span><a name="line.76"></a>
-<span class="sourceLineNo">077</span>                return count;<a name="line.77"></a>
-<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
-<span class="sourceLineNo">079</span><a name="line.79"></a>
-<span class="sourceLineNo">080</span>        private static byte[] createManifest(Class&lt;?&gt; agentClass) {<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                StringBuffer sb = new StringBuffer();<a name="line.81"></a>
-<span class="sourceLineNo">082</span><a name="line.82"></a>
-<span class="sourceLineNo">083</span>                try {<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                        agentClass.getDeclaredMethod("premain", String.class, Instrumentation.class);<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                        sb.append("Premain-Class: "+ agentClass.getName() + "\n");<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                } catch (NoSuchMethodException e) { <a name="line.86"></a>
-<span class="sourceLineNo">087</span>                        //IGNORE//<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                }<a name="line.88"></a>
-<span class="sourceLineNo">089</span><a name="line.89"></a>
-<span class="sourceLineNo">090</span>                try {<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                        agentClass.getDeclaredMethod("agentmain", String.class, Instrumentation.class);<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                        sb.append("Agent-Class: "+ agentClass.getName() + "\n");<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                } catch (NoSuchMethodException e) { <a name="line.93"></a>
-<span class="sourceLineNo">094</span>                        //IGNORE//<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                }<a name="line.95"></a>
-<span class="sourceLineNo">096</span><a name="line.96"></a>
-<span class="sourceLineNo">097</span>                sb.append("Can-Redefine-Classes: true\n");<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                sb.append("Can-Retransform-Classes: true\n");<a name="line.98"></a>
-<span class="sourceLineNo">099</span><a name="line.99"></a>
-<span class="sourceLineNo">100</span>                try {<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                        return sb.toString().getBytes("US-ASCII");<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                } catch (UnsupportedEncodingException e) {<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                        throw new RuntimeException("Charset US-ASCII isn't supported!! This should never happen.");<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                }<a name="line.104"></a>
-<span class="sourceLineNo">105</span>        }<a name="line.105"></a>
-<span class="sourceLineNo">106</span><a name="line.106"></a>
-<span class="sourceLineNo">107</span>        /**<a name="line.107"></a>
-<span class="sourceLineNo">108</span>         * Create an agent jar file with the required manifest entries.<a name="line.108"></a>
-<span class="sourceLineNo">109</span>         * <a name="line.109"></a>
-<span class="sourceLineNo">110</span>         * @param file the location to create the jar<a name="line.110"></a>
-<span class="sourceLineNo">111</span>         * @param agentClass the agent class<a name="line.111"></a>
-<span class="sourceLineNo">112</span>         * @throws IOException if an error occurs<a name="line.112"></a>
-<span class="sourceLineNo">113</span>         */<a name="line.113"></a>
-<span class="sourceLineNo">114</span>        public static void createAgentJar(File file, Class&lt;?&gt; agentClass) throws IOException {<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                JarOutputStream jos = new JarOutputStream(new FileOutputStream(file));<a name="line.115"></a>
-<span class="sourceLineNo">116</span><a name="line.116"></a>
-<span class="sourceLineNo">117</span>                String classEntryPath = agentClass.getName().replace(".", "/") + ".class";<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                InputStream classStream = agentClass.getClassLoader().getResourceAsStream(classEntryPath);<a name="line.118"></a>
-<span class="sourceLineNo">119</span><a name="line.119"></a>
-<span class="sourceLineNo">120</span>                if (classEntryPath.startsWith("/")) classEntryPath = classEntryPath.substring(1);<a name="line.120"></a>
-<span class="sourceLineNo">121</span><a name="line.121"></a>
-<span class="sourceLineNo">122</span>                JarEntry entry = new JarEntry(classEntryPath);<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                jos.putNextEntry(entry);<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                copy(classStream, jos);<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                jos.closeEntry();<a name="line.125"></a>
+<span class="sourceLineNo">051</span>import org.apache.logging.log4j.Logger;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import org.apache.logging.log4j.LogManager;<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>/**<a name="line.54"></a>
+<span class="sourceLineNo">055</span> * Dynamic agent loader. Provides methods to extract an agent jar with a<a name="line.55"></a>
+<span class="sourceLineNo">056</span> * specific agent class, and to attempt to dynamically load agents on Oracle<a name="line.56"></a>
+<span class="sourceLineNo">057</span> * JVMs (including OpenJDK). Dynamic loading won't work on all JVMs (i.e. IBMs),<a name="line.57"></a>
+<span class="sourceLineNo">058</span> * but the standard "-javaagent" commandline option can be used instead. If<a name="line.58"></a>
+<span class="sourceLineNo">059</span> * dynamic loading fails, instructions on using the command line flag will be<a name="line.59"></a>
+<span class="sourceLineNo">060</span> * printed to stderr.<a name="line.60"></a>
+<span class="sourceLineNo">061</span> *<a name="line.61"></a>
+<span class="sourceLineNo">062</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.62"></a>
+<span class="sourceLineNo">063</span> */<a name="line.63"></a>
+<span class="sourceLineNo">064</span>public class AgentLoader {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        private static final Logger logger = LogManager.getLogger(AgentLoader.class);<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        private static final String VMCLASS = "com.sun.tools.attach.VirtualMachine";<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>        private static long copy(InputStream input, OutputStream output) throws IOException {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                long count = 0;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                int n = 0;<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                final byte[] buffer = new byte[4096];<a name="line.71"></a>
+<span class="sourceLineNo">072</span><a name="line.72"></a>
+<span class="sourceLineNo">073</span>                while (-1 != (n = input.read(buffer))) {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                        output.write(buffer, 0, n);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        count += n;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                }<a name="line.76"></a>
+<span class="sourceLineNo">077</span><a name="line.77"></a>
+<span class="sourceLineNo">078</span>                return count;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        }<a name="line.79"></a>
+<span class="sourceLineNo">080</span><a name="line.80"></a>
+<span class="sourceLineNo">081</span>        private static byte[] createManifest(Class&lt;?&gt; agentClass) {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                final StringBuffer sb = new StringBuffer();<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>                try {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                        agentClass.getDeclaredMethod("premain", String.class, Instrumentation.class);<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                        sb.append("Premain-Class: " + agentClass.getName() + "\n");<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                } catch (final NoSuchMethodException e) {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        // IGNORE//<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                }<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>                try {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        agentClass.getDeclaredMethod("agentmain", String.class, Instrumentation.class);<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        sb.append("Agent-Class: " + agentClass.getName() + "\n");<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                } catch (final NoSuchMethodException e) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        // IGNORE//<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                }<a name="line.96"></a>
+<span class="sourceLineNo">097</span><a name="line.97"></a>
+<span class="sourceLineNo">098</span>                sb.append("Can-Redefine-Classes: true\n");<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                sb.append("Can-Retransform-Classes: true\n");<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>                try {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                        return sb.toString().getBytes("US-ASCII");<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                } catch (final UnsupportedEncodingException e) {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                        throw new RuntimeException("Charset US-ASCII isn't supported!! This should never happen.");<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                }<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        }<a name="line.106"></a>
+<span class="sourceLineNo">107</span><a name="line.107"></a>
+<span class="sourceLineNo">108</span>        /**<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         * Create an agent jar file with the required manifest entries.<a name="line.109"></a>
+<span class="sourceLineNo">110</span>         *<a name="line.110"></a>
+<span class="sourceLineNo">111</span>         * @param file<a name="line.111"></a>
+<span class="sourceLineNo">112</span>         *            the location to create the jar<a name="line.112"></a>
+<span class="sourceLineNo">113</span>         * @param agentClass<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         *            the agent class<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         * @throws IOException<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         *             if an error occurs<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         */<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        public static void createAgentJar(File file, Class&lt;?&gt; agentClass) throws IOException {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                final JarOutputStream jos = new JarOutputStream(new FileOutputStream(file));<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>                String classEntryPath = agentClass.getName().replace(".", "/") + ".class";<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                final InputStream classStream = agentClass.getClassLoader().getResourceAsStream(classEntryPath);<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>                if (classEntryPath.startsWith("/"))<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        classEntryPath = classEntryPath.substring(1);<a name="line.125"></a>
 <span class="sourceLineNo">126</span><a name="line.126"></a>
-<span class="sourceLineNo">127</span>                entry = new JarEntry("META-INF/MANIFEST.MF");<a name="line.127"></a>
+<span class="sourceLineNo">127</span>                JarEntry entry = new JarEntry(classEntryPath);<a name="line.127"></a>
 <span class="sourceLineNo">128</span>                jos.putNextEntry(entry);<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                jos.write(createManifest(agentClass));<a name="line.129"></a>
+<span class="sourceLineNo">129</span>                copy(classStream, jos);<a name="line.129"></a>
 <span class="sourceLineNo">130</span>                jos.closeEntry();<a name="line.130"></a>
 <span class="sourceLineNo">131</span><a name="line.131"></a>
-<span class="sourceLineNo">132</span>                jos.close();<a name="line.132"></a>
-<span class="sourceLineNo">133</span>        }<a name="line.133"></a>
-<span class="sourceLineNo">134</span><a name="line.134"></a>
-<span class="sourceLineNo">135</span>        /**<a name="line.135"></a>
-<span class="sourceLineNo">136</span>         * Attempt to locate potential "tools.jar" jars<a name="line.136"></a>
-<span class="sourceLineNo">137</span>         */<a name="line.137"></a>
-<span class="sourceLineNo">138</span>        private static List&lt;File&gt; getPotentialToolsJars() {<a name="line.138"></a>
-<span class="sourceLineNo">139</span>                List&lt;File&gt; jars = new ArrayList&lt;File&gt;();<a name="line.139"></a>
-<span class="sourceLineNo">140</span><a name="line.140"></a>
-<span class="sourceLineNo">141</span>                File javaHome = new File(System.getProperty("java.home"));<a name="line.141"></a>
-<span class="sourceLineNo">142</span><a name="line.142"></a>
-<span class="sourceLineNo">143</span>                File jreSourced = new File(javaHome, "lib/tools.jar");<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                if (jreSourced.exists()) {<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                        jars.add(jreSourced);<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                }<a name="line.146"></a>
+<span class="sourceLineNo">132</span>                entry = new JarEntry("META-INF/MANIFEST.MF");<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                jos.putNextEntry(entry);<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                jos.write(createManifest(agentClass));<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                jos.closeEntry();<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>                jos.close();<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        }<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>        /**<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         * Attempt to locate potential "tools.jar" jars<a name="line.141"></a>
+<span class="sourceLineNo">142</span>         */<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        private static List&lt;File&gt; getPotentialToolsJars() {<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                final List&lt;File&gt; jars = new ArrayList&lt;File&gt;();<a name="line.144"></a>
+<span class="sourceLineNo">145</span><a name="line.145"></a>
+<span class="sourceLineNo">146</span>                final File javaHome = new File(System.getProperty("java.home"));<a name="line.146"></a>
 <span class="sourceLineNo">147</span><a name="line.147"></a>
-<span class="sourceLineNo">148</span>                if ("jre".equals(javaHome.getName())) {<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                        File jdkHome = new File(javaHome, "../");<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                        File jdkSourced = new File(jdkHome, "lib/tools.jar");<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                        if (jdkSourced.exists()) {<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                                jars.add(jdkSourced);<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                        }<a name="line.153"></a>
-<span class="sourceLineNo">154</span>                }<a name="line.154"></a>
-<span class="sourceLineNo">155</span><a name="line.155"></a>
-<span class="sourceLineNo">156</span>                return jars;<a name="line.156"></a>
-<span class="sourceLineNo">157</span>        }<a name="line.157"></a>
-<span class="sourceLineNo">158</span><a name="line.158"></a>
-<span class="sourceLineNo">159</span>        /**<a name="line.159"></a>
-<span class="sourceLineNo">160</span>         * Try and get the VirtualMachine class<a name="line.160"></a>
-<span class="sourceLineNo">161</span>         */<a name="line.161"></a>
-<span class="sourceLineNo">162</span>        private static Class&lt;?&gt; tryGetVMClass() {<a name="line.162"></a>
-<span class="sourceLineNo">163</span>                try {<a name="line.163"></a>
-<span class="sourceLineNo">164</span>                        return AccessController.doPrivileged(new PrivilegedExceptionAction&lt;Class&lt;?&gt;&gt;() {<a name="line.164"></a>
-<span class="sourceLineNo">165</span>                                @Override<a name="line.165"></a>
-<span class="sourceLineNo">166</span>                                public Class&lt;?&gt; run() throws Exception {<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                                        try {<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                                                return ClassLoader.getSystemClassLoader().loadClass(VMCLASS);<a name="line.168"></a>
-<span class="sourceLineNo">169</span>                                        } catch (ClassNotFoundException e) {<a name="line.169"></a>
-<span class="sourceLineNo">170</span>                                                for (File jar : getPotentialToolsJars()) {<a name="line.170"></a>
-<span class="sourceLineNo">171</span>                                                        try {<a name="line.171"></a>
-<span class="sourceLineNo">172</span>                                                                return new URLClassLoader(new URL[] {jar.toURI().toURL()}).loadClass(VMCLASS);<a name="line.172"></a>
-<span class="sourceLineNo">173</span>                                                        } catch (Throwable t) {<a name="line.173"></a>
-<span class="sourceLineNo">174</span>                                                                logger.trace("Exception while loading tools.jar from "+ jar, t);<a name="line.174"></a>
-<span class="sourceLineNo">175</span>                                                        }<a name="line.175"></a>
-<span class="sourceLineNo">176</span>                                                }<a name="line.176"></a>
-<span class="sourceLineNo">177</span>                                        }<a name="line.177"></a>
-<span class="sourceLineNo">178</span>                                        return null;<a name="line.178"></a>
-<span class="sourceLineNo">179</span>                                }<a name="line.179"></a>
-<span class="sourceLineNo">180</span>                        });<a name="line.180"></a>
-<span class="sourceLineNo">181</span>                } catch (PrivilegedActionException pae) {<a name="line.181"></a>
-<span class="sourceLineNo">182</span>                        Throwable actual = pae.getCause();<a name="line.182"></a>
-<span class="sourceLineNo">183</span><a name="line.183"></a>
-<span class="sourceLineNo">184</span>                        if (actual instanceof ClassNotFoundException) {<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                                logger.trace("No VirtualMachine found");<a name="line.185"></a>
-<span class="sourceLineNo">186</span>                                return null;<a name="line.186"></a>
-<span class="sourceLineNo">187</span>                        }<a name="line.187"></a>
+<span class="sourceLineNo">148</span>                final File jreSourced = new File(javaHome, "lib/tools.jar");<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                if (jreSourced.exists()) {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        jars.add(jreSourced);<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                }<a name="line.151"></a>
+<span class="sourceLineNo">152</span><a name="line.152"></a>
+<span class="sourceLineNo">153</span>                if ("jre".equals(javaHome.getName())) {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                        final File jdkHome = new File(javaHome, "../");<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        final File jdkSourced = new File(jdkHome, "lib/tools.jar");<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                        if (jdkSourced.exists()) {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                                jars.add(jdkSourced);<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                        }<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                }<a name="line.159"></a>
+<span class="sourceLineNo">160</span><a name="line.160"></a>
+<span class="sourceLineNo">161</span>                return jars;<a name="line.161"></a>
+<span class="sourceLineNo">162</span>        }<a name="line.162"></a>
+<span class="sourceLineNo">163</span><a name="line.163"></a>
+<span class="sourceLineNo">164</span>        /**<a name="line.164"></a>
+<span class="sourceLineNo">165</span>         * Try and get the VirtualMachine class<a name="line.165"></a>
+<span class="sourceLineNo">166</span>         */<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        private static Class&lt;?&gt; tryGetVMClass() {<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                try {<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                        return AccessController.doPrivileged(new PrivilegedExceptionAction&lt;Class&lt;?&gt;&gt;() {<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                                @Override<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                                public Class&lt;?&gt; run() throws Exception {<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                                        try {<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                                                return ClassLoader.getSystemClassLoader().loadClass(VMCLASS);<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                                        } catch (final ClassNotFoundException e) {<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                                                for (final File jar : getPotentialToolsJars()) {<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                                                        try {<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                                                                return new URLClassLoader(new URL[] { jar.toURI().toURL() }).loadClass(VMCLASS);<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                                                        } catch (final Throwable t) {<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                                                                logger.trace("Exception while loading tools.jar from " + jar, t);<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                                                        }<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                                                }<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                                        }<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                                        return null;<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                                }<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                        });<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                } catch (final PrivilegedActionException pae) {<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                        final Throwable actual = pae.getCause();<a name="line.187"></a>
 <span class="sourceLineNo">188</span><a name="line.188"></a>
-<span class="sourceLineNo">189</span>                        throw new RuntimeException("Unexpected checked exception : " + actual);<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                }<a name="line.190"></a>
-<span class="sourceLineNo">191</span>        }<a name="line.191"></a>
-<span class="sourceLineNo">192</span><a name="line.192"></a>
-<span class="sourceLineNo">193</span>        private static void loadFailed() {<a name="line.193"></a>
-<span class="sourceLineNo">194</span>                System.err.println("Unable to load the java agent dynamically");<a name="line.194"></a>
-<span class="sourceLineNo">195</span>                //FIXME: instructions<a name="line.195"></a>
+<span class="sourceLineNo">189</span>                        if (actual instanceof ClassNotFoundException) {<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                                logger.trace("No VirtualMachine found");<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                                return null;<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                        }<a name="line.192"></a>
+<span class="sourceLineNo">193</span><a name="line.193"></a>
+<span class="sourceLineNo">194</span>                        throw new RuntimeException("Unexpected checked exception : " + actual);<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                }<a name="line.195"></a>
 <span class="sourceLineNo">196</span>        }<a name="line.196"></a>
 <span class="sourceLineNo">197</span><a name="line.197"></a>
-<span class="sourceLineNo">198</span>        /**<a name="line.198"></a>
-<span class="sourceLineNo">199</span>         * Attempt to dynamically load the given agent class<a name="line.199"></a>
-<span class="sourceLineNo">200</span>         * <a name="line.200"></a>
-<span class="sourceLineNo">201</span>         * @param agentClass the agent class<a name="line.201"></a>
-<span class="sourceLineNo">202</span>         * @throws IOException if an error occurs creating the agent jar<a name="line.202"></a>
-<span class="sourceLineNo">203</span>         */<a name="line.203"></a>
-<span class="sourceLineNo">204</span>        public static void loadAgent(Class&lt;?&gt; agentClass) throws IOException {<a name="line.204"></a>
-<span class="sourceLineNo">205</span>                File tmp = File.createTempFile("agent", ".jar");<a name="line.205"></a>
-<span class="sourceLineNo">206</span>                tmp.deleteOnExit();<a name="line.206"></a>
-<span class="sourceLineNo">207</span>                createAgentJar(tmp, agentClass);<a name="line.207"></a>
-<span class="sourceLineNo">208</span><a name="line.208"></a>
-<span class="sourceLineNo">209</span>                String nameOfRunningVM = ManagementFactory.getRuntimeMXBean().getName();<a name="line.209"></a>
-<span class="sourceLineNo">210</span>                int p = nameOfRunningVM.indexOf('@');<a name="line.210"></a>
-<span class="sourceLineNo">211</span>                String pid = nameOfRunningVM.substring(0, p);<a name="line.211"></a>
-<span class="sourceLineNo">212</span><a name="line.212"></a>
-<span class="sourceLineNo">213</span>                Class&lt;?&gt; vmClass = tryGetVMClass();<a name="line.213"></a>
-<span class="sourceLineNo">214</span><a name="line.214"></a>
-<span class="sourceLineNo">215</span>                if (vmClass == null) {<a name="line.215"></a>
-<span class="sourceLineNo">216</span>                        loadFailed();<a name="line.216"></a>
-<span class="sourceLineNo">217</span>                } else {<a name="line.217"></a>
-<span class="sourceLineNo">218</span>                        try {<a name="line.218"></a>
-<span class="sourceLineNo">219</span>                                Method attach = vmClass.getMethod("attach", String.class);<a name="line.219"></a>
-<span class="sourceLineNo">220</span>                                Method loadAgent = vmClass.getMethod("loadAgent", String.class);<a name="line.220"></a>
-<span class="sourceLineNo">221</span>                                Method detach = vmClass.getMethod("detach");<a name="line.221"></a>
-<span class="sourceLineNo">222</span>                                <a name="line.222"></a>
-<span class="sourceLineNo">223</span>                                Object vm = attach.invoke(null, pid);<a name="line.223"></a>
-<span class="sourceLineNo">224</span>                                try {<a name="line.224"></a>
-<span class="sourceLineNo">225</span>                                        loadAgent.invoke(vm, tmp.getAbsolutePath());<a name="line.225"></a>
-<span class="sourceLineNo">226</span>                                } finally {<a name="line.226"></a>
-<span class="sourceLineNo">227</span>                                        detach.invoke(vm);<a name="line.227"></a>
-<span class="sourceLineNo">228</span>                                }<a name="line.228"></a>
-<span class="sourceLineNo">229</span>                        } catch (Exception e) {<a name="line.229"></a>
-<span class="sourceLineNo">230</span>                                logger.warn("Loading the agent failed", e);<a name="line.230"></a>
-<span class="sourceLineNo">231</span>                                loadFailed();<a name="line.231"></a>
-<span class="sourceLineNo">232</span>                        }<a name="line.232"></a>
-<span class="sourceLineNo">233</span>                }<a name="line.233"></a>
-<span class="sourceLineNo">234</span>        }<a name="line.234"></a>
-<span class="sourceLineNo">235</span>}<a name="line.235"></a>
+<span class="sourceLineNo">198</span>        private static void loadFailed() {<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                System.err.println("Unable to load the java agent dynamically");<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                // FIXME: instructions<a name="line.200"></a>
+<span class="sourceLineNo">201</span>        }<a name="line.201"></a>
+<span class="sourceLineNo">202</span><a name="line.202"></a>
+<span class="sourceLineNo">203</span>        /**<a name="line.203"></a>
+<span class="sourceLineNo">204</span>         * Attempt to dynamically load the given agent class<a name="line.204"></a>
+<span class="sourceLineNo">205</span>         *<a name="line.205"></a>
+<span class="sourceLineNo">206</span>         * @param agentClass<a name="line.206"></a>
+<span class="sourceLineNo">207</span>         *            the agent class<a name="line.207"></a>
+<span class="sourceLineNo">208</span>         * @throws IOException<a name="line.208"></a>
+<span class="sourceLineNo">209</span>         *             if an error occurs creating the agent jar<a name="line.209"></a>
+<span class="sourceLineNo">210</span>         */<a name="line.210"></a>
+<span class="sourceLineNo">211</span>        public static void loadAgent(Class&lt;?&gt; agentClass) throws IOException {<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                final File tmp = File.createTempFile("agent", ".jar");<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                tmp.deleteOnExit();<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                createAgentJar(tmp, agentClass);<a name="line.214"></a>
+<span class="sourceLineNo">215</span><a name="line.215"></a>
+<span class="sourceLineNo">216</span>                final String nameOfRunningVM = ManagementFactory.getRuntimeMXBean().getName();<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                final int p = nameOfRunningVM.indexOf('@');<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                final String pid = nameOfRunningVM.substring(0, p);<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>                final Class&lt;?&gt; vmClass = tryGetVMClass();<a name="line.220"></a>
+<span class="sourceLineNo">221</span><a name="line.221"></a>
+<span class="sourceLineNo">222</span>                if (vmClass == null) {<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                        loadFailed();<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                } else {<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                        try {<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                                final Method attach = vmClass.getMethod("attach", String.class);<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                                final Method loadAgent = vmClass.getMethod("loadAgent", String.class);<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                                final Method detach = vmClass.getMethod("detach");<a name="line.228"></a>
+<span class="sourceLineNo">229</span><a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                final Object vm = attach.invoke(null, pid);<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                                try {<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                                        loadAgent.invoke(vm, tmp.getAbsolutePath());<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                                } finally {<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                                        detach.invoke(vm);<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                                }<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                        } catch (final Exception e) {<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                                logger.warn("Loading the agent failed", e);<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                                loadFailed();<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                        }<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                }<a name="line.240"></a>
+<span class="sourceLineNo">241</span>        }<a name="line.241"></a>
+<span class="sourceLineNo">242</span>}<a name="line.242"></a>
 
 
 

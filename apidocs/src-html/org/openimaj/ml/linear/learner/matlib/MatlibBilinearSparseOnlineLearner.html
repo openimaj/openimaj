@@ -41,452 +41,454 @@
 <span class="sourceLineNo">033</span>import java.io.DataOutput;<a name="line.33"></a>
 <span class="sourceLineNo">034</span>import java.io.IOException;<a name="line.34"></a>
 <span class="sourceLineNo">035</span><a name="line.35"></a>
-<span class="sourceLineNo">036</span>import org.apache.log4j.Logger;<a name="line.36"></a>
-<span class="sourceLineNo">037</span>import org.openimaj.io.ReadWriteableBinary;<a name="line.37"></a>
-<span class="sourceLineNo">038</span>import org.openimaj.math.matrix.DiagonalMatrix;<a name="line.38"></a>
-<span class="sourceLineNo">039</span>import org.openimaj.math.matrix.MatlibMatrixUtils;<a name="line.39"></a>
-<span class="sourceLineNo">040</span>import org.openimaj.ml.linear.learner.BilinearLearnerParameters;<a name="line.40"></a>
-<span class="sourceLineNo">041</span>import org.openimaj.ml.linear.learner.OnlineLearner;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>import org.openimaj.ml.linear.learner.matlib.init.InitStrategy;<a name="line.42"></a>
-<span class="sourceLineNo">043</span>import org.openimaj.ml.linear.learner.matlib.init.SparseSingleValueInitStrat;<a name="line.43"></a>
-<span class="sourceLineNo">044</span>import org.openimaj.ml.linear.learner.matlib.loss.LossFunction;<a name="line.44"></a>
-<span class="sourceLineNo">045</span>import org.openimaj.ml.linear.learner.matlib.loss.MatLossFunction;<a name="line.45"></a>
-<span class="sourceLineNo">046</span>import org.openimaj.ml.linear.learner.matlib.regul.Regulariser;<a name="line.46"></a>
-<span class="sourceLineNo">047</span><a name="line.47"></a>
-<span class="sourceLineNo">048</span>import ch.akuhn.matrix.Matrix;<a name="line.48"></a>
-<span class="sourceLineNo">049</span>import ch.akuhn.matrix.SparseMatrix;<a name="line.49"></a>
-<span class="sourceLineNo">050</span><a name="line.50"></a>
-<span class="sourceLineNo">051</span><a name="line.51"></a>
-<span class="sourceLineNo">052</span>/**<a name="line.52"></a>
-<span class="sourceLineNo">053</span> * An implementation of a stochastic gradient decent with proximal perameter adjustment<a name="line.53"></a>
-<span class="sourceLineNo">054</span> * (for regularised parameters).<a name="line.54"></a>
-<span class="sourceLineNo">055</span> *<a name="line.55"></a>
-<span class="sourceLineNo">056</span> * Data is dealt with sequentially using a one pass implementation of the<a name="line.56"></a>
-<span class="sourceLineNo">057</span> * online proximal algorithm described in chapter 9 and 10 of:<a name="line.57"></a>
-<span class="sourceLineNo">058</span> * The Geometry of Constrained Structured Prediction: Applications to Inference and<a name="line.58"></a>
-<span class="sourceLineNo">059</span> * Learning of Natural Language Syntax, PhD, Andre T. Martins<a name="line.59"></a>
-<span class="sourceLineNo">060</span> *<a name="line.60"></a>
-<span class="sourceLineNo">061</span> * The implementation does the following:<a name="line.61"></a>
-<span class="sourceLineNo">062</span> *      - When an X,Y is recieved:<a name="line.62"></a>
-<span class="sourceLineNo">063</span> *              - Update currently held batch<a name="line.63"></a>
-<span class="sourceLineNo">064</span> *              - If the batch is full:<a name="line.64"></a>
-<span class="sourceLineNo">065</span> *                      - While There is a great deal of change in U and W:<a name="line.65"></a>
-<span class="sourceLineNo">066</span> *                              - Calculate the gradient of W holding U fixed<a name="line.66"></a>
-<span class="sourceLineNo">067</span> *                              - Proximal update of W<a name="line.67"></a>
-<span class="sourceLineNo">068</span> *                              - Calculate the gradient of U holding W fixed<a name="line.68"></a>
-<span class="sourceLineNo">069</span> *                              - Proximal update of U<a name="line.69"></a>
-<span class="sourceLineNo">070</span> *                              - Calculate the gradient of Bias holding U and W fixed<a name="line.70"></a>
-<span class="sourceLineNo">071</span> *                      - flush the batch<a name="line.71"></a>
-<span class="sourceLineNo">072</span> *              - return current U and W (same as last time is batch isn't filled yet)<a name="line.72"></a>
-<span class="sourceLineNo">073</span> *<a name="line.73"></a>
-<span class="sourceLineNo">074</span> *<a name="line.74"></a>
-<span class="sourceLineNo">075</span> * @author Sina Samangooei (ss@ecs.soton.ac.uk)<a name="line.75"></a>
+<span class="sourceLineNo">036</span>import org.apache.logging.log4j.Logger;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.apache.logging.log4j.LogManager;<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>import org.openimaj.io.ReadWriteableBinary;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.openimaj.math.matrix.DiagonalMatrix;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.math.matrix.MatlibMatrixUtils;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.openimaj.ml.linear.learner.BilinearLearnerParameters;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.openimaj.ml.linear.learner.OnlineLearner;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.ml.linear.learner.matlib.init.InitStrategy;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.ml.linear.learner.matlib.init.SparseSingleValueInitStrat;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.openimaj.ml.linear.learner.matlib.loss.LossFunction;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.openimaj.ml.linear.learner.matlib.loss.MatLossFunction;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.ml.linear.learner.matlib.regul.Regulariser;<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>import ch.akuhn.matrix.Matrix;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import ch.akuhn.matrix.SparseMatrix;<a name="line.51"></a>
+<span class="sourceLineNo">052</span><a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>/**<a name="line.54"></a>
+<span class="sourceLineNo">055</span> * An implementation of a stochastic gradient decent with proximal perameter adjustment<a name="line.55"></a>
+<span class="sourceLineNo">056</span> * (for regularised parameters).<a name="line.56"></a>
+<span class="sourceLineNo">057</span> *<a name="line.57"></a>
+<span class="sourceLineNo">058</span> * Data is dealt with sequentially using a one pass implementation of the<a name="line.58"></a>
+<span class="sourceLineNo">059</span> * online proximal algorithm described in chapter 9 and 10 of:<a name="line.59"></a>
+<span class="sourceLineNo">060</span> * The Geometry of Constrained Structured Prediction: Applications to Inference and<a name="line.60"></a>
+<span class="sourceLineNo">061</span> * Learning of Natural Language Syntax, PhD, Andre T. Martins<a name="line.61"></a>
+<span class="sourceLineNo">062</span> *<a name="line.62"></a>
+<span class="sourceLineNo">063</span> * The implementation does the following:<a name="line.63"></a>
+<span class="sourceLineNo">064</span> *      - When an X,Y is recieved:<a name="line.64"></a>
+<span class="sourceLineNo">065</span> *              - Update currently held batch<a name="line.65"></a>
+<span class="sourceLineNo">066</span> *              - If the batch is full:<a name="line.66"></a>
+<span class="sourceLineNo">067</span> *                      - While There is a great deal of change in U and W:<a name="line.67"></a>
+<span class="sourceLineNo">068</span> *                              - Calculate the gradient of W holding U fixed<a name="line.68"></a>
+<span class="sourceLineNo">069</span> *                              - Proximal update of W<a name="line.69"></a>
+<span class="sourceLineNo">070</span> *                              - Calculate the gradient of U holding W fixed<a name="line.70"></a>
+<span class="sourceLineNo">071</span> *                              - Proximal update of U<a name="line.71"></a>
+<span class="sourceLineNo">072</span> *                              - Calculate the gradient of Bias holding U and W fixed<a name="line.72"></a>
+<span class="sourceLineNo">073</span> *                      - flush the batch<a name="line.73"></a>
+<span class="sourceLineNo">074</span> *              - return current U and W (same as last time is batch isn't filled yet)<a name="line.74"></a>
+<span class="sourceLineNo">075</span> *<a name="line.75"></a>
 <span class="sourceLineNo">076</span> *<a name="line.76"></a>
-<span class="sourceLineNo">077</span> */<a name="line.77"></a>
-<span class="sourceLineNo">078</span>public class MatlibBilinearSparseOnlineLearner implements OnlineLearner&lt;Matrix,Matrix&gt;, ReadWriteableBinary{<a name="line.78"></a>
-<span class="sourceLineNo">079</span><a name="line.79"></a>
-<span class="sourceLineNo">080</span>        static Logger logger = Logger.getLogger(MatlibBilinearSparseOnlineLearner.class);<a name="line.80"></a>
+<span class="sourceLineNo">077</span> * @author Sina Samangooei (ss@ecs.soton.ac.uk)<a name="line.77"></a>
+<span class="sourceLineNo">078</span> *<a name="line.78"></a>
+<span class="sourceLineNo">079</span> */<a name="line.79"></a>
+<span class="sourceLineNo">080</span>public class MatlibBilinearSparseOnlineLearner implements OnlineLearner&lt;Matrix,Matrix&gt;, ReadWriteableBinary{<a name="line.80"></a>
 <span class="sourceLineNo">081</span><a name="line.81"></a>
-<span class="sourceLineNo">082</span>        protected BilinearLearnerParameters params;<a name="line.82"></a>
-<span class="sourceLineNo">083</span>        protected Matrix w;<a name="line.83"></a>
-<span class="sourceLineNo">084</span>        protected Matrix u;<a name="line.84"></a>
-<span class="sourceLineNo">085</span>        protected LossFunction loss;<a name="line.85"></a>
-<span class="sourceLineNo">086</span>        protected Regulariser regul;<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        protected Double lambda_w,lambda_u;<a name="line.87"></a>
-<span class="sourceLineNo">088</span>        protected Boolean biasMode;<a name="line.88"></a>
-<span class="sourceLineNo">089</span>        protected Matrix bias;<a name="line.89"></a>
-<span class="sourceLineNo">090</span>        protected Matrix diagX;<a name="line.90"></a>
-<span class="sourceLineNo">091</span>        protected Double eta0_u;<a name="line.91"></a>
-<span class="sourceLineNo">092</span>        protected Double eta0_w;<a name="line.92"></a>
-<span class="sourceLineNo">093</span><a name="line.93"></a>
-<span class="sourceLineNo">094</span>        private Boolean forceSparcity;<a name="line.94"></a>
+<span class="sourceLineNo">082</span>        static Logger logger = LogManager.getLogger(MatlibBilinearSparseOnlineLearner.class);<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>        protected BilinearLearnerParameters params;<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        protected Matrix w;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        protected Matrix u;<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        protected LossFunction loss;<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        protected Regulariser regul;<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        protected Double lambda_w,lambda_u;<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        protected Boolean biasMode;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        protected Matrix bias;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        protected Matrix diagX;<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        protected Double eta0_u;<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        protected Double eta0_w;<a name="line.94"></a>
 <span class="sourceLineNo">095</span><a name="line.95"></a>
-<span class="sourceLineNo">096</span>        private Boolean zStandardise;<a name="line.96"></a>
+<span class="sourceLineNo">096</span>        private Boolean forceSparcity;<a name="line.96"></a>
 <span class="sourceLineNo">097</span><a name="line.97"></a>
-<span class="sourceLineNo">098</span>        private boolean nodataseen;<a name="line.98"></a>
+<span class="sourceLineNo">098</span>        private Boolean zStandardise;<a name="line.98"></a>
 <span class="sourceLineNo">099</span><a name="line.99"></a>
-<span class="sourceLineNo">100</span>        /**<a name="line.100"></a>
-<span class="sourceLineNo">101</span>         * The default parameters. These won't work with your dataset, i promise.<a name="line.101"></a>
-<span class="sourceLineNo">102</span>         */<a name="line.102"></a>
-<span class="sourceLineNo">103</span>        public MatlibBilinearSparseOnlineLearner() {<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                this(new BilinearLearnerParameters());<a name="line.104"></a>
-<span class="sourceLineNo">105</span>        }<a name="line.105"></a>
-<span class="sourceLineNo">106</span>        /**<a name="line.106"></a>
-<span class="sourceLineNo">107</span>         * @param params the parameters used by this learner<a name="line.107"></a>
-<span class="sourceLineNo">108</span>         */<a name="line.108"></a>
-<span class="sourceLineNo">109</span>        public MatlibBilinearSparseOnlineLearner(BilinearLearnerParameters params) {<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                this.params = params;<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                reinitParams();<a name="line.111"></a>
-<span class="sourceLineNo">112</span>        }<a name="line.112"></a>
-<span class="sourceLineNo">113</span><a name="line.113"></a>
-<span class="sourceLineNo">114</span>        /**<a name="line.114"></a>
-<span class="sourceLineNo">115</span>         * must be called if any parameters are changed<a name="line.115"></a>
-<span class="sourceLineNo">116</span>         */<a name="line.116"></a>
-<span class="sourceLineNo">117</span>        public void reinitParams() {<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                this.loss = this.params.getTyped(BilinearLearnerParameters.LOSS);<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                this.regul = this.params.getTyped(BilinearLearnerParameters.REGUL);<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                this.lambda_w = this.params.getTyped(BilinearLearnerParameters.LAMBDA_W);<a name="line.120"></a>
-<span class="sourceLineNo">121</span>                this.lambda_u = this.params.getTyped(BilinearLearnerParameters.LAMBDA_U);<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                this.biasMode = this.params.getTyped(BilinearLearnerParameters.BIAS);<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                this.eta0_u = this.params.getTyped(BilinearLearnerParameters.ETA0_U);<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                this.eta0_w = this.params.getTyped(BilinearLearnerParameters.ETA0_W);<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                this.forceSparcity = this.params.getTyped(BilinearLearnerParameters.FORCE_SPARCITY);<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                this.zStandardise = this.params.getTyped(BilinearLearnerParameters.Z_STANDARDISE);<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                if(!this.loss.isMatrixLoss())<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                        this.loss = new MatLossFunction(this.loss);<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                this.nodataseen = true;<a name="line.129"></a>
-<span class="sourceLineNo">130</span>        }<a name="line.130"></a>
-<span class="sourceLineNo">131</span>        private void initParams(Matrix x, Matrix y, int xrows, int xcols, int ycols) {<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                final InitStrategy wstrat = getInitStrat(BilinearLearnerParameters.WINITSTRAT,x,y);<a name="line.132"></a>
-<span class="sourceLineNo">133</span>                final InitStrategy ustrat = getInitStrat(BilinearLearnerParameters.UINITSTRAT,x,y);<a name="line.133"></a>
-<span class="sourceLineNo">134</span>                this.w = wstrat.init(xrows, ycols);<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                this.u = ustrat.init(xcols, ycols);<a name="line.135"></a>
-<span class="sourceLineNo">136</span><a name="line.136"></a>
-<span class="sourceLineNo">137</span>                this.bias = SparseMatrix.sparse(ycols,ycols);<a name="line.137"></a>
-<span class="sourceLineNo">138</span>                if(this.biasMode){<a name="line.138"></a>
-<span class="sourceLineNo">139</span>                        final InitStrategy bstrat = getInitStrat(BilinearLearnerParameters.BIASINITSTRAT,x,y);<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                        this.bias = bstrat.init(ycols, ycols);<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                        this.diagX = new DiagonalMatrix(ycols,1);<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                }<a name="line.142"></a>
-<span class="sourceLineNo">143</span>        }<a name="line.143"></a>
-<span class="sourceLineNo">144</span><a name="line.144"></a>
-<span class="sourceLineNo">145</span>        private InitStrategy getInitStrat(String initstrat, Matrix x, Matrix y) {<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                final InitStrategy strat = this.params.getTyped(initstrat);<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                return strat;<a name="line.147"></a>
-<span class="sourceLineNo">148</span>        }<a name="line.148"></a>
-<span class="sourceLineNo">149</span>        @Override<a name="line.149"></a>
-<span class="sourceLineNo">150</span>        public void process(Matrix X, Matrix Y){<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                final int nfeatures = X.rowCount();<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                final int nusers = X.columnCount();<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                final int ntasks = Y.columnCount();<a name="line.153"></a>
-<span class="sourceLineNo">154</span>//              int ninstances = Y.rowCount(); // Assume 1 instance!<a name="line.154"></a>
-<span class="sourceLineNo">155</span>                <a name="line.155"></a>
-<span class="sourceLineNo">156</span>                // only inits when the current params is null<a name="line.156"></a>
-<span class="sourceLineNo">157</span>                if (this.w == null){<a name="line.157"></a>
-<span class="sourceLineNo">158</span>                        initParams(X,Y,nfeatures, nusers, ntasks); // Number of words, users and tasks<a name="line.158"></a>
-<span class="sourceLineNo">159</span>                }<a name="line.159"></a>
-<span class="sourceLineNo">160</span><a name="line.160"></a>
-<span class="sourceLineNo">161</span>                final Double dampening = this.params.getTyped(BilinearLearnerParameters.DAMPENING);<a name="line.161"></a>
-<span class="sourceLineNo">162</span>                final double weighting = 1.0 - dampening ;<a name="line.162"></a>
-<span class="sourceLineNo">163</span><a name="line.163"></a>
-<span class="sourceLineNo">164</span>                logger.debug("... dampening w, u and bias by: " + weighting);<a name="line.164"></a>
+<span class="sourceLineNo">100</span>        private boolean nodataseen;<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>        /**<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         * The default parameters. These won't work with your dataset, i promise.<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         */<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        public MatlibBilinearSparseOnlineLearner() {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                this(new BilinearLearnerParameters());<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        }<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        /**<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         * @param params the parameters used by this learner<a name="line.109"></a>
+<span class="sourceLineNo">110</span>         */<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        public MatlibBilinearSparseOnlineLearner(BilinearLearnerParameters params) {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                this.params = params;<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                reinitParams();<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        }<a name="line.114"></a>
+<span class="sourceLineNo">115</span><a name="line.115"></a>
+<span class="sourceLineNo">116</span>        /**<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         * must be called if any parameters are changed<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         */<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        public void reinitParams() {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                this.loss = this.params.getTyped(BilinearLearnerParameters.LOSS);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                this.regul = this.params.getTyped(BilinearLearnerParameters.REGUL);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                this.lambda_w = this.params.getTyped(BilinearLearnerParameters.LAMBDA_W);<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                this.lambda_u = this.params.getTyped(BilinearLearnerParameters.LAMBDA_U);<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                this.biasMode = this.params.getTyped(BilinearLearnerParameters.BIAS);<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                this.eta0_u = this.params.getTyped(BilinearLearnerParameters.ETA0_U);<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                this.eta0_w = this.params.getTyped(BilinearLearnerParameters.ETA0_W);<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                this.forceSparcity = this.params.getTyped(BilinearLearnerParameters.FORCE_SPARCITY);<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                this.zStandardise = this.params.getTyped(BilinearLearnerParameters.Z_STANDARDISE);<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                if(!this.loss.isMatrixLoss())<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                        this.loss = new MatLossFunction(this.loss);<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                this.nodataseen = true;<a name="line.131"></a>
+<span class="sourceLineNo">132</span>        }<a name="line.132"></a>
+<span class="sourceLineNo">133</span>        private void initParams(Matrix x, Matrix y, int xrows, int xcols, int ycols) {<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                final InitStrategy wstrat = getInitStrat(BilinearLearnerParameters.WINITSTRAT,x,y);<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                final InitStrategy ustrat = getInitStrat(BilinearLearnerParameters.UINITSTRAT,x,y);<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                this.w = wstrat.init(xrows, ycols);<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                this.u = ustrat.init(xcols, ycols);<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
+<span class="sourceLineNo">139</span>                this.bias = SparseMatrix.sparse(ycols,ycols);<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                if(this.biasMode){<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        final InitStrategy bstrat = getInitStrat(BilinearLearnerParameters.BIASINITSTRAT,x,y);<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        this.bias = bstrat.init(ycols, ycols);<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                        this.diagX = new DiagonalMatrix(ycols,1);<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                }<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        }<a name="line.145"></a>
+<span class="sourceLineNo">146</span><a name="line.146"></a>
+<span class="sourceLineNo">147</span>        private InitStrategy getInitStrat(String initstrat, Matrix x, Matrix y) {<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                final InitStrategy strat = this.params.getTyped(initstrat);<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                return strat;<a name="line.149"></a>
+<span class="sourceLineNo">150</span>        }<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        @Override<a name="line.151"></a>
+<span class="sourceLineNo">152</span>        public void process(Matrix X, Matrix Y){<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                final int nfeatures = X.rowCount();<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                final int nusers = X.columnCount();<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                final int ntasks = Y.columnCount();<a name="line.155"></a>
+<span class="sourceLineNo">156</span>//              int ninstances = Y.rowCount(); // Assume 1 instance!<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                <a name="line.157"></a>
+<span class="sourceLineNo">158</span>                // only inits when the current params is null<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                if (this.w == null){<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                        initParams(X,Y,nfeatures, nusers, ntasks); // Number of words, users and tasks<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                }<a name="line.161"></a>
+<span class="sourceLineNo">162</span><a name="line.162"></a>
+<span class="sourceLineNo">163</span>                final Double dampening = this.params.getTyped(BilinearLearnerParameters.DAMPENING);<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                final double weighting = 1.0 - dampening ;<a name="line.164"></a>
 <span class="sourceLineNo">165</span><a name="line.165"></a>
-<span class="sourceLineNo">166</span>                // Adjust for weighting<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                MatlibMatrixUtils.scaleInplace(this.w,weighting);<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                MatlibMatrixUtils.scaleInplace(this.u,weighting);<a name="line.168"></a>
-<span class="sourceLineNo">169</span>                if(this.biasMode){<a name="line.169"></a>
-<span class="sourceLineNo">170</span>                        MatlibMatrixUtils.scaleInplace(this.bias,weighting);<a name="line.170"></a>
-<span class="sourceLineNo">171</span>                }<a name="line.171"></a>
-<span class="sourceLineNo">172</span>                // First expand Y s.t. blocks of rows contain the task values for each row of Y.<a name="line.172"></a>
-<span class="sourceLineNo">173</span>                // This means Yexp has (n * t x t)<a name="line.173"></a>
-<span class="sourceLineNo">174</span>                final SparseMatrix Yexp = expandY(Y);<a name="line.174"></a>
-<span class="sourceLineNo">175</span>                loss.setY(Yexp);<a name="line.175"></a>
-<span class="sourceLineNo">176</span>                int iter = 0;<a name="line.176"></a>
-<span class="sourceLineNo">177</span>                while(true) {<a name="line.177"></a>
-<span class="sourceLineNo">178</span>                        // We need to set the bias here because it is used in the loss calculation of U and W<a name="line.178"></a>
-<span class="sourceLineNo">179</span>                        if(this.biasMode) loss.setBias(this.bias);<a name="line.179"></a>
-<span class="sourceLineNo">180</span>                        iter += 1;<a name="line.180"></a>
-<span class="sourceLineNo">181</span><a name="line.181"></a>
-<span class="sourceLineNo">182</span>                        final double uLossWeight = etat(iter,eta0_u);<a name="line.182"></a>
-<span class="sourceLineNo">183</span>                        final double wLossWeighted = etat(iter,eta0_w);<a name="line.183"></a>
-<span class="sourceLineNo">184</span>                        final double weightedLambda_u = lambdat(iter,lambda_u);<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                        final double weightedLambda_w = lambdat(iter,lambda_w);<a name="line.185"></a>
-<span class="sourceLineNo">186</span>                        // Dprime is tasks x nwords<a name="line.186"></a>
-<span class="sourceLineNo">187</span>                        Matrix Dprime = null;<a name="line.187"></a>
-<span class="sourceLineNo">188</span>                        if(this.nodataseen){<a name="line.188"></a>
-<span class="sourceLineNo">189</span>                                this.nodataseen = false;<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                                Matrix fakeut = new SparseSingleValueInitStrat(1).init(this.u.columnCount(),this.u.rowCount());<a name="line.190"></a>
-<span class="sourceLineNo">191</span>                                Dprime = MatlibMatrixUtils.dotProductTranspose(fakeut, X); // i.e. fakeut . X^T<a name="line.191"></a>
-<span class="sourceLineNo">192</span>                        } else {<a name="line.192"></a>
-<span class="sourceLineNo">193</span>                                Dprime = MatlibMatrixUtils.dotProductTransposeTranspose(u, X); // i.e. u^T . X^T<a name="line.193"></a>
-<span class="sourceLineNo">194</span>                        }<a name="line.194"></a>
-<span class="sourceLineNo">195</span>                        <a name="line.195"></a>
-<span class="sourceLineNo">196</span>                        // ... as is the cost function's X<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                        if(zStandardise){<a name="line.197"></a>
-<span class="sourceLineNo">198</span>//                              Vector rowMean = CFMatrixUtils.rowMean(Dprime);<a name="line.198"></a>
-<span class="sourceLineNo">199</span>//                              CFMatrixUtils.minusEqualsCol(Dprime,rowMean);<a name="line.199"></a>
-<span class="sourceLineNo">200</span>                        }<a name="line.200"></a>
-<span class="sourceLineNo">201</span>                        loss.setX(Dprime);<a name="line.201"></a>
-<span class="sourceLineNo">202</span>                        final Matrix neww = updateW(this.w,wLossWeighted, weightedLambda_w);<a name="line.202"></a>
-<span class="sourceLineNo">203</span><a name="line.203"></a>
-<span class="sourceLineNo">204</span>                        // Vprime is nusers x tasks<a name="line.204"></a>
-<span class="sourceLineNo">205</span>                        final Matrix Vt = MatlibMatrixUtils.transposeDotProduct(neww,X); // i.e. (X^T.neww)^T X.transpose().times(neww);<a name="line.205"></a>
-<span class="sourceLineNo">206</span>                        // ... so the loss function's X is (tasks x nusers)<a name="line.206"></a>
-<span class="sourceLineNo">207</span>                        loss.setX(Vt);<a name="line.207"></a>
-<span class="sourceLineNo">208</span>                        final Matrix newu = updateU(this.u,uLossWeight, weightedLambda_u);<a name="line.208"></a>
-<span class="sourceLineNo">209</span>                        <a name="line.209"></a>
-<span class="sourceLineNo">210</span>                        final double sumchangew = MatlibMatrixUtils.normF(MatlibMatrixUtils.minus(neww, this.w));<a name="line.210"></a>
-<span class="sourceLineNo">211</span>                        final double totalw = MatlibMatrixUtils.normF(this.w);<a name="line.211"></a>
-<span class="sourceLineNo">212</span><a name="line.212"></a>
-<span class="sourceLineNo">213</span>                        final double sumchangeu = MatlibMatrixUtils.normF(MatlibMatrixUtils.minus(newu, this.u));<a name="line.213"></a>
-<span class="sourceLineNo">214</span>                        final double totalu = MatlibMatrixUtils.normF(this.u);<a name="line.214"></a>
-<span class="sourceLineNo">215</span><a name="line.215"></a>
-<span class="sourceLineNo">216</span>                        double ratioU = 0;<a name="line.216"></a>
-<span class="sourceLineNo">217</span>                        if(totalu!=0) ratioU = sumchangeu/totalu;<a name="line.217"></a>
-<span class="sourceLineNo">218</span>                        final double ratioW = 0;<a name="line.218"></a>
-<span class="sourceLineNo">219</span>                        if(totalw!=0) ratioU = sumchangew/totalw;<a name="line.219"></a>
-<span class="sourceLineNo">220</span>                        double ratioB = 0;<a name="line.220"></a>
-<span class="sourceLineNo">221</span>                        double ratio = ratioU + ratioW;<a name="line.221"></a>
-<span class="sourceLineNo">222</span>                        double totalbias = 0;<a name="line.222"></a>
-<span class="sourceLineNo">223</span>                        if(this.biasMode){<a name="line.223"></a>
-<span class="sourceLineNo">224</span>                                Matrix mult = MatlibMatrixUtils.dotProductTransposeTranspose(newu, X);<a name="line.224"></a>
-<span class="sourceLineNo">225</span>                                mult = MatlibMatrixUtils.dotProduct(mult, neww);                                <a name="line.225"></a>
-<span class="sourceLineNo">226</span>                                MatlibMatrixUtils.plusInplace(mult, bias);<a name="line.226"></a>
-<span class="sourceLineNo">227</span>                                // We must set bias to null!<a name="line.227"></a>
-<span class="sourceLineNo">228</span>                                loss.setBias(null);<a name="line.228"></a>
-<span class="sourceLineNo">229</span>                                loss.setX(diagX);<a name="line.229"></a>
-<span class="sourceLineNo">230</span>                                // Calculate gradient of bias (don't regularise)<a name="line.230"></a>
-<span class="sourceLineNo">231</span>                                final Matrix biasGrad = loss.gradient(mult);<a name="line.231"></a>
-<span class="sourceLineNo">232</span>                                final double biasLossWeight = biasEtat(iter);<a name="line.232"></a>
-<span class="sourceLineNo">233</span>                                final Matrix newbias = updateBias(biasGrad, biasLossWeight);<a name="line.233"></a>
-<span class="sourceLineNo">234</span><a name="line.234"></a>
-<span class="sourceLineNo">235</span>                                final double sumchangebias = MatlibMatrixUtils.normF(MatlibMatrixUtils.minus(newbias, bias));<a name="line.235"></a>
-<span class="sourceLineNo">236</span>                                totalbias = MatlibMatrixUtils.normF(this.bias);<a name="line.236"></a>
-<span class="sourceLineNo">237</span>                                if(totalbias!=0) ratioB = (sumchangebias/totalbias) ;<a name="line.237"></a>
-<span class="sourceLineNo">238</span>                                this.bias = newbias;<a name="line.238"></a>
-<span class="sourceLineNo">239</span>                                ratio += ratioB;<a name="line.239"></a>
-<span class="sourceLineNo">240</span>                                ratio/=3;<a name="line.240"></a>
-<span class="sourceLineNo">241</span>                        }<a name="line.241"></a>
-<span class="sourceLineNo">242</span>                        else{<a name="line.242"></a>
-<span class="sourceLineNo">243</span>                                ratio/=2;<a name="line.243"></a>
-<span class="sourceLineNo">244</span>                        }<a name="line.244"></a>
-<span class="sourceLineNo">245</span><a name="line.245"></a>
-<span class="sourceLineNo">246</span>                        final Double biconvextol = this.params.getTyped("biconvex_tol");<a name="line.246"></a>
-<span class="sourceLineNo">247</span>                        final Integer maxiter = this.params.getTyped("biconvex_maxiter");<a name="line.247"></a>
-<span class="sourceLineNo">248</span>                        if(iter%3 == 0){<a name="line.248"></a>
-<span class="sourceLineNo">249</span>                                logger.debug(String.format("Iter: %d. Last Ratio: %2.3f",iter,ratio));<a name="line.249"></a>
-<span class="sourceLineNo">250</span>                                logger.debug("W row sparcity: " + MatlibMatrixUtils.sparsity(w));<a name="line.250"></a>
-<span class="sourceLineNo">251</span>                                logger.debug("U row sparcity: " + MatlibMatrixUtils.sparsity(u));<a name="line.251"></a>
-<span class="sourceLineNo">252</span>                                logger.debug("Total U magnitude: " + totalu);<a name="line.252"></a>
-<span class="sourceLineNo">253</span>                                logger.debug("Total W magnitude: " + totalw);<a name="line.253"></a>
-<span class="sourceLineNo">254</span>                                logger.debug("Total Bias: " + totalbias);<a name="line.254"></a>
-<span class="sourceLineNo">255</span>                        }<a name="line.255"></a>
-<span class="sourceLineNo">256</span>                        if(biconvextol  &lt; 0 || ratio &lt; biconvextol || iter &gt;= maxiter) {<a name="line.256"></a>
-<span class="sourceLineNo">257</span>                                logger.debug("tolerance reached after iteration: " + iter);<a name="line.257"></a>
-<span class="sourceLineNo">258</span>                                logger.debug("W row sparcity: " + MatlibMatrixUtils.sparsity(w));<a name="line.258"></a>
-<span class="sourceLineNo">259</span>                                logger.debug("U row sparcity: " + MatlibMatrixUtils.sparsity(u));<a name="line.259"></a>
-<span class="sourceLineNo">260</span>                                logger.debug("Total U magnitude: " + totalu);<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                                logger.debug("Total W magnitude: " + totalw);<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                                logger.debug("Total Bias: " + totalbias);<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                                break;<a name="line.263"></a>
-<span class="sourceLineNo">264</span>                        }<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                }<a name="line.265"></a>
-<span class="sourceLineNo">266</span>        }<a name="line.266"></a>
-<span class="sourceLineNo">267</span>        <a name="line.267"></a>
-<span class="sourceLineNo">268</span>        protected Matrix updateBias(Matrix biasGrad, double biasLossWeight) {<a name="line.268"></a>
-<span class="sourceLineNo">269</span>                final Matrix newbias = MatlibMatrixUtils.minus(<a name="line.269"></a>
-<span class="sourceLineNo">270</span>                                this.bias,<a name="line.270"></a>
-<span class="sourceLineNo">271</span>                                MatlibMatrixUtils.scaleInplace(<a name="line.271"></a>
-<span class="sourceLineNo">272</span>                                                biasGrad,<a name="line.272"></a>
-<span class="sourceLineNo">273</span>                                                biasLossWeight<a name="line.273"></a>
-<span class="sourceLineNo">274</span>                                )<a name="line.274"></a>
-<span class="sourceLineNo">275</span>                );<a name="line.275"></a>
-<span class="sourceLineNo">276</span>                return newbias;<a name="line.276"></a>
-<span class="sourceLineNo">277</span>        }<a name="line.277"></a>
-<span class="sourceLineNo">278</span>        protected Matrix updateW(Matrix currentW, double wLossWeighted, double weightedLambda) {<a name="line.278"></a>
-<span class="sourceLineNo">279</span>                final Matrix gradW = loss.gradient(currentW);<a name="line.279"></a>
-<span class="sourceLineNo">280</span>                MatlibMatrixUtils.scaleInplace(gradW,wLossWeighted);<a name="line.280"></a>
-<span class="sourceLineNo">281</span><a name="line.281"></a>
-<span class="sourceLineNo">282</span>                Matrix neww = MatlibMatrixUtils.minus(currentW,gradW);<a name="line.282"></a>
-<span class="sourceLineNo">283</span>                neww = regul.prox(neww, weightedLambda);<a name="line.283"></a>
-<span class="sourceLineNo">284</span>                return neww;<a name="line.284"></a>
-<span class="sourceLineNo">285</span>        }<a name="line.285"></a>
-<span class="sourceLineNo">286</span>        protected Matrix updateU(Matrix currentU, double uLossWeight, double uWeightedLambda) {<a name="line.286"></a>
-<span class="sourceLineNo">287</span>                final Matrix gradU = loss.gradient(currentU);<a name="line.287"></a>
-<span class="sourceLineNo">288</span>                MatlibMatrixUtils.scaleInplace(gradU,uLossWeight);<a name="line.288"></a>
-<span class="sourceLineNo">289</span>                Matrix newu = MatlibMatrixUtils.minus(currentU,gradU);<a name="line.289"></a>
-<span class="sourceLineNo">290</span>                newu = regul.prox(newu, uWeightedLambda);<a name="line.290"></a>
-<span class="sourceLineNo">291</span>                return newu;<a name="line.291"></a>
-<span class="sourceLineNo">292</span>        }<a name="line.292"></a>
-<span class="sourceLineNo">293</span>        private double lambdat(int iter, double lambda) {<a name="line.293"></a>
-<span class="sourceLineNo">294</span>                return lambda/iter;<a name="line.294"></a>
-<span class="sourceLineNo">295</span>        }<a name="line.295"></a>
-<span class="sourceLineNo">296</span>        /**<a name="line.296"></a>
-<span class="sourceLineNo">297</span>         * Given a flat value matrix, makes a diagonal sparse matrix containing the values as the diagonal<a name="line.297"></a>
-<span class="sourceLineNo">298</span>         * @param Y<a name="line.298"></a>
-<span class="sourceLineNo">299</span>         * @return the diagonalised Y<a name="line.299"></a>
-<span class="sourceLineNo">300</span>         */<a name="line.300"></a>
-<span class="sourceLineNo">301</span>        public static SparseMatrix expandY(Matrix Y) {<a name="line.301"></a>
-<span class="sourceLineNo">302</span>                final int ntasks = Y.columnCount();<a name="line.302"></a>
-<span class="sourceLineNo">303</span>                final SparseMatrix Yexp = SparseMatrix.sparse(ntasks, ntasks);<a name="line.303"></a>
-<span class="sourceLineNo">304</span>                for (int touter = 0; touter &lt; ntasks; touter++) {<a name="line.304"></a>
-<span class="sourceLineNo">305</span>                        for (int tinner = 0; tinner &lt; ntasks; tinner++) {<a name="line.305"></a>
-<span class="sourceLineNo">306</span>                                if(tinner == touter){<a name="line.306"></a>
-<span class="sourceLineNo">307</span>                                        Yexp.put(touter, tinner, Y.get(0, tinner));<a name="line.307"></a>
-<span class="sourceLineNo">308</span>                                }<a name="line.308"></a>
-<span class="sourceLineNo">309</span>                                else{<a name="line.309"></a>
-<span class="sourceLineNo">310</span>                                        Yexp.put(touter, tinner, Double.NaN);<a name="line.310"></a>
-<span class="sourceLineNo">311</span>                                }<a name="line.311"></a>
-<span class="sourceLineNo">312</span>                        }<a name="line.312"></a>
-<span class="sourceLineNo">313</span>                }<a name="line.313"></a>
-<span class="sourceLineNo">314</span>                return Yexp;<a name="line.314"></a>
-<span class="sourceLineNo">315</span>        }<a name="line.315"></a>
-<span class="sourceLineNo">316</span>        private double biasEtat(int iter){<a name="line.316"></a>
-<span class="sourceLineNo">317</span>                final Double biasEta0 = this.params.getTyped(BilinearLearnerParameters.ETA0_BIAS);<a name="line.317"></a>
-<span class="sourceLineNo">318</span>                return biasEta0 / Math.sqrt(iter);<a name="line.318"></a>
-<span class="sourceLineNo">319</span>        }<a name="line.319"></a>
-<span class="sourceLineNo">320</span><a name="line.320"></a>
-<span class="sourceLineNo">321</span><a name="line.321"></a>
-<span class="sourceLineNo">322</span>        private double etat(int iter,double eta0) {<a name="line.322"></a>
-<span class="sourceLineNo">323</span>                final Integer etaSteps = this.params.getTyped(BilinearLearnerParameters.ETASTEPS);<a name="line.323"></a>
-<span class="sourceLineNo">324</span>                final double sqrtCeil = Math.sqrt(Math.ceil(iter/(double)etaSteps));<a name="line.324"></a>
-<span class="sourceLineNo">325</span>                return eta(eta0) / sqrtCeil;<a name="line.325"></a>
-<span class="sourceLineNo">326</span>        }<a name="line.326"></a>
-<span class="sourceLineNo">327</span>        private double eta(double eta0) {<a name="line.327"></a>
-<span class="sourceLineNo">328</span>                return eta0 ;<a name="line.328"></a>
-<span class="sourceLineNo">329</span>        }<a name="line.329"></a>
-<span class="sourceLineNo">330</span><a name="line.330"></a>
-<span class="sourceLineNo">331</span><a name="line.331"></a>
+<span class="sourceLineNo">166</span>                logger.debug("... dampening w, u and bias by: " + weighting);<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>                // Adjust for weighting<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                MatlibMatrixUtils.scaleInplace(this.w,weighting);<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                MatlibMatrixUtils.scaleInplace(this.u,weighting);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                if(this.biasMode){<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                        MatlibMatrixUtils.scaleInplace(this.bias,weighting);<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                }<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                // First expand Y s.t. blocks of rows contain the task values for each row of Y.<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                // This means Yexp has (n * t x t)<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                final SparseMatrix Yexp = expandY(Y);<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                loss.setY(Yexp);<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                int iter = 0;<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                while(true) {<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                        // We need to set the bias here because it is used in the loss calculation of U and W<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                        if(this.biasMode) loss.setBias(this.bias);<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                        iter += 1;<a name="line.182"></a>
+<span class="sourceLineNo">183</span><a name="line.183"></a>
+<span class="sourceLineNo">184</span>                        final double uLossWeight = etat(iter,eta0_u);<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                        final double wLossWeighted = etat(iter,eta0_w);<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                        final double weightedLambda_u = lambdat(iter,lambda_u);<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                        final double weightedLambda_w = lambdat(iter,lambda_w);<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                        // Dprime is tasks x nwords<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                        Matrix Dprime = null;<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                        if(this.nodataseen){<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                                this.nodataseen = false;<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                                Matrix fakeut = new SparseSingleValueInitStrat(1).init(this.u.columnCount(),this.u.rowCount());<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                                Dprime = MatlibMatrixUtils.dotProductTranspose(fakeut, X); // i.e. fakeut . X^T<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                        } else {<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                                Dprime = MatlibMatrixUtils.dotProductTransposeTranspose(u, X); // i.e. u^T . X^T<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                        }<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                        <a name="line.197"></a>
+<span class="sourceLineNo">198</span>                        // ... as is the cost function's X<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                        if(zStandardise){<a name="line.199"></a>
+<span class="sourceLineNo">200</span>//                              Vector rowMean = CFMatrixUtils.rowMean(Dprime);<a name="line.200"></a>
+<span class="sourceLineNo">201</span>//                              CFMatrixUtils.minusEqualsCol(Dprime,rowMean);<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                        }<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                        loss.setX(Dprime);<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                        final Matrix neww = updateW(this.w,wLossWeighted, weightedLambda_w);<a name="line.204"></a>
+<span class="sourceLineNo">205</span><a name="line.205"></a>
+<span class="sourceLineNo">206</span>                        // Vprime is nusers x tasks<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                        final Matrix Vt = MatlibMatrixUtils.transposeDotProduct(neww,X); // i.e. (X^T.neww)^T X.transpose().times(neww);<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                        // ... so the loss function's X is (tasks x nusers)<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                        loss.setX(Vt);<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                        final Matrix newu = updateU(this.u,uLossWeight, weightedLambda_u);<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                        <a name="line.211"></a>
+<span class="sourceLineNo">212</span>                        final double sumchangew = MatlibMatrixUtils.normF(MatlibMatrixUtils.minus(neww, this.w));<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                        final double totalw = MatlibMatrixUtils.normF(this.w);<a name="line.213"></a>
+<span class="sourceLineNo">214</span><a name="line.214"></a>
+<span class="sourceLineNo">215</span>                        final double sumchangeu = MatlibMatrixUtils.normF(MatlibMatrixUtils.minus(newu, this.u));<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                        final double totalu = MatlibMatrixUtils.normF(this.u);<a name="line.216"></a>
+<span class="sourceLineNo">217</span><a name="line.217"></a>
+<span class="sourceLineNo">218</span>                        double ratioU = 0;<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                        if(totalu!=0) ratioU = sumchangeu/totalu;<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                        final double ratioW = 0;<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                        if(totalw!=0) ratioU = sumchangew/totalw;<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                        double ratioB = 0;<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                        double ratio = ratioU + ratioW;<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                        double totalbias = 0;<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                        if(this.biasMode){<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                                Matrix mult = MatlibMatrixUtils.dotProductTransposeTranspose(newu, X);<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                                mult = MatlibMatrixUtils.dotProduct(mult, neww);                                <a name="line.227"></a>
+<span class="sourceLineNo">228</span>                                MatlibMatrixUtils.plusInplace(mult, bias);<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                                // We must set bias to null!<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                loss.setBias(null);<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                                loss.setX(diagX);<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                                // Calculate gradient of bias (don't regularise)<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                                final Matrix biasGrad = loss.gradient(mult);<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                                final double biasLossWeight = biasEtat(iter);<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                                final Matrix newbias = updateBias(biasGrad, biasLossWeight);<a name="line.235"></a>
+<span class="sourceLineNo">236</span><a name="line.236"></a>
+<span class="sourceLineNo">237</span>                                final double sumchangebias = MatlibMatrixUtils.normF(MatlibMatrixUtils.minus(newbias, bias));<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                                totalbias = MatlibMatrixUtils.normF(this.bias);<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                                if(totalbias!=0) ratioB = (sumchangebias/totalbias) ;<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                                this.bias = newbias;<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                                ratio += ratioB;<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                                ratio/=3;<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                        }<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                        else{<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                                ratio/=2;<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                        }<a name="line.246"></a>
+<span class="sourceLineNo">247</span><a name="line.247"></a>
+<span class="sourceLineNo">248</span>                        final Double biconvextol = this.params.getTyped("biconvex_tol");<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                        final Integer maxiter = this.params.getTyped("biconvex_maxiter");<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                        if(iter%3 == 0){<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                                logger.debug(String.format("Iter: %d. Last Ratio: %2.3f",iter,ratio));<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                                logger.debug("W row sparcity: " + MatlibMatrixUtils.sparsity(w));<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                                logger.debug("U row sparcity: " + MatlibMatrixUtils.sparsity(u));<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                                logger.debug("Total U magnitude: " + totalu);<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                                logger.debug("Total W magnitude: " + totalw);<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                                logger.debug("Total Bias: " + totalbias);<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                        }<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                        if(biconvextol  &lt; 0 || ratio &lt; biconvextol || iter &gt;= maxiter) {<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                                logger.debug("tolerance reached after iteration: " + iter);<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                                logger.debug("W row sparcity: " + MatlibMatrixUtils.sparsity(w));<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                                logger.debug("U row sparcity: " + MatlibMatrixUtils.sparsity(u));<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                                logger.debug("Total U magnitude: " + totalu);<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                                logger.debug("Total W magnitude: " + totalw);<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                                logger.debug("Total Bias: " + totalbias);<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                                break;<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                        }<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                }<a name="line.267"></a>
+<span class="sourceLineNo">268</span>        }<a name="line.268"></a>
+<span class="sourceLineNo">269</span>        <a name="line.269"></a>
+<span class="sourceLineNo">270</span>        protected Matrix updateBias(Matrix biasGrad, double biasLossWeight) {<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                final Matrix newbias = MatlibMatrixUtils.minus(<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                                this.bias,<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                                MatlibMatrixUtils.scaleInplace(<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                                                biasGrad,<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                                                biasLossWeight<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                                )<a name="line.276"></a>
+<span class="sourceLineNo">277</span>                );<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                return newbias;<a name="line.278"></a>
+<span class="sourceLineNo">279</span>        }<a name="line.279"></a>
+<span class="sourceLineNo">280</span>        protected Matrix updateW(Matrix currentW, double wLossWeighted, double weightedLambda) {<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                final Matrix gradW = loss.gradient(currentW);<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                MatlibMatrixUtils.scaleInplace(gradW,wLossWeighted);<a name="line.282"></a>
+<span class="sourceLineNo">283</span><a name="line.283"></a>
+<span class="sourceLineNo">284</span>                Matrix neww = MatlibMatrixUtils.minus(currentW,gradW);<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                neww = regul.prox(neww, weightedLambda);<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                return neww;<a name="line.286"></a>
+<span class="sourceLineNo">287</span>        }<a name="line.287"></a>
+<span class="sourceLineNo">288</span>        protected Matrix updateU(Matrix currentU, double uLossWeight, double uWeightedLambda) {<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                final Matrix gradU = loss.gradient(currentU);<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                MatlibMatrixUtils.scaleInplace(gradU,uLossWeight);<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                Matrix newu = MatlibMatrixUtils.minus(currentU,gradU);<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                newu = regul.prox(newu, uWeightedLambda);<a name="line.292"></a>
+<span class="sourceLineNo">293</span>                return newu;<a name="line.293"></a>
+<span class="sourceLineNo">294</span>        }<a name="line.294"></a>
+<span class="sourceLineNo">295</span>        private double lambdat(int iter, double lambda) {<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                return lambda/iter;<a name="line.296"></a>
+<span class="sourceLineNo">297</span>        }<a name="line.297"></a>
+<span class="sourceLineNo">298</span>        /**<a name="line.298"></a>
+<span class="sourceLineNo">299</span>         * Given a flat value matrix, makes a diagonal sparse matrix containing the values as the diagonal<a name="line.299"></a>
+<span class="sourceLineNo">300</span>         * @param Y<a name="line.300"></a>
+<span class="sourceLineNo">301</span>         * @return the diagonalised Y<a name="line.301"></a>
+<span class="sourceLineNo">302</span>         */<a name="line.302"></a>
+<span class="sourceLineNo">303</span>        public static SparseMatrix expandY(Matrix Y) {<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                final int ntasks = Y.columnCount();<a name="line.304"></a>
+<span class="sourceLineNo">305</span>                final SparseMatrix Yexp = SparseMatrix.sparse(ntasks, ntasks);<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                for (int touter = 0; touter &lt; ntasks; touter++) {<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                        for (int tinner = 0; tinner &lt; ntasks; tinner++) {<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                                if(tinner == touter){<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                                        Yexp.put(touter, tinner, Y.get(0, tinner));<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                                }<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                                else{<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                                        Yexp.put(touter, tinner, Double.NaN);<a name="line.312"></a>
+<span class="sourceLineNo">313</span>                                }<a name="line.313"></a>
+<span class="sourceLineNo">314</span>                        }<a name="line.314"></a>
+<span class="sourceLineNo">315</span>                }<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                return Yexp;<a name="line.316"></a>
+<span class="sourceLineNo">317</span>        }<a name="line.317"></a>
+<span class="sourceLineNo">318</span>        private double biasEtat(int iter){<a name="line.318"></a>
+<span class="sourceLineNo">319</span>                final Double biasEta0 = this.params.getTyped(BilinearLearnerParameters.ETA0_BIAS);<a name="line.319"></a>
+<span class="sourceLineNo">320</span>                return biasEta0 / Math.sqrt(iter);<a name="line.320"></a>
+<span class="sourceLineNo">321</span>        }<a name="line.321"></a>
+<span class="sourceLineNo">322</span><a name="line.322"></a>
+<span class="sourceLineNo">323</span><a name="line.323"></a>
+<span class="sourceLineNo">324</span>        private double etat(int iter,double eta0) {<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                final Integer etaSteps = this.params.getTyped(BilinearLearnerParameters.ETASTEPS);<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                final double sqrtCeil = Math.sqrt(Math.ceil(iter/(double)etaSteps));<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                return eta(eta0) / sqrtCeil;<a name="line.327"></a>
+<span class="sourceLineNo">328</span>        }<a name="line.328"></a>
+<span class="sourceLineNo">329</span>        private double eta(double eta0) {<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                return eta0 ;<a name="line.330"></a>
+<span class="sourceLineNo">331</span>        }<a name="line.331"></a>
 <span class="sourceLineNo">332</span><a name="line.332"></a>
-<span class="sourceLineNo">333</span>        /**<a name="line.333"></a>
-<span class="sourceLineNo">334</span>         * @return the current apramters<a name="line.334"></a>
-<span class="sourceLineNo">335</span>         */<a name="line.335"></a>
-<span class="sourceLineNo">336</span>        public BilinearLearnerParameters getParams() {<a name="line.336"></a>
-<span class="sourceLineNo">337</span>                return this.params;<a name="line.337"></a>
-<span class="sourceLineNo">338</span>        }<a name="line.338"></a>
-<span class="sourceLineNo">339</span><a name="line.339"></a>
-<span class="sourceLineNo">340</span>        /**<a name="line.340"></a>
-<span class="sourceLineNo">341</span>         * @return the current user matrix<a name="line.341"></a>
-<span class="sourceLineNo">342</span>         */<a name="line.342"></a>
-<span class="sourceLineNo">343</span>        public Matrix getU(){<a name="line.343"></a>
-<span class="sourceLineNo">344</span>                return this.u;<a name="line.344"></a>
-<span class="sourceLineNo">345</span>        }<a name="line.345"></a>
-<span class="sourceLineNo">346</span><a name="line.346"></a>
-<span class="sourceLineNo">347</span>        /**<a name="line.347"></a>
-<span class="sourceLineNo">348</span>         * @return the current word matrix<a name="line.348"></a>
-<span class="sourceLineNo">349</span>         */<a name="line.349"></a>
-<span class="sourceLineNo">350</span>        public Matrix getW(){<a name="line.350"></a>
-<span class="sourceLineNo">351</span>                return this.w;<a name="line.351"></a>
-<span class="sourceLineNo">352</span>        }<a name="line.352"></a>
-<span class="sourceLineNo">353</span>        /**<a name="line.353"></a>
-<span class="sourceLineNo">354</span>         * @return the current bias (null if {@link BilinearLearnerParameters#BIAS} is false<a name="line.354"></a>
-<span class="sourceLineNo">355</span>         */<a name="line.355"></a>
-<span class="sourceLineNo">356</span>        public Matrix getBias() {<a name="line.356"></a>
-<span class="sourceLineNo">357</span>                if(this.biasMode)<a name="line.357"></a>
-<span class="sourceLineNo">358</span>                        return this.bias;<a name="line.358"></a>
-<span class="sourceLineNo">359</span>                else<a name="line.359"></a>
-<span class="sourceLineNo">360</span>                        return null;<a name="line.360"></a>
-<span class="sourceLineNo">361</span>        }<a name="line.361"></a>
-<span class="sourceLineNo">362</span><a name="line.362"></a>
-<span class="sourceLineNo">363</span>        /**<a name="line.363"></a>
-<span class="sourceLineNo">364</span>         * Expand the U parameters matrix by added a set of rows.<a name="line.364"></a>
-<span class="sourceLineNo">365</span>         * If currently unset, this function does nothing (assuming U will be initialised in the first round)<a name="line.365"></a>
-<span class="sourceLineNo">366</span>         * The new U parameters are initialised used {@link BilinearLearnerParameters#EXPANDEDUINITSTRAT}<a name="line.366"></a>
-<span class="sourceLineNo">367</span>         * @param newUsers the number of new users to add<a name="line.367"></a>
-<span class="sourceLineNo">368</span>         */<a name="line.368"></a>
-<span class="sourceLineNo">369</span>        public void addU(int newUsers) {<a name="line.369"></a>
-<span class="sourceLineNo">370</span>                if(this.u == null) return; // If u has not be inited, then it will be on first process<a name="line.370"></a>
-<span class="sourceLineNo">371</span>                final InitStrategy ustrat = this.getInitStrat(BilinearLearnerParameters.EXPANDEDUINITSTRAT,null,null);<a name="line.371"></a>
-<span class="sourceLineNo">372</span>                final Matrix newU = ustrat.init(newUsers, this.u.columnCount());<a name="line.372"></a>
-<span class="sourceLineNo">373</span>                this.u = MatlibMatrixUtils.vstack(this.u,newU);<a name="line.373"></a>
-<span class="sourceLineNo">374</span>        }<a name="line.374"></a>
-<span class="sourceLineNo">375</span><a name="line.375"></a>
-<span class="sourceLineNo">376</span>        /**<a name="line.376"></a>
-<span class="sourceLineNo">377</span>         * Expand the W parameters matrix by added a set of rows.<a name="line.377"></a>
-<span class="sourceLineNo">378</span>         * If currently unset, this function does nothing (assuming W will be initialised in the first round)<a name="line.378"></a>
-<span class="sourceLineNo">379</span>         * The new W parameters are initialised used {@link BilinearLearnerParameters#EXPANDEDWINITSTRAT}<a name="line.379"></a>
-<span class="sourceLineNo">380</span>         * @param newWords the number of new words to add<a name="line.380"></a>
-<span class="sourceLineNo">381</span>         */<a name="line.381"></a>
-<span class="sourceLineNo">382</span>        public void addW(int newWords) {<a name="line.382"></a>
-<span class="sourceLineNo">383</span>                if(this.w == null) return; // If w has not be inited, then it will be on first process<a name="line.383"></a>
-<span class="sourceLineNo">384</span>                final InitStrategy wstrat = this.getInitStrat(BilinearLearnerParameters.EXPANDEDWINITSTRAT,null,null);<a name="line.384"></a>
-<span class="sourceLineNo">385</span>                final Matrix newW = wstrat.init(newWords, this.w.columnCount());<a name="line.385"></a>
-<span class="sourceLineNo">386</span>                this.w = MatlibMatrixUtils.vstack(this.w,newW);<a name="line.386"></a>
-<span class="sourceLineNo">387</span>        }<a name="line.387"></a>
-<span class="sourceLineNo">388</span><a name="line.388"></a>
-<span class="sourceLineNo">389</span>        @Override<a name="line.389"></a>
-<span class="sourceLineNo">390</span>        public MatlibBilinearSparseOnlineLearner clone(){<a name="line.390"></a>
-<span class="sourceLineNo">391</span>                final MatlibBilinearSparseOnlineLearner ret = new MatlibBilinearSparseOnlineLearner(this.getParams());<a name="line.391"></a>
-<span class="sourceLineNo">392</span>                ret.u = MatlibMatrixUtils.copy(this.u);<a name="line.392"></a>
-<span class="sourceLineNo">393</span>                ret.w = MatlibMatrixUtils.copy(this.w);<a name="line.393"></a>
-<span class="sourceLineNo">394</span>                if(this.biasMode){<a name="line.394"></a>
-<span class="sourceLineNo">395</span>                        ret.bias = MatlibMatrixUtils.copy(this.bias);<a name="line.395"></a>
-<span class="sourceLineNo">396</span>                }<a name="line.396"></a>
-<span class="sourceLineNo">397</span>                return ret;<a name="line.397"></a>
-<span class="sourceLineNo">398</span>        }<a name="line.398"></a>
-<span class="sourceLineNo">399</span>        /**<a name="line.399"></a>
-<span class="sourceLineNo">400</span>         * @param newu set the model's U<a name="line.400"></a>
-<span class="sourceLineNo">401</span>         */<a name="line.401"></a>
-<span class="sourceLineNo">402</span>        public void setU(Matrix newu) {<a name="line.402"></a>
-<span class="sourceLineNo">403</span>                this.u = newu;<a name="line.403"></a>
-<span class="sourceLineNo">404</span>        }<a name="line.404"></a>
-<span class="sourceLineNo">405</span><a name="line.405"></a>
-<span class="sourceLineNo">406</span>        /**<a name="line.406"></a>
-<span class="sourceLineNo">407</span>         * @param neww set the model's W<a name="line.407"></a>
-<span class="sourceLineNo">408</span>         */<a name="line.408"></a>
-<span class="sourceLineNo">409</span>        public void setW(Matrix neww) {<a name="line.409"></a>
-<span class="sourceLineNo">410</span>                this.w = neww;<a name="line.410"></a>
-<span class="sourceLineNo">411</span>        }<a name="line.411"></a>
-<span class="sourceLineNo">412</span>        @Override<a name="line.412"></a>
-<span class="sourceLineNo">413</span>        public void readBinary(DataInput in) throws IOException {<a name="line.413"></a>
-<span class="sourceLineNo">414</span>                final int nwords = in.readInt();<a name="line.414"></a>
-<span class="sourceLineNo">415</span>                final int nusers = in.readInt();<a name="line.415"></a>
-<span class="sourceLineNo">416</span>                final int ntasks = in.readInt();<a name="line.416"></a>
-<span class="sourceLineNo">417</span><a name="line.417"></a>
-<span class="sourceLineNo">418</span><a name="line.418"></a>
-<span class="sourceLineNo">419</span>                this.w = SparseMatrix.sparse(nwords, ntasks);<a name="line.419"></a>
-<span class="sourceLineNo">420</span>                for (int t = 0; t &lt; ntasks; t++) {<a name="line.420"></a>
-<span class="sourceLineNo">421</span>                        for (int r = 0; r &lt; nwords; r++) {<a name="line.421"></a>
-<span class="sourceLineNo">422</span>                                final double readDouble = in.readDouble();<a name="line.422"></a>
-<span class="sourceLineNo">423</span>                                if(readDouble != 0){<a name="line.423"></a>
-<span class="sourceLineNo">424</span>                                        this.w.put(r, t, readDouble);<a name="line.424"></a>
-<span class="sourceLineNo">425</span>                                }<a name="line.425"></a>
-<span class="sourceLineNo">426</span>                        }<a name="line.426"></a>
-<span class="sourceLineNo">427</span>                }<a name="line.427"></a>
-<span class="sourceLineNo">428</span><a name="line.428"></a>
-<span class="sourceLineNo">429</span>                this.u = SparseMatrix.sparse(nusers, ntasks);<a name="line.429"></a>
-<span class="sourceLineNo">430</span>                for (int t = 0; t &lt; ntasks; t++) {<a name="line.430"></a>
-<span class="sourceLineNo">431</span>                        for (int r = 0; r &lt; nusers; r++) {<a name="line.431"></a>
-<span class="sourceLineNo">432</span>                                final double readDouble = in.readDouble();<a name="line.432"></a>
-<span class="sourceLineNo">433</span>                                if(readDouble != 0){<a name="line.433"></a>
-<span class="sourceLineNo">434</span>                                        this.u.put(r, t, readDouble);<a name="line.434"></a>
-<span class="sourceLineNo">435</span>                                }<a name="line.435"></a>
-<span class="sourceLineNo">436</span>                        }<a name="line.436"></a>
-<span class="sourceLineNo">437</span>                }<a name="line.437"></a>
-<span class="sourceLineNo">438</span><a name="line.438"></a>
-<span class="sourceLineNo">439</span>                this.bias = SparseMatrix.sparse(ntasks, ntasks);<a name="line.439"></a>
-<span class="sourceLineNo">440</span>                for (int t1 = 0; t1 &lt; ntasks; t1++) {<a name="line.440"></a>
-<span class="sourceLineNo">441</span>                        for (int t2 = 0; t2 &lt; ntasks; t2++) {<a name="line.441"></a>
-<span class="sourceLineNo">442</span>                                final double readDouble = in.readDouble();<a name="line.442"></a>
-<span class="sourceLineNo">443</span>                                if(readDouble != 0){<a name="line.443"></a>
-<span class="sourceLineNo">444</span>                                        this.bias.put(t1, t2, readDouble);<a name="line.444"></a>
-<span class="sourceLineNo">445</span>                                }<a name="line.445"></a>
-<span class="sourceLineNo">446</span>                        }<a name="line.446"></a>
-<span class="sourceLineNo">447</span>                }<a name="line.447"></a>
-<span class="sourceLineNo">448</span>        }<a name="line.448"></a>
-<span class="sourceLineNo">449</span>        @Override<a name="line.449"></a>
-<span class="sourceLineNo">450</span>        public byte[] binaryHeader() {<a name="line.450"></a>
-<span class="sourceLineNo">451</span>                return "".getBytes();<a name="line.451"></a>
-<span class="sourceLineNo">452</span>        }<a name="line.452"></a>
-<span class="sourceLineNo">453</span>        @Override<a name="line.453"></a>
-<span class="sourceLineNo">454</span>        public void writeBinary(DataOutput out) throws IOException {<a name="line.454"></a>
-<span class="sourceLineNo">455</span>                out.writeInt(w.rowCount());<a name="line.455"></a>
-<span class="sourceLineNo">456</span>                out.writeInt(u.rowCount());<a name="line.456"></a>
-<span class="sourceLineNo">457</span>                out.writeInt(u.columnCount());<a name="line.457"></a>
-<span class="sourceLineNo">458</span>                final double[] wdata = w.asColumnMajorArray();<a name="line.458"></a>
-<span class="sourceLineNo">459</span>                for (int i = 0; i &lt; wdata.length; i++) {<a name="line.459"></a>
-<span class="sourceLineNo">460</span>                        out.writeDouble(wdata[i]);<a name="line.460"></a>
-<span class="sourceLineNo">461</span>                }<a name="line.461"></a>
-<span class="sourceLineNo">462</span>                final double[] udata = u.asColumnMajorArray();<a name="line.462"></a>
-<span class="sourceLineNo">463</span>                for (int i = 0; i &lt; udata.length; i++) {<a name="line.463"></a>
-<span class="sourceLineNo">464</span>                        out.writeDouble(udata[i]);<a name="line.464"></a>
-<span class="sourceLineNo">465</span>                }<a name="line.465"></a>
-<span class="sourceLineNo">466</span>                final double[] biasdata = bias.asColumnMajorArray();<a name="line.466"></a>
-<span class="sourceLineNo">467</span>                for (int i = 0; i &lt; biasdata.length; i++) {<a name="line.467"></a>
-<span class="sourceLineNo">468</span>                        out.writeDouble(biasdata[i]);<a name="line.468"></a>
-<span class="sourceLineNo">469</span>                }<a name="line.469"></a>
-<span class="sourceLineNo">470</span>        }<a name="line.470"></a>
-<span class="sourceLineNo">471</span><a name="line.471"></a>
-<span class="sourceLineNo">472</span><a name="line.472"></a>
-<span class="sourceLineNo">473</span>        @Override<a name="line.473"></a>
-<span class="sourceLineNo">474</span>        public Matrix predict(Matrix x) {<a name="line.474"></a>
-<span class="sourceLineNo">475</span>                Matrix xt = MatlibMatrixUtils.transpose(x);<a name="line.475"></a>
-<span class="sourceLineNo">476</span>                final Matrix mult = MatlibMatrixUtils.dotProduct(MatlibMatrixUtils.dotProduct(MatlibMatrixUtils.transpose(u), xt),this.w);<a name="line.476"></a>
-<span class="sourceLineNo">477</span>                if(this.biasMode) MatlibMatrixUtils.plusInplace(mult,this.bias);<a name="line.477"></a>
-<span class="sourceLineNo">478</span>                Matrix ydiag = new DiagonalMatrix(mult);<a name="line.478"></a>
-<span class="sourceLineNo">479</span>                return ydiag;<a name="line.479"></a>
-<span class="sourceLineNo">480</span>        }<a name="line.480"></a>
-<span class="sourceLineNo">481</span>}<a name="line.481"></a>
+<span class="sourceLineNo">333</span><a name="line.333"></a>
+<span class="sourceLineNo">334</span><a name="line.334"></a>
+<span class="sourceLineNo">335</span>        /**<a name="line.335"></a>
+<span class="sourceLineNo">336</span>         * @return the current apramters<a name="line.336"></a>
+<span class="sourceLineNo">337</span>         */<a name="line.337"></a>
+<span class="sourceLineNo">338</span>        public BilinearLearnerParameters getParams() {<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                return this.params;<a name="line.339"></a>
+<span class="sourceLineNo">340</span>        }<a name="line.340"></a>
+<span class="sourceLineNo">341</span><a name="line.341"></a>
+<span class="sourceLineNo">342</span>        /**<a name="line.342"></a>
+<span class="sourceLineNo">343</span>         * @return the current user matrix<a name="line.343"></a>
+<span class="sourceLineNo">344</span>         */<a name="line.344"></a>
+<span class="sourceLineNo">345</span>        public Matrix getU(){<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                return this.u;<a name="line.346"></a>
+<span class="sourceLineNo">347</span>        }<a name="line.347"></a>
+<span class="sourceLineNo">348</span><a name="line.348"></a>
+<span class="sourceLineNo">349</span>        /**<a name="line.349"></a>
+<span class="sourceLineNo">350</span>         * @return the current word matrix<a name="line.350"></a>
+<span class="sourceLineNo">351</span>         */<a name="line.351"></a>
+<span class="sourceLineNo">352</span>        public Matrix getW(){<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                return this.w;<a name="line.353"></a>
+<span class="sourceLineNo">354</span>        }<a name="line.354"></a>
+<span class="sourceLineNo">355</span>        /**<a name="line.355"></a>
+<span class="sourceLineNo">356</span>         * @return the current bias (null if {@link BilinearLearnerParameters#BIAS} is false<a name="line.356"></a>
+<span class="sourceLineNo">357</span>         */<a name="line.357"></a>
+<span class="sourceLineNo">358</span>        public Matrix getBias() {<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                if(this.biasMode)<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                        return this.bias;<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                else<a name="line.361"></a>
+<span class="sourceLineNo">362</span>                        return null;<a name="line.362"></a>
+<span class="sourceLineNo">363</span>        }<a name="line.363"></a>
+<span class="sourceLineNo">364</span><a name="line.364"></a>
+<span class="sourceLineNo">365</span>        /**<a name="line.365"></a>
+<span class="sourceLineNo">366</span>         * Expand the U parameters matrix by added a set of rows.<a name="line.366"></a>
+<span class="sourceLineNo">367</span>         * If currently unset, this function does nothing (assuming U will be initialised in the first round)<a name="line.367"></a>
+<span class="sourceLineNo">368</span>         * The new U parameters are initialised used {@link BilinearLearnerParameters#EXPANDEDUINITSTRAT}<a name="line.368"></a>
+<span class="sourceLineNo">369</span>         * @param newUsers the number of new users to add<a name="line.369"></a>
+<span class="sourceLineNo">370</span>         */<a name="line.370"></a>
+<span class="sourceLineNo">371</span>        public void addU(int newUsers) {<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                if(this.u == null) return; // If u has not be inited, then it will be on first process<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                final InitStrategy ustrat = this.getInitStrat(BilinearLearnerParameters.EXPANDEDUINITSTRAT,null,null);<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                final Matrix newU = ustrat.init(newUsers, this.u.columnCount());<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                this.u = MatlibMatrixUtils.vstack(this.u,newU);<a name="line.375"></a>
+<span class="sourceLineNo">376</span>        }<a name="line.376"></a>
+<span class="sourceLineNo">377</span><a name="line.377"></a>
+<span class="sourceLineNo">378</span>        /**<a name="line.378"></a>
+<span class="sourceLineNo">379</span>         * Expand the W parameters matrix by added a set of rows.<a name="line.379"></a>
+<span class="sourceLineNo">380</span>         * If currently unset, this function does nothing (assuming W will be initialised in the first round)<a name="line.380"></a>
+<span class="sourceLineNo">381</span>         * The new W parameters are initialised used {@link BilinearLearnerParameters#EXPANDEDWINITSTRAT}<a name="line.381"></a>
+<span class="sourceLineNo">382</span>         * @param newWords the number of new words to add<a name="line.382"></a>
+<span class="sourceLineNo">383</span>         */<a name="line.383"></a>
+<span class="sourceLineNo">384</span>        public void addW(int newWords) {<a name="line.384"></a>
+<span class="sourceLineNo">385</span>                if(this.w == null) return; // If w has not be inited, then it will be on first process<a name="line.385"></a>
+<span class="sourceLineNo">386</span>                final InitStrategy wstrat = this.getInitStrat(BilinearLearnerParameters.EXPANDEDWINITSTRAT,null,null);<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                final Matrix newW = wstrat.init(newWords, this.w.columnCount());<a name="line.387"></a>
+<span class="sourceLineNo">388</span>                this.w = MatlibMatrixUtils.vstack(this.w,newW);<a name="line.388"></a>
+<span class="sourceLineNo">389</span>        }<a name="line.389"></a>
+<span class="sourceLineNo">390</span><a name="line.390"></a>
+<span class="sourceLineNo">391</span>        @Override<a name="line.391"></a>
+<span class="sourceLineNo">392</span>        public MatlibBilinearSparseOnlineLearner clone(){<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                final MatlibBilinearSparseOnlineLearner ret = new MatlibBilinearSparseOnlineLearner(this.getParams());<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                ret.u = MatlibMatrixUtils.copy(this.u);<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                ret.w = MatlibMatrixUtils.copy(this.w);<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                if(this.biasMode){<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                        ret.bias = MatlibMatrixUtils.copy(this.bias);<a name="line.397"></a>
+<span class="sourceLineNo">398</span>                }<a name="line.398"></a>
+<span class="sourceLineNo">399</span>                return ret;<a name="line.399"></a>
+<span class="sourceLineNo">400</span>        }<a name="line.400"></a>
+<span class="sourceLineNo">401</span>        /**<a name="line.401"></a>
+<span class="sourceLineNo">402</span>         * @param newu set the model's U<a name="line.402"></a>
+<span class="sourceLineNo">403</span>         */<a name="line.403"></a>
+<span class="sourceLineNo">404</span>        public void setU(Matrix newu) {<a name="line.404"></a>
+<span class="sourceLineNo">405</span>                this.u = newu;<a name="line.405"></a>
+<span class="sourceLineNo">406</span>        }<a name="line.406"></a>
+<span class="sourceLineNo">407</span><a name="line.407"></a>
+<span class="sourceLineNo">408</span>        /**<a name="line.408"></a>
+<span class="sourceLineNo">409</span>         * @param neww set the model's W<a name="line.409"></a>
+<span class="sourceLineNo">410</span>         */<a name="line.410"></a>
+<span class="sourceLineNo">411</span>        public void setW(Matrix neww) {<a name="line.411"></a>
+<span class="sourceLineNo">412</span>                this.w = neww;<a name="line.412"></a>
+<span class="sourceLineNo">413</span>        }<a name="line.413"></a>
+<span class="sourceLineNo">414</span>        @Override<a name="line.414"></a>
+<span class="sourceLineNo">415</span>        public void readBinary(DataInput in) throws IOException {<a name="line.415"></a>
+<span class="sourceLineNo">416</span>                final int nwords = in.readInt();<a name="line.416"></a>
+<span class="sourceLineNo">417</span>                final int nusers = in.readInt();<a name="line.417"></a>
+<span class="sourceLineNo">418</span>                final int ntasks = in.readInt();<a name="line.418"></a>
+<span class="sourceLineNo">419</span><a name="line.419"></a>
+<span class="sourceLineNo">420</span><a name="line.420"></a>
+<span class="sourceLineNo">421</span>                this.w = SparseMatrix.sparse(nwords, ntasks);<a name="line.421"></a>
+<span class="sourceLineNo">422</span>                for (int t = 0; t &lt; ntasks; t++) {<a name="line.422"></a>
+<span class="sourceLineNo">423</span>                        for (int r = 0; r &lt; nwords; r++) {<a name="line.423"></a>
+<span class="sourceLineNo">424</span>                                final double readDouble = in.readDouble();<a name="line.424"></a>
+<span class="sourceLineNo">425</span>                                if(readDouble != 0){<a name="line.425"></a>
+<span class="sourceLineNo">426</span>                                        this.w.put(r, t, readDouble);<a name="line.426"></a>
+<span class="sourceLineNo">427</span>                                }<a name="line.427"></a>
+<span class="sourceLineNo">428</span>                        }<a name="line.428"></a>
+<span class="sourceLineNo">429</span>                }<a name="line.429"></a>
+<span class="sourceLineNo">430</span><a name="line.430"></a>
+<span class="sourceLineNo">431</span>                this.u = SparseMatrix.sparse(nusers, ntasks);<a name="line.431"></a>
+<span class="sourceLineNo">432</span>                for (int t = 0; t &lt; ntasks; t++) {<a name="line.432"></a>
+<span class="sourceLineNo">433</span>                        for (int r = 0; r &lt; nusers; r++) {<a name="line.433"></a>
+<span class="sourceLineNo">434</span>                                final double readDouble = in.readDouble();<a name="line.434"></a>
+<span class="sourceLineNo">435</span>                                if(readDouble != 0){<a name="line.435"></a>
+<span class="sourceLineNo">436</span>                                        this.u.put(r, t, readDouble);<a name="line.436"></a>
+<span class="sourceLineNo">437</span>                                }<a name="line.437"></a>
+<span class="sourceLineNo">438</span>                        }<a name="line.438"></a>
+<span class="sourceLineNo">439</span>                }<a name="line.439"></a>
+<span class="sourceLineNo">440</span><a name="line.440"></a>
+<span class="sourceLineNo">441</span>                this.bias = SparseMatrix.sparse(ntasks, ntasks);<a name="line.441"></a>
+<span class="sourceLineNo">442</span>                for (int t1 = 0; t1 &lt; ntasks; t1++) {<a name="line.442"></a>
+<span class="sourceLineNo">443</span>                        for (int t2 = 0; t2 &lt; ntasks; t2++) {<a name="line.443"></a>
+<span class="sourceLineNo">444</span>                                final double readDouble = in.readDouble();<a name="line.444"></a>
+<span class="sourceLineNo">445</span>                                if(readDouble != 0){<a name="line.445"></a>
+<span class="sourceLineNo">446</span>                                        this.bias.put(t1, t2, readDouble);<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                                }<a name="line.447"></a>
+<span class="sourceLineNo">448</span>                        }<a name="line.448"></a>
+<span class="sourceLineNo">449</span>                }<a name="line.449"></a>
+<span class="sourceLineNo">450</span>        }<a name="line.450"></a>
+<span class="sourceLineNo">451</span>        @Override<a name="line.451"></a>
+<span class="sourceLineNo">452</span>        public byte[] binaryHeader() {<a name="line.452"></a>
+<span class="sourceLineNo">453</span>                return "".getBytes();<a name="line.453"></a>
+<span class="sourceLineNo">454</span>        }<a name="line.454"></a>
+<span class="sourceLineNo">455</span>        @Override<a name="line.455"></a>
+<span class="sourceLineNo">456</span>        public void writeBinary(DataOutput out) throws IOException {<a name="line.456"></a>
+<span class="sourceLineNo">457</span>                out.writeInt(w.rowCount());<a name="line.457"></a>
+<span class="sourceLineNo">458</span>                out.writeInt(u.rowCount());<a name="line.458"></a>
+<span class="sourceLineNo">459</span>                out.writeInt(u.columnCount());<a name="line.459"></a>
+<span class="sourceLineNo">460</span>                final double[] wdata = w.asColumnMajorArray();<a name="line.460"></a>
+<span class="sourceLineNo">461</span>                for (int i = 0; i &lt; wdata.length; i++) {<a name="line.461"></a>
+<span class="sourceLineNo">462</span>                        out.writeDouble(wdata[i]);<a name="line.462"></a>
+<span class="sourceLineNo">463</span>                }<a name="line.463"></a>
+<span class="sourceLineNo">464</span>                final double[] udata = u.asColumnMajorArray();<a name="line.464"></a>
+<span class="sourceLineNo">465</span>                for (int i = 0; i &lt; udata.length; i++) {<a name="line.465"></a>
+<span class="sourceLineNo">466</span>                        out.writeDouble(udata[i]);<a name="line.466"></a>
+<span class="sourceLineNo">467</span>                }<a name="line.467"></a>
+<span class="sourceLineNo">468</span>                final double[] biasdata = bias.asColumnMajorArray();<a name="line.468"></a>
+<span class="sourceLineNo">469</span>                for (int i = 0; i &lt; biasdata.length; i++) {<a name="line.469"></a>
+<span class="sourceLineNo">470</span>                        out.writeDouble(biasdata[i]);<a name="line.470"></a>
+<span class="sourceLineNo">471</span>                }<a name="line.471"></a>
+<span class="sourceLineNo">472</span>        }<a name="line.472"></a>
+<span class="sourceLineNo">473</span><a name="line.473"></a>
+<span class="sourceLineNo">474</span><a name="line.474"></a>
+<span class="sourceLineNo">475</span>        @Override<a name="line.475"></a>
+<span class="sourceLineNo">476</span>        public Matrix predict(Matrix x) {<a name="line.476"></a>
+<span class="sourceLineNo">477</span>                Matrix xt = MatlibMatrixUtils.transpose(x);<a name="line.477"></a>
+<span class="sourceLineNo">478</span>                final Matrix mult = MatlibMatrixUtils.dotProduct(MatlibMatrixUtils.dotProduct(MatlibMatrixUtils.transpose(u), xt),this.w);<a name="line.478"></a>
+<span class="sourceLineNo">479</span>                if(this.biasMode) MatlibMatrixUtils.plusInplace(mult,this.bias);<a name="line.479"></a>
+<span class="sourceLineNo">480</span>                Matrix ydiag = new DiagonalMatrix(mult);<a name="line.480"></a>
+<span class="sourceLineNo">481</span>                return ydiag;<a name="line.481"></a>
+<span class="sourceLineNo">482</span>        }<a name="line.482"></a>
+<span class="sourceLineNo">483</span>}<a name="line.483"></a>
 
 
 
