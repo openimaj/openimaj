@@ -4,7 +4,7 @@
   <parent>
     <artifactId>openimaj-machine-learning</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.7</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>nearest-neighbour</artifactId>
@@ -18,13 +18,13 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-math</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.7</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-feature</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.7</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
