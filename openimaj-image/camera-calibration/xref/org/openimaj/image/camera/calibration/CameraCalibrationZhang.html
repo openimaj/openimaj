@@ -367,7 +367,7 @@
 <a class="jxr_linenumber" name="357" href="#357">357</a> <em class="jxr_javadoccomment">	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="358" href="#358">358</a> <em class="jxr_javadoccomment">	 * </em>
 <a class="jxr_linenumber" name="359" href="#359">359</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="360" href="#360">360</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/image/camera/calibration/CameraCalibrationZhang.html">Value</a> <strong class="jxr_keyword">implements</strong> MultivariateVectorFunction {
+<a class="jxr_linenumber" name="360" href="#360">360</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/image/camera/calibration/CameraCalibration.html">Value</a> <strong class="jxr_keyword">implements</strong> MultivariateVectorFunction {
 <a class="jxr_linenumber" name="361" href="#361">361</a> 		@Override
 <a class="jxr_linenumber" name="362" href="#362">362</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong>[] value(<strong class="jxr_keyword">double</strong>[] params) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
 <a class="jxr_linenumber" name="363" href="#363">363</a> 			<strong class="jxr_keyword">int</strong> totalPoints = 0;
@@ -532,7 +532,7 @@
 <a class="jxr_linenumber" name="522" href="#522">522</a> <em class="jxr_javadoccomment">	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="523" href="#523">523</a> <em class="jxr_javadoccomment">	 * </em>
 <a class="jxr_linenumber" name="524" href="#524">524</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="525" href="#525">525</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/image/camera/calibration/CameraCalibrationZhang.html">Jacobian</a> <strong class="jxr_keyword">implements</strong> MultivariateMatrixFunction {
+<a class="jxr_linenumber" name="525" href="#525">525</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/image/camera/calibration/CameraCalibration.html">Jacobian</a> <strong class="jxr_keyword">implements</strong> MultivariateMatrixFunction {
 <a class="jxr_linenumber" name="526" href="#526">526</a> 		@Override
 <a class="jxr_linenumber" name="527" href="#527">527</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong>[][] value(<strong class="jxr_keyword">double</strong>[] params) {
 <a class="jxr_linenumber" name="528" href="#528">528</a> 			<em class="jxr_comment">// Note that we're building the jacobian for all cameras/images and</em>
@@ -956,8 +956,8 @@
 <a class="jxr_linenumber" name="946" href="#946">946</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> maxEvaluations = 1000;
 <a class="jxr_linenumber" name="947" href="#947">947</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> maxIterations = 1000;
 <a class="jxr_linenumber" name="948" href="#948">948</a> 
-<a class="jxr_linenumber" name="949" href="#949">949</a> 		<strong class="jxr_keyword">final</strong> MultivariateVectorFunction value = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/image/camera/calibration/CameraCalibrationZhang.html">Value</a>();
-<a class="jxr_linenumber" name="950" href="#950">950</a> 		<strong class="jxr_keyword">final</strong> MultivariateMatrixFunction jacobian = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/image/camera/calibration/CameraCalibrationZhang.html">Jacobian</a>();
+<a class="jxr_linenumber" name="949" href="#949">949</a> 		<strong class="jxr_keyword">final</strong> MultivariateVectorFunction value = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/image/camera/calibration/CameraCalibration.html">Value</a>();
+<a class="jxr_linenumber" name="950" href="#950">950</a> 		<strong class="jxr_keyword">final</strong> MultivariateMatrixFunction jacobian = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/image/camera/calibration/CameraCalibration.html">Jacobian</a>();
 <a class="jxr_linenumber" name="951" href="#951">951</a> 		<strong class="jxr_keyword">final</strong> MultivariateJacobianFunction model = LeastSquaresFactory.model(value, jacobian);
 <a class="jxr_linenumber" name="952" href="#952">952</a> 
 <a class="jxr_linenumber" name="953" href="#953">953</a> 		<strong class="jxr_keyword">final</strong> Optimum result = lm.optimize(LeastSquaresFactory.create(model,
