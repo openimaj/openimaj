@@ -366,9 +366,9 @@
 <a class="jxr_linenumber" name="356" href="#356">356</a> 
 <a class="jxr_linenumber" name="357" href="#357">357</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0, y = 0; y &lt; height; y++) {
 <a class="jxr_linenumber" name="358" href="#358">358</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> x = 0; x &lt; width; x++) {
-<a class="jxr_linenumber" name="359" href="#359">359</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> blue = bytes[i++] &amp; 0xff;
+<a class="jxr_linenumber" name="359" href="#359">359</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> red = (bytes[i++]) &amp; 0xff;
 <a class="jxr_linenumber" name="360" href="#360">360</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> green = (bytes[i++]) &amp; 0xff;
-<a class="jxr_linenumber" name="361" href="#361">361</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> red = (bytes[i++]) &amp; 0xff;
+<a class="jxr_linenumber" name="361" href="#361">361</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> blue = bytes[i++] &amp; 0xff;
 <a class="jxr_linenumber" name="362" href="#362">362</a> 				br[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[red];
 <a class="jxr_linenumber" name="363" href="#363">363</a> 				bg[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[green];
 <a class="jxr_linenumber" name="364" href="#364">364</a> 				bb[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[blue];
@@ -582,56 +582,52 @@
 <a class="jxr_linenumber" name="572" href="#572">572</a> 	}
 <a class="jxr_linenumber" name="573" href="#573">573</a> 
 <a class="jxr_linenumber" name="574" href="#574">574</a> 	@Override
-<a class="jxr_linenumber" name="575" href="#575">575</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../org/openimaj/image/MBFImage.html">MBFImage</a> fill(<strong class="jxr_keyword">final</strong> Float[] colour)
-<a class="jxr_linenumber" name="576" href="#576">576</a> 	{
-<a class="jxr_linenumber" name="577" href="#577">577</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.fill(<strong class="jxr_keyword">this</strong>.colourSpace.sanitise(colour));
-<a class="jxr_linenumber" name="578" href="#578">578</a> 	}
-<a class="jxr_linenumber" name="579" href="#579">579</a> 
-<a class="jxr_linenumber" name="580" href="#580">580</a> 	@Override
-<a class="jxr_linenumber" name="581" href="#581">581</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPixel(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> y, <strong class="jxr_keyword">final</strong> Float[] val)
-<a class="jxr_linenumber" name="582" href="#582">582</a> 	{
-<a class="jxr_linenumber" name="583" href="#583">583</a> 		<em class="jxr_comment">// Check if we have an alpha channel. If we do, we'll use alpha</em>
-<a class="jxr_linenumber" name="584" href="#584">584</a> 		<em class="jxr_comment">// compositing, otherwise, we'll simply copy the pixel colour into</em>
-<a class="jxr_linenumber" name="585" href="#585">585</a> 		<em class="jxr_comment">// the pixel position.</em>
-<a class="jxr_linenumber" name="586" href="#586">586</a> 		<strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.colourSpace == ColourSpace.RGBA &amp;&amp; <strong class="jxr_keyword">this</strong>.numBands() &gt;= 4 &amp;&amp; val.length &gt;= 4
-<a class="jxr_linenumber" name="587" href="#587">587</a> 				&amp;&amp; x &gt;= 0 &amp;&amp; x &lt; <strong class="jxr_keyword">this</strong>.getWidth() &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; <strong class="jxr_keyword">this</strong>.getHeight())
-<a class="jxr_linenumber" name="588" href="#588">588</a> 		{
-<a class="jxr_linenumber" name="589" href="#589">589</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong>[] p = ImageUtilities.alphaCompositePixel(<strong class="jxr_keyword">this</strong>.getPixel(x, y), val);
-<a class="jxr_linenumber" name="590" href="#590">590</a> 			<strong class="jxr_keyword">this</strong>.getBand(0).pixels[y][x] = p[0];
-<a class="jxr_linenumber" name="591" href="#591">591</a> 			<strong class="jxr_keyword">this</strong>.getBand(1).pixels[y][x] = p[1];
-<a class="jxr_linenumber" name="592" href="#592">592</a> 			<strong class="jxr_keyword">this</strong>.getBand(2).pixels[y][x] = p[2];
-<a class="jxr_linenumber" name="593" href="#593">593</a> 			<strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.numBands() &gt;= 4)
-<a class="jxr_linenumber" name="594" href="#594">594</a> 				<strong class="jxr_keyword">this</strong>.getBand(3).pixels[y][x] = p[3];
-<a class="jxr_linenumber" name="595" href="#595">595</a> 		}
-<a class="jxr_linenumber" name="596" href="#596">596</a> 		<strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="597" href="#597">597</a> 			<strong class="jxr_keyword">super</strong>.setPixel(x, y, val);
-<a class="jxr_linenumber" name="598" href="#598">598</a> 	}
-<a class="jxr_linenumber" name="599" href="#599">599</a> 
-<a class="jxr_linenumber" name="600" href="#600">600</a> 	@Override
-<a class="jxr_linenumber" name="601" href="#601">601</a> 	<strong class="jxr_keyword">protected</strong> Float[] createPixelArray(<strong class="jxr_keyword">int</strong> n) {
-<a class="jxr_linenumber" name="602" href="#602">602</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Float[n];
-<a class="jxr_linenumber" name="603" href="#603">603</a> 	}
-<a class="jxr_linenumber" name="604" href="#604">604</a> 
-<a class="jxr_linenumber" name="605" href="#605">605</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="606" href="#606">606</a> <em class="jxr_javadoccomment">	 * Returns the pixels of the image as a vector (array) of doubles.</em>
-<a class="jxr_linenumber" name="607" href="#607">607</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="608" href="#608">608</a> <em class="jxr_javadoccomment">	 * @return the pixels of the image as a vector (array) of doubles.</em>
-<a class="jxr_linenumber" name="609" href="#609">609</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="610" href="#610">610</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong>[] getDoublePixelVector()
-<a class="jxr_linenumber" name="611" href="#611">611</a> 	{
-<a class="jxr_linenumber" name="612" href="#612">612</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> height = getHeight();
-<a class="jxr_linenumber" name="613" href="#613">613</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> width = getWidth();
-<a class="jxr_linenumber" name="614" href="#614">614</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> f[] = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[width * height * <strong class="jxr_keyword">this</strong>.numBands()];
-<a class="jxr_linenumber" name="615" href="#615">615</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; <strong class="jxr_keyword">this</strong>.bands.size(); i++) {
-<a class="jxr_linenumber" name="616" href="#616">616</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong>[][] pixels = bands.get(i).pixels;
-<a class="jxr_linenumber" name="617" href="#617">617</a> 
-<a class="jxr_linenumber" name="618" href="#618">618</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> y = 0; y &lt; height; y++)
-<a class="jxr_linenumber" name="619" href="#619">619</a> 				<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> x = 0; x &lt; width; x++)
-<a class="jxr_linenumber" name="620" href="#620">620</a> 					f[x + y * width + i * height * width] = pixels[y][x];
-<a class="jxr_linenumber" name="621" href="#621">621</a> 		}
-<a class="jxr_linenumber" name="622" href="#622">622</a> 		<strong class="jxr_keyword">return</strong> f;
-<a class="jxr_linenumber" name="623" href="#623">623</a> 	}
-<a class="jxr_linenumber" name="624" href="#624">624</a> }
+<a class="jxr_linenumber" name="575" href="#575">575</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../org/openimaj/image/MBFImage.html">MBFImage</a> fill(<strong class="jxr_keyword">final</strong> Float[] colour) {
+<a class="jxr_linenumber" name="576" href="#576">576</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.fill(<strong class="jxr_keyword">this</strong>.colourSpace.sanitise(colour));
+<a class="jxr_linenumber" name="577" href="#577">577</a> 	}
+<a class="jxr_linenumber" name="578" href="#578">578</a> 
+<a class="jxr_linenumber" name="579" href="#579">579</a> 	@Override
+<a class="jxr_linenumber" name="580" href="#580">580</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPixel(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> y, <strong class="jxr_keyword">final</strong> Float[] val) {
+<a class="jxr_linenumber" name="581" href="#581">581</a> 		<em class="jxr_comment">// Check if we have an alpha channel. If we do, we'll use alpha</em>
+<a class="jxr_linenumber" name="582" href="#582">582</a> 		<em class="jxr_comment">// compositing, otherwise, we'll simply copy the pixel colour into</em>
+<a class="jxr_linenumber" name="583" href="#583">583</a> 		<em class="jxr_comment">// the pixel position.</em>
+<a class="jxr_linenumber" name="584" href="#584">584</a> 		<strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.colourSpace == ColourSpace.RGBA &amp;&amp; <strong class="jxr_keyword">this</strong>.numBands() &gt;= 4 &amp;&amp; val.length &gt;= 4
+<a class="jxr_linenumber" name="585" href="#585">585</a> 				&amp;&amp; x &gt;= 0 &amp;&amp; x &lt; <strong class="jxr_keyword">this</strong>.getWidth() &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; <strong class="jxr_keyword">this</strong>.getHeight())
+<a class="jxr_linenumber" name="586" href="#586">586</a> 		{
+<a class="jxr_linenumber" name="587" href="#587">587</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong>[] p = ImageUtilities.alphaCompositePixel(<strong class="jxr_keyword">this</strong>.getPixel(x, y), val);
+<a class="jxr_linenumber" name="588" href="#588">588</a> 			<strong class="jxr_keyword">this</strong>.getBand(0).pixels[y][x] = p[0];
+<a class="jxr_linenumber" name="589" href="#589">589</a> 			<strong class="jxr_keyword">this</strong>.getBand(1).pixels[y][x] = p[1];
+<a class="jxr_linenumber" name="590" href="#590">590</a> 			<strong class="jxr_keyword">this</strong>.getBand(2).pixels[y][x] = p[2];
+<a class="jxr_linenumber" name="591" href="#591">591</a> 			<strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.numBands() &gt;= 4)
+<a class="jxr_linenumber" name="592" href="#592">592</a> 				<strong class="jxr_keyword">this</strong>.getBand(3).pixels[y][x] = p[3];
+<a class="jxr_linenumber" name="593" href="#593">593</a> 		} <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="594" href="#594">594</a> 			<strong class="jxr_keyword">super</strong>.setPixel(x, y, val);
+<a class="jxr_linenumber" name="595" href="#595">595</a> 	}
+<a class="jxr_linenumber" name="596" href="#596">596</a> 
+<a class="jxr_linenumber" name="597" href="#597">597</a> 	@Override
+<a class="jxr_linenumber" name="598" href="#598">598</a> 	<strong class="jxr_keyword">protected</strong> Float[] createPixelArray(<strong class="jxr_keyword">int</strong> n) {
+<a class="jxr_linenumber" name="599" href="#599">599</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Float[n];
+<a class="jxr_linenumber" name="600" href="#600">600</a> 	}
+<a class="jxr_linenumber" name="601" href="#601">601</a> 
+<a class="jxr_linenumber" name="602" href="#602">602</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="603" href="#603">603</a> <em class="jxr_javadoccomment">	 * Returns the pixels of the image as a vector (array) of doubles.</em>
+<a class="jxr_linenumber" name="604" href="#604">604</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="605" href="#605">605</a> <em class="jxr_javadoccomment">	 * @return the pixels of the image as a vector (array) of doubles.</em>
+<a class="jxr_linenumber" name="606" href="#606">606</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="607" href="#607">607</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong>[] getDoublePixelVector() {
+<a class="jxr_linenumber" name="608" href="#608">608</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> height = getHeight();
+<a class="jxr_linenumber" name="609" href="#609">609</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> width = getWidth();
+<a class="jxr_linenumber" name="610" href="#610">610</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> f[] = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[width * height * <strong class="jxr_keyword">this</strong>.numBands()];
+<a class="jxr_linenumber" name="611" href="#611">611</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; <strong class="jxr_keyword">this</strong>.bands.size(); i++) {
+<a class="jxr_linenumber" name="612" href="#612">612</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong>[][] pixels = bands.get(i).pixels;
+<a class="jxr_linenumber" name="613" href="#613">613</a> 
+<a class="jxr_linenumber" name="614" href="#614">614</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> y = 0; y &lt; height; y++)
+<a class="jxr_linenumber" name="615" href="#615">615</a> 				<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> x = 0; x &lt; width; x++)
+<a class="jxr_linenumber" name="616" href="#616">616</a> 					f[x + y * width + i * height * width] = pixels[y][x];
+<a class="jxr_linenumber" name="617" href="#617">617</a> 		}
+<a class="jxr_linenumber" name="618" href="#618">618</a> 		<strong class="jxr_keyword">return</strong> f;
+<a class="jxr_linenumber" name="619" href="#619">619</a> 	}
+<a class="jxr_linenumber" name="620" href="#620">620</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
