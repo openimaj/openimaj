@@ -68,8 +68,10 @@ public class HttpUtilsTest {
 				// new String[] { "http://t.co/kp7qdeL6",
 				// "http://www.openrightsgroup.org/press/releases/bruce-willis-right-to-challenge-apple#copyright"
 				// },
-				new String[] { "http://t.co/VJn1ISBl", "http://ow.ly/1mgxj1",
-						"http://www.electronicsweekly.com/Articles/2012/09/03/54467/raspberry-pi-goes-to-cambridge-to-get-free-os.htm" }
+				new String[] { "http://t.co/VJn1ISBl", "https://t.co/VJn1ISBl", "http://ow.ly/1mgxj1",
+						"http://www.electronicsweekly.com/Articles/2012/09/03/54467/raspberry-pi-goes-to-cambridge-to-get-free-os.htm",
+						"https://www.electronicsweekly.com/Articles/2012/09/03/54467/raspberry-pi-goes-to-cambridge-to-get-free-os.htm"
+				}
 		};
 		for (final String[] link : links) {
 			final String[] expecting = Arrays.copyOfRange(link, 1, link.length);
@@ -92,6 +94,8 @@ public class HttpUtilsTest {
 						final String uriString = redirect.getURI().toString();
 						assertEquals(expecting[redirected++], uriString);
 					}
+					if (redirected == links.length)
+						return false;
 					return isRedirect;
 				}
 			});
