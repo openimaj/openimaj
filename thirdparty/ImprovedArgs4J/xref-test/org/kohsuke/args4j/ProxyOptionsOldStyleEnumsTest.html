@@ -25,7 +25,7 @@
 <a class="jxr_linenumber" name="15" href="#15">15</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="16" href="#16">16</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="17" href="#17">17</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../org/kohsuke/args4j/ProxyOptionsOldStyleEnumsTest.html">ProxyOptionsOldStyleEnumsTest</a> {
-<a class="jxr_linenumber" name="18" href="#18">18</a>  	enum <a href="../../../org/kohsuke/args4j/ProxyOptionsTest.html">OptionsEnum</a> <strong class="jxr_keyword">implements</strong> CmdLineOptionsProvider {
+<a class="jxr_linenumber" name="18" href="#18">18</a>  	enum <a href="../../../org/kohsuke/args4j/ProxyOptionsOldStyleEnumsTest.html">OptionsEnum</a> <strong class="jxr_keyword">implements</strong> CmdLineOptionsProvider {
 <a class="jxr_linenumber" name="19" href="#19">19</a>  		WITH {
 <a class="jxr_linenumber" name="20" href="#20">20</a>  			@Option(name = <span class="jxr_string">"-i"</span>, required=<strong class="jxr_keyword">true</strong>)
 <a class="jxr_linenumber" name="21" href="#21">21</a>  			<strong class="jxr_keyword">int</strong> intOption;
@@ -51,7 +51,7 @@
 <a class="jxr_linenumber" name="41" href="#41">41</a>  		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">int</strong> getValue();
 <a class="jxr_linenumber" name="42" href="#42">42</a>  	}
 <a class="jxr_linenumber" name="43" href="#43">43</a>  	
-<a class="jxr_linenumber" name="44" href="#44">44</a>  	<strong class="jxr_keyword">class</strong> <a href="../../../org/kohsuke/args4j/ProxyOptionsTest.html">OptionsHolder</a> {
+<a class="jxr_linenumber" name="44" href="#44">44</a>  	<strong class="jxr_keyword">class</strong> <a href="../../../org/kohsuke/args4j/ProxyOptionsOldStyleEnumsTest.html">OptionsHolder</a> {
 <a class="jxr_linenumber" name="45" href="#45">45</a>  		@Option(name = <span class="jxr_string">"-o"</span>, required = false, handler = ProxyOptionHandler.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="46" href="#46">46</a>  		OptionsEnum optionEnum = OptionsEnum.WITH;
 <a class="jxr_linenumber" name="47" href="#47">47</a>  	}
@@ -64,7 +64,7 @@
 <a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="55" href="#55">55</a>  	@Before
 <a class="jxr_linenumber" name="56" href="#56">56</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setup() {
-<a class="jxr_linenumber" name="57" href="#57">57</a>  		options = <strong class="jxr_keyword">new</strong> <a href="../../../org/kohsuke/args4j/ProxyOptionsTest.html">OptionsHolder</a>();
+<a class="jxr_linenumber" name="57" href="#57">57</a>  		options = <strong class="jxr_keyword">new</strong> <a href="../../../org/kohsuke/args4j/ProxyOptionsOldStyleEnumsTest.html">OptionsHolder</a>();
 <a class="jxr_linenumber" name="58" href="#58">58</a>  		parser = <strong class="jxr_keyword">new</strong> CmdLineParser(options);
 <a class="jxr_linenumber" name="59" href="#59">59</a>  	}
 <a class="jxr_linenumber" name="60" href="#60">60</a>  	
