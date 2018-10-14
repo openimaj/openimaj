@@ -70,7 +70,7 @@
 <a class="jxr_linenumber" name="60" href="#60">60</a>  	series = <span class="jxr_string">"STOC '98"</span>
 <a class="jxr_linenumber" name="61" href="#61">61</a>  )
 <a class="jxr_linenumber" name="62" href="#62">62</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/openimaj/lsh/functions/FloatHammingFactory.html">FloatHammingFactory</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/openimaj/lsh/functions/FloatHashFunctionFactory.html">FloatHashFunctionFactory</a> {
-<a class="jxr_linenumber" name="63" href="#63">63</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/openimaj/lsh/functions/ShortHyperplaneL1Factory.html">Function</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/openimaj/lsh/functions/FloatHashFunction.html">FloatHashFunction</a> {
+<a class="jxr_linenumber" name="63" href="#63">63</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/openimaj/lsh/functions/DoubleHyperplaneCosineFactory.html">Function</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/openimaj/lsh/functions/FloatHashFunction.html">FloatHashFunction</a> {
 <a class="jxr_linenumber" name="64" href="#64">64</a>  		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> ham;
 <a class="jxr_linenumber" name="65" href="#65">65</a>  
 <a class="jxr_linenumber" name="66" href="#66">66</a>  		Function(<a href="../../../../org/openimaj/lsh/functions/FloatHammingFactory.html">FloatHammingFactory</a> options, <strong class="jxr_keyword">int</strong> ndims, MersenneTwister rng) {
@@ -135,8 +135,8 @@
 <a class="jxr_linenumber" name="125" href="#125">125</a> 	}
 <a class="jxr_linenumber" name="126" href="#126">126</a> 
 <a class="jxr_linenumber" name="127" href="#127">127</a> 	@Override
-<a class="jxr_linenumber" name="128" href="#128">128</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../org/openimaj/lsh/functions/ShortHyperplaneL1Factory.html">Function</a> create() {
-<a class="jxr_linenumber" name="129" href="#129">129</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/lsh/functions/ShortHyperplaneL1Factory.html">Function</a>(<strong class="jxr_keyword">this</strong>, ndims, rng);
+<a class="jxr_linenumber" name="128" href="#128">128</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../org/openimaj/lsh/functions/DoubleHyperplaneCosineFactory.html">Function</a> create() {
+<a class="jxr_linenumber" name="129" href="#129">129</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/lsh/functions/DoubleHyperplaneCosineFactory.html">Function</a>(<strong class="jxr_keyword">this</strong>, ndims, rng);
 <a class="jxr_linenumber" name="130" href="#130">130</a> 	}
 <a class="jxr_linenumber" name="131" href="#131">131</a> 
 <a class="jxr_linenumber" name="132" href="#132">132</a> 	@Override
