@@ -47,82 +47,83 @@
 <a class="jxr_linenumber" name="37" href="#37">37</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
 <a class="jxr_linenumber" name="38" href="#38">38</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
 <a class="jxr_linenumber" name="39" href="#39">39</a>  
-<a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">import</strong> org.apache.log4j.Logger;
-<a class="jxr_linenumber" name="41" href="#41">41</a>  
-<a class="jxr_linenumber" name="42" href="#42">42</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment"> * Create an {@link AdjustedRandomIndexAnalysis} instance </em>
-<a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment"> * @author Sina Samangooei (ss@ecs.soton.ac.uk)</em>
-<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/openimaj/experiment/evaluation/cluster/analyser/AdjustedRandomIndexClusterAnalyser.html">AdjustedRandomIndexClusterAnalyser</a> <strong class="jxr_keyword">implements</strong> ClusterAnalyser&lt;AdjustedRandomIndexAnalysis&gt;{
-<a class="jxr_linenumber" name="47" href="#47">47</a>  	<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> Logger logger = Logger.getLogger(AdjustedRandomIndexAnalysis.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="48" href="#48">48</a>  	@Override
-<a class="jxr_linenumber" name="49" href="#49">49</a>  	<strong class="jxr_keyword">public</strong> <a href="../../../../../../org/openimaj/experiment/evaluation/cluster/analyser/AdjustedRandomIndexAnalysis.html">AdjustedRandomIndexAnalysis</a> analyse(<strong class="jxr_keyword">int</strong>[][] correct, <strong class="jxr_keyword">int</strong>[][] estimated) {
-<a class="jxr_linenumber" name="50" href="#50">50</a>  		TIntLongHashMap nij = <strong class="jxr_keyword">new</strong> TIntLongHashMap();
-<a class="jxr_linenumber" name="51" href="#51">51</a>  		TIntLongHashMap ni = <strong class="jxr_keyword">new</strong> TIntLongHashMap();
-<a class="jxr_linenumber" name="52" href="#52">52</a>  		TIntLongHashMap nj = <strong class="jxr_keyword">new</strong> TIntLongHashMap();
-<a class="jxr_linenumber" name="53" href="#53">53</a>  		
-<a class="jxr_linenumber" name="54" href="#54">54</a>  		Map&lt;Integer,Integer&gt; invCor = ClusterAnalyserUtils.invert(correct);
-<a class="jxr_linenumber" name="55" href="#55">55</a>  		logger.debug(<span class="jxr_string">"Correct keys: "</span> + invCor.size());
-<a class="jxr_linenumber" name="56" href="#56">56</a>  		Map&lt;Integer,Integer&gt; invEst = ClusterAnalyserUtils.invert(estimated);
-<a class="jxr_linenumber" name="57" href="#57">57</a>  		logger.debug(<span class="jxr_string">"Estimated keys: "</span> + invCor.size());
-<a class="jxr_linenumber" name="58" href="#58">58</a>  		Set&lt;Integer&gt; sharedKeys = <strong class="jxr_keyword">new</strong> HashSet&lt;Integer&gt;();
-<a class="jxr_linenumber" name="59" href="#59">59</a>  		sharedKeys.addAll(invCor.keySet());
-<a class="jxr_linenumber" name="60" href="#60">60</a>  		sharedKeys.retainAll(invEst.keySet());
-<a class="jxr_linenumber" name="61" href="#61">61</a>  		logger.debug(<span class="jxr_string">"Shared keys: "</span> + sharedKeys.size());
-<a class="jxr_linenumber" name="62" href="#62">62</a>  		<strong class="jxr_keyword">for</strong> (Integer index : sharedKeys) {
-<a class="jxr_linenumber" name="63" href="#63">63</a>  			<strong class="jxr_keyword">int</strong> i = invCor.get(index);
-<a class="jxr_linenumber" name="64" href="#64">64</a>  			<strong class="jxr_keyword">int</strong> j = invEst.get(index);
-<a class="jxr_linenumber" name="65" href="#65">65</a>  			nij.adjustOrPutValue(i * correct.length + j, 1, 1);
-<a class="jxr_linenumber" name="66" href="#66">66</a>  			ni.adjustOrPutValue(i, 1, 1);
-<a class="jxr_linenumber" name="67" href="#67">67</a>  			nj.adjustOrPutValue(j, 1, 1);
-<a class="jxr_linenumber" name="68" href="#68">68</a>  		}
-<a class="jxr_linenumber" name="69" href="#69">69</a>  		
-<a class="jxr_linenumber" name="70" href="#70">70</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong>[] sumnij = <strong class="jxr_keyword">new</strong>  <strong class="jxr_keyword">long</strong>[1];
-<a class="jxr_linenumber" name="71" href="#71">71</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong>[] sumni  = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">long</strong>[1];
-<a class="jxr_linenumber" name="72" href="#72">72</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong>[] sumnj  = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">long</strong>[1];
-<a class="jxr_linenumber" name="73" href="#73">73</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong>[] sumn   = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">long</strong>[1];
-<a class="jxr_linenumber" name="74" href="#74">74</a>  		
-<a class="jxr_linenumber" name="75" href="#75">75</a>  		nj.forEachEntry(<strong class="jxr_keyword">new</strong> TIntLongProcedure() {
-<a class="jxr_linenumber" name="76" href="#76">76</a>  			
-<a class="jxr_linenumber" name="77" href="#77">77</a>  			@Override
-<a class="jxr_linenumber" name="78" href="#78">78</a>  			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> execute(<strong class="jxr_keyword">int</strong> a, <strong class="jxr_keyword">long</strong> b) {
-<a class="jxr_linenumber" name="79" href="#79">79</a>  				<strong class="jxr_keyword">if</strong>(b &gt; 1){
-<a class="jxr_linenumber" name="80" href="#80">80</a>  					sumnj[0] += MathUtil.binomialCoefficient((<strong class="jxr_keyword">int</strong>)b, 2);
-<a class="jxr_linenumber" name="81" href="#81">81</a>  				}
-<a class="jxr_linenumber" name="82" href="#82">82</a>  				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="83" href="#83">83</a>  			}
-<a class="jxr_linenumber" name="84" href="#84">84</a>  		});
-<a class="jxr_linenumber" name="85" href="#85">85</a>  		
-<a class="jxr_linenumber" name="86" href="#86">86</a>  		ni.forEachEntry(<strong class="jxr_keyword">new</strong> TIntLongProcedure() {
-<a class="jxr_linenumber" name="87" href="#87">87</a>  			
-<a class="jxr_linenumber" name="88" href="#88">88</a>  			@Override
-<a class="jxr_linenumber" name="89" href="#89">89</a>  			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> execute(<strong class="jxr_keyword">int</strong> a, <strong class="jxr_keyword">long</strong> b) {
-<a class="jxr_linenumber" name="90" href="#90">90</a>  				<strong class="jxr_keyword">if</strong>(b &gt; 1){
-<a class="jxr_linenumber" name="91" href="#91">91</a>  					sumni[0] += MathUtil.binomialCoefficient((<strong class="jxr_keyword">int</strong>)b, 2);
-<a class="jxr_linenumber" name="92" href="#92">92</a>  				}
-<a class="jxr_linenumber" name="93" href="#93">93</a>  				sumn[0] += b;
-<a class="jxr_linenumber" name="94" href="#94">94</a>  				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="95" href="#95">95</a>  			}
-<a class="jxr_linenumber" name="96" href="#96">96</a>  		});
-<a class="jxr_linenumber" name="97" href="#97">97</a>  		nij.forEachEntry(<strong class="jxr_keyword">new</strong> TIntLongProcedure() {
-<a class="jxr_linenumber" name="98" href="#98">98</a>  			
-<a class="jxr_linenumber" name="99" href="#99">99</a>  			@Override
-<a class="jxr_linenumber" name="100" href="#100">100</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> execute(<strong class="jxr_keyword">int</strong> a, <strong class="jxr_keyword">long</strong> b) {
-<a class="jxr_linenumber" name="101" href="#101">101</a> 				<strong class="jxr_keyword">if</strong>(b &gt; 1){
-<a class="jxr_linenumber" name="102" href="#102">102</a> 					sumnij[0] += MathUtil.binomialCoefficient((<strong class="jxr_keyword">int</strong>)b, 2);
-<a class="jxr_linenumber" name="103" href="#103">103</a> 				}
-<a class="jxr_linenumber" name="104" href="#104">104</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="105" href="#105">105</a> 			}
-<a class="jxr_linenumber" name="106" href="#106">106</a> 		});
-<a class="jxr_linenumber" name="107" href="#107">107</a> 		<strong class="jxr_keyword">double</strong> bisumn = MathUtil.binomialCoefficient((<strong class="jxr_keyword">int</strong>) sumn[0], 2);
-<a class="jxr_linenumber" name="108" href="#108">108</a> 		<strong class="jxr_keyword">double</strong> div = (sumni[0] * sumnj[0]) / bisumn;
-<a class="jxr_linenumber" name="109" href="#109">109</a> 		AdjustedRandomIndexAnalysis ret = <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/experiment/evaluation/cluster/analyser/AdjustedRandomIndexAnalysis.html">AdjustedRandomIndexAnalysis</a>();
-<a class="jxr_linenumber" name="110" href="#110">110</a> 		ret.adjRandInd = (sumnij[0] - div) / (0.5 * (sumni[0] + sumnj[0]) - div);
-<a class="jxr_linenumber" name="111" href="#111">111</a> 		
-<a class="jxr_linenumber" name="112" href="#112">112</a> 		<strong class="jxr_keyword">return</strong> ret;
-<a class="jxr_linenumber" name="113" href="#113">113</a> 	}
-<a class="jxr_linenumber" name="114" href="#114">114</a> 
-<a class="jxr_linenumber" name="115" href="#115">115</a> }
+<a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">import</strong> org.apache.logging.log4j.Logger;
+<a class="jxr_linenumber" name="41" href="#41">41</a>  <strong class="jxr_keyword">import</strong> org.apache.logging.log4j.LogManager;
+<a class="jxr_linenumber" name="42" href="#42">42</a>  
+<a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment"> * Create an {@link AdjustedRandomIndexAnalysis} instance </em>
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> * @author Sina Samangooei (ss@ecs.soton.ac.uk)</em>
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/openimaj/experiment/evaluation/cluster/analyser/AdjustedRandomIndexClusterAnalyser.html">AdjustedRandomIndexClusterAnalyser</a> <strong class="jxr_keyword">implements</strong> ClusterAnalyser&lt;AdjustedRandomIndexAnalysis&gt;{
+<a class="jxr_linenumber" name="48" href="#48">48</a>  	<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> Logger logger = LogManager.getLogger(AdjustedRandomIndexAnalysis.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="49" href="#49">49</a>  	@Override
+<a class="jxr_linenumber" name="50" href="#50">50</a>  	<strong class="jxr_keyword">public</strong> <a href="../../../../../../org/openimaj/experiment/evaluation/cluster/analyser/AdjustedRandomIndexAnalysis.html">AdjustedRandomIndexAnalysis</a> analyse(<strong class="jxr_keyword">int</strong>[][] correct, <strong class="jxr_keyword">int</strong>[][] estimated) {
+<a class="jxr_linenumber" name="51" href="#51">51</a>  		TIntLongHashMap nij = <strong class="jxr_keyword">new</strong> TIntLongHashMap();
+<a class="jxr_linenumber" name="52" href="#52">52</a>  		TIntLongHashMap ni = <strong class="jxr_keyword">new</strong> TIntLongHashMap();
+<a class="jxr_linenumber" name="53" href="#53">53</a>  		TIntLongHashMap nj = <strong class="jxr_keyword">new</strong> TIntLongHashMap();
+<a class="jxr_linenumber" name="54" href="#54">54</a>  		
+<a class="jxr_linenumber" name="55" href="#55">55</a>  		Map&lt;Integer,Integer&gt; invCor = ClusterAnalyserUtils.invert(correct);
+<a class="jxr_linenumber" name="56" href="#56">56</a>  		logger.debug(<span class="jxr_string">"Correct keys: "</span> + invCor.size());
+<a class="jxr_linenumber" name="57" href="#57">57</a>  		Map&lt;Integer,Integer&gt; invEst = ClusterAnalyserUtils.invert(estimated);
+<a class="jxr_linenumber" name="58" href="#58">58</a>  		logger.debug(<span class="jxr_string">"Estimated keys: "</span> + invCor.size());
+<a class="jxr_linenumber" name="59" href="#59">59</a>  		Set&lt;Integer&gt; sharedKeys = <strong class="jxr_keyword">new</strong> HashSet&lt;Integer&gt;();
+<a class="jxr_linenumber" name="60" href="#60">60</a>  		sharedKeys.addAll(invCor.keySet());
+<a class="jxr_linenumber" name="61" href="#61">61</a>  		sharedKeys.retainAll(invEst.keySet());
+<a class="jxr_linenumber" name="62" href="#62">62</a>  		logger.debug(<span class="jxr_string">"Shared keys: "</span> + sharedKeys.size());
+<a class="jxr_linenumber" name="63" href="#63">63</a>  		<strong class="jxr_keyword">for</strong> (Integer index : sharedKeys) {
+<a class="jxr_linenumber" name="64" href="#64">64</a>  			<strong class="jxr_keyword">int</strong> i = invCor.get(index);
+<a class="jxr_linenumber" name="65" href="#65">65</a>  			<strong class="jxr_keyword">int</strong> j = invEst.get(index);
+<a class="jxr_linenumber" name="66" href="#66">66</a>  			nij.adjustOrPutValue(i * correct.length + j, 1, 1);
+<a class="jxr_linenumber" name="67" href="#67">67</a>  			ni.adjustOrPutValue(i, 1, 1);
+<a class="jxr_linenumber" name="68" href="#68">68</a>  			nj.adjustOrPutValue(j, 1, 1);
+<a class="jxr_linenumber" name="69" href="#69">69</a>  		}
+<a class="jxr_linenumber" name="70" href="#70">70</a>  		
+<a class="jxr_linenumber" name="71" href="#71">71</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong>[] sumnij = <strong class="jxr_keyword">new</strong>  <strong class="jxr_keyword">long</strong>[1];
+<a class="jxr_linenumber" name="72" href="#72">72</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong>[] sumni  = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">long</strong>[1];
+<a class="jxr_linenumber" name="73" href="#73">73</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong>[] sumnj  = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">long</strong>[1];
+<a class="jxr_linenumber" name="74" href="#74">74</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong>[] sumn   = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">long</strong>[1];
+<a class="jxr_linenumber" name="75" href="#75">75</a>  		
+<a class="jxr_linenumber" name="76" href="#76">76</a>  		nj.forEachEntry(<strong class="jxr_keyword">new</strong> TIntLongProcedure() {
+<a class="jxr_linenumber" name="77" href="#77">77</a>  			
+<a class="jxr_linenumber" name="78" href="#78">78</a>  			@Override
+<a class="jxr_linenumber" name="79" href="#79">79</a>  			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> execute(<strong class="jxr_keyword">int</strong> a, <strong class="jxr_keyword">long</strong> b) {
+<a class="jxr_linenumber" name="80" href="#80">80</a>  				<strong class="jxr_keyword">if</strong>(b &gt; 1){
+<a class="jxr_linenumber" name="81" href="#81">81</a>  					sumnj[0] += MathUtil.binomialCoefficient((<strong class="jxr_keyword">int</strong>)b, 2);
+<a class="jxr_linenumber" name="82" href="#82">82</a>  				}
+<a class="jxr_linenumber" name="83" href="#83">83</a>  				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="84" href="#84">84</a>  			}
+<a class="jxr_linenumber" name="85" href="#85">85</a>  		});
+<a class="jxr_linenumber" name="86" href="#86">86</a>  		
+<a class="jxr_linenumber" name="87" href="#87">87</a>  		ni.forEachEntry(<strong class="jxr_keyword">new</strong> TIntLongProcedure() {
+<a class="jxr_linenumber" name="88" href="#88">88</a>  			
+<a class="jxr_linenumber" name="89" href="#89">89</a>  			@Override
+<a class="jxr_linenumber" name="90" href="#90">90</a>  			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> execute(<strong class="jxr_keyword">int</strong> a, <strong class="jxr_keyword">long</strong> b) {
+<a class="jxr_linenumber" name="91" href="#91">91</a>  				<strong class="jxr_keyword">if</strong>(b &gt; 1){
+<a class="jxr_linenumber" name="92" href="#92">92</a>  					sumni[0] += MathUtil.binomialCoefficient((<strong class="jxr_keyword">int</strong>)b, 2);
+<a class="jxr_linenumber" name="93" href="#93">93</a>  				}
+<a class="jxr_linenumber" name="94" href="#94">94</a>  				sumn[0] += b;
+<a class="jxr_linenumber" name="95" href="#95">95</a>  				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="96" href="#96">96</a>  			}
+<a class="jxr_linenumber" name="97" href="#97">97</a>  		});
+<a class="jxr_linenumber" name="98" href="#98">98</a>  		nij.forEachEntry(<strong class="jxr_keyword">new</strong> TIntLongProcedure() {
+<a class="jxr_linenumber" name="99" href="#99">99</a>  			
+<a class="jxr_linenumber" name="100" href="#100">100</a> 			@Override
+<a class="jxr_linenumber" name="101" href="#101">101</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> execute(<strong class="jxr_keyword">int</strong> a, <strong class="jxr_keyword">long</strong> b) {
+<a class="jxr_linenumber" name="102" href="#102">102</a> 				<strong class="jxr_keyword">if</strong>(b &gt; 1){
+<a class="jxr_linenumber" name="103" href="#103">103</a> 					sumnij[0] += MathUtil.binomialCoefficient((<strong class="jxr_keyword">int</strong>)b, 2);
+<a class="jxr_linenumber" name="104" href="#104">104</a> 				}
+<a class="jxr_linenumber" name="105" href="#105">105</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="106" href="#106">106</a> 			}
+<a class="jxr_linenumber" name="107" href="#107">107</a> 		});
+<a class="jxr_linenumber" name="108" href="#108">108</a> 		<strong class="jxr_keyword">double</strong> bisumn = MathUtil.binomialCoefficient((<strong class="jxr_keyword">int</strong>) sumn[0], 2);
+<a class="jxr_linenumber" name="109" href="#109">109</a> 		<strong class="jxr_keyword">double</strong> div = (sumni[0] * sumnj[0]) / bisumn;
+<a class="jxr_linenumber" name="110" href="#110">110</a> 		AdjustedRandomIndexAnalysis ret = <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/experiment/evaluation/cluster/analyser/AdjustedRandomIndexAnalysis.html">AdjustedRandomIndexAnalysis</a>();
+<a class="jxr_linenumber" name="111" href="#111">111</a> 		ret.adjRandInd = (sumnij[0] - div) / (0.5 * (sumni[0] + sumnj[0]) - div);
+<a class="jxr_linenumber" name="112" href="#112">112</a> 		
+<a class="jxr_linenumber" name="113" href="#113">113</a> 		<strong class="jxr_keyword">return</strong> ret;
+<a class="jxr_linenumber" name="114" href="#114">114</a> 	}
+<a class="jxr_linenumber" name="115" href="#115">115</a> 
+<a class="jxr_linenumber" name="116" href="#116">116</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
