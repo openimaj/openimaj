@@ -62,7 +62,7 @@
 <a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment"> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/openimaj/util/tree/IncrementalLongKDTree.html">IncrementalLongKDTree</a> {
-<a class="jxr_linenumber" name="55" href="#55">55</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/openimaj/util/tree/IncrementalShortKDTree.html">KDNode</a> {
+<a class="jxr_linenumber" name="55" href="#55">55</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/openimaj/util/tree/IncrementalDoubleKDTree.html">KDNode</a> {
 <a class="jxr_linenumber" name="56" href="#56">56</a>      	<strong class="jxr_keyword">int</strong> discriminateDim;
 <a class="jxr_linenumber" name="57" href="#57">57</a>      	<strong class="jxr_keyword">long</strong>[] point;
 <a class="jxr_linenumber" name="58" href="#58">58</a>      	KDNode left, right;
@@ -136,7 +136,7 @@
 <a class="jxr_linenumber" name="126" href="#126">126</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> insert(<strong class="jxr_keyword">long</strong>[] point) {
 <a class="jxr_linenumber" name="127" href="#127">127</a> 
 <a class="jxr_linenumber" name="128" href="#128">128</a> 		<strong class="jxr_keyword">if</strong> (_root == <strong class="jxr_keyword">null</strong>)
-<a class="jxr_linenumber" name="129" href="#129">129</a> 			_root = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/util/tree/IncrementalShortKDTree.html">KDNode</a>(point, 0);
+<a class="jxr_linenumber" name="129" href="#129">129</a> 			_root = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/util/tree/IncrementalDoubleKDTree.html">KDNode</a>(point, 0);
 <a class="jxr_linenumber" name="130" href="#130">130</a> 		<strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="131" href="#131">131</a> 			<strong class="jxr_keyword">int</strong> discriminate;
 <a class="jxr_linenumber" name="132" href="#132">132</a> 			KDNode curNode, tmpNode;
@@ -161,9 +161,9 @@
 <a class="jxr_linenumber" name="151" href="#151">151</a> 				discriminate = 0;
 <a class="jxr_linenumber" name="152" href="#152">152</a> 
 <a class="jxr_linenumber" name="153" href="#153">153</a> 			<strong class="jxr_keyword">if</strong> (ordinate1 &gt; ordinate2)
-<a class="jxr_linenumber" name="154" href="#154">154</a> 				tmpNode.right = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/util/tree/IncrementalShortKDTree.html">KDNode</a>(point, discriminate);
+<a class="jxr_linenumber" name="154" href="#154">154</a> 				tmpNode.right = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/util/tree/IncrementalDoubleKDTree.html">KDNode</a>(point, discriminate);
 <a class="jxr_linenumber" name="155" href="#155">155</a> 			<strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="156" href="#156">156</a> 				tmpNode.left = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/util/tree/IncrementalShortKDTree.html">KDNode</a>(point, discriminate);
+<a class="jxr_linenumber" name="156" href="#156">156</a> 				tmpNode.left = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/util/tree/IncrementalDoubleKDTree.html">KDNode</a>(point, discriminate);
 <a class="jxr_linenumber" name="157" href="#157">157</a> 		}
 <a class="jxr_linenumber" name="158" href="#158">158</a> 	}
 <a class="jxr_linenumber" name="159" href="#159">159</a> 
@@ -260,7 +260,7 @@
 <a class="jxr_linenumber" name="250" href="#250">250</a> 			<strong class="jxr_keyword">return</strong> state;
 <a class="jxr_linenumber" name="251" href="#251">251</a> 
 <a class="jxr_linenumber" name="252" href="#252">252</a> 		<strong class="jxr_keyword">while</strong> (!stack.isEmpty()) {
-<a class="jxr_linenumber" name="253" href="#253">253</a> 			<strong class="jxr_keyword">final</strong> <a href="../../../../org/openimaj/util/tree/IncrementalShortKDTree.html">KDNode</a> current = stack.pop();
+<a class="jxr_linenumber" name="253" href="#253">253</a> 			<strong class="jxr_keyword">final</strong> <a href="../../../../org/openimaj/util/tree/IncrementalDoubleKDTree.html">KDNode</a> current = stack.pop();
 <a class="jxr_linenumber" name="254" href="#254">254</a> 
 <a class="jxr_linenumber" name="255" href="#255">255</a> 			checkSubtree(current, query, state);
 <a class="jxr_linenumber" name="256" href="#256">256</a> 		}
@@ -288,7 +288,7 @@
 <a class="jxr_linenumber" name="278" href="#278">278</a> 		state.add(initialState);
 <a class="jxr_linenumber" name="279" href="#279">279</a> 
 <a class="jxr_linenumber" name="280" href="#280">280</a> 		<strong class="jxr_keyword">while</strong> (!stack.isEmpty()) {
-<a class="jxr_linenumber" name="281" href="#281">281</a> 			<strong class="jxr_keyword">final</strong> <a href="../../../../org/openimaj/util/tree/IncrementalShortKDTree.html">KDNode</a> current = stack.pop();
+<a class="jxr_linenumber" name="281" href="#281">281</a> 			<strong class="jxr_keyword">final</strong> <a href="../../../../org/openimaj/util/tree/IncrementalDoubleKDTree.html">KDNode</a> current = stack.pop();
 <a class="jxr_linenumber" name="282" href="#282">282</a> 
 <a class="jxr_linenumber" name="283" href="#283">283</a> 			checkSubtreeK(current, query, state, k);
 <a class="jxr_linenumber" name="284" href="#284">284</a> 		}
@@ -299,7 +299,7 @@
 <a class="jxr_linenumber" name="289" href="#289">289</a> 	<em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="290" href="#290">290</a> <em class="jxr_comment">	 * Check a subtree for a closer match</em>
 <a class="jxr_linenumber" name="291" href="#291">291</a> <em class="jxr_comment">	 */</em>
-<a class="jxr_linenumber" name="292" href="#292">292</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkSubtree(<a href="../../../../org/openimaj/util/tree/IncrementalShortKDTree.html">KDNode</a> node, <strong class="jxr_keyword">long</strong>[] query, ObjectDoublePair&lt;<strong class="jxr_keyword">long</strong>[]&gt; state) {
+<a class="jxr_linenumber" name="292" href="#292">292</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkSubtree(<a href="../../../../org/openimaj/util/tree/IncrementalDoubleKDTree.html">KDNode</a> node, <strong class="jxr_keyword">long</strong>[] query, ObjectDoublePair&lt;<strong class="jxr_keyword">long</strong>[]&gt; state) {
 <a class="jxr_linenumber" name="293" href="#293">293</a> 		<strong class="jxr_keyword">if</strong> (node == <strong class="jxr_keyword">null</strong>)
 <a class="jxr_linenumber" name="294" href="#294">294</a> 			<strong class="jxr_keyword">return</strong>;
 <a class="jxr_linenumber" name="295" href="#295">295</a> 
@@ -328,7 +328,7 @@
 <a class="jxr_linenumber" name="318" href="#318">318</a> 		}
 <a class="jxr_linenumber" name="319" href="#319">319</a> 	}
 <a class="jxr_linenumber" name="320" href="#320">320</a> 
-<a class="jxr_linenumber" name="321" href="#321">321</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkSubtreeK(<a href="../../../../org/openimaj/util/tree/IncrementalShortKDTree.html">KDNode</a> node, <strong class="jxr_keyword">long</strong>[] query, PriorityQueue&lt;ObjectDoublePair&lt;<strong class="jxr_keyword">long</strong>[]&gt;&gt; state, <strong class="jxr_keyword">int</strong> k) {
+<a class="jxr_linenumber" name="321" href="#321">321</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkSubtreeK(<a href="../../../../org/openimaj/util/tree/IncrementalDoubleKDTree.html">KDNode</a> node, <strong class="jxr_keyword">long</strong>[] query, PriorityQueue&lt;ObjectDoublePair&lt;<strong class="jxr_keyword">long</strong>[]&gt;&gt; state, <strong class="jxr_keyword">int</strong> k) {
 <a class="jxr_linenumber" name="322" href="#322">322</a> 		<strong class="jxr_keyword">if</strong> (node == <strong class="jxr_keyword">null</strong>)
 <a class="jxr_linenumber" name="323" href="#323">323</a> 			<strong class="jxr_keyword">return</strong>;
 <a class="jxr_linenumber" name="324" href="#324">324</a> 
