@@ -4,7 +4,7 @@
   <parent>
     <artifactId>openimaj-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.8</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>processing</artifactId>
@@ -19,36 +19,36 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>ImprovedArgs4J</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>processing-core</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.8</version>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>faces</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-video</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>video-processing</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>xuggle-video</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

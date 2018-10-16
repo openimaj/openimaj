@@ -7,7 +7,7 @@
   <parent>
     <artifactId>openimaj</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.8</version>
     <relativePath>../</relativePath>
   </parent>
   <description>Sub-modules containing interfaces to hardware devices that we've used in projects built using OpenIMAJ.</description>

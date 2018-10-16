@@ -4,7 +4,7 @@
   <parent>
     <artifactId>thirdparty</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.8</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>klt-tracker</artifactId>
@@ -42,31 +42,31 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-math</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-image</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-video</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-processing</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
