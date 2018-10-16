@@ -33,19 +33,19 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Random;
 
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.NotConvergedException;
-import no.uib.cipr.matrix.SVD;
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 import ch.akuhn.matrix.SparseMatrix;
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.SVD;
 
 /**
  * Miscellaneous matrix operations.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class MatrixUtils {
 	private MatrixUtils() {
@@ -53,7 +53,7 @@ public class MatrixUtils {
 
 	/**
 	 * Are any values NaN or Inf?
-	 * 
+	 *
 	 * @param matrix
 	 *            matrix to test
 	 * @return true if any elements are NaN or Inf; false otherwise
@@ -70,7 +70,7 @@ public class MatrixUtils {
 
 	/**
 	 * Get the maximum absolute value of the diagonal.
-	 * 
+	 *
 	 * @param matrix
 	 *            the matrix
 	 * @return the maximum absolute value
@@ -89,7 +89,7 @@ public class MatrixUtils {
 
 	/**
 	 * Get the minimum absolute value of the diagonal.
-	 * 
+	 *
 	 * @param matrix
 	 *            the matrix
 	 * @return the minimum absolute value
@@ -108,7 +108,7 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the principle square root, X, of the matrix A such that A=X*X
-	 * 
+	 *
 	 * @param matrix
 	 *            the matrix
 	 * @return the sqrt of the matrix
@@ -132,9 +132,9 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Computes the Moore-Penrose pseudoinverse. This is just a convenience
-	 * wrapper around {@link PseudoInverse#pseudoInverse(Matrix)}.
-	 * 
+	 * Computes the Moore-Penrose pseudoinverse. This is just a convenience wrapper
+	 * around {@link PseudoInverse#pseudoInverse(Matrix)}.
+	 *
 	 * @param matrix
 	 *            the matrix to invert.
 	 * @return the inverted matrix
@@ -146,7 +146,7 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the inverse square root, X, of the symmetric matrix A; A^-(1/2)
-	 * 
+	 *
 	 * @param matrix
 	 *            the symmetric matrix
 	 * @return the inverse sqrt of the matrix
@@ -173,7 +173,7 @@ public class MatrixUtils {
 	/**
 	 * Return a copy of the input matrix with all elements set to their absolute
 	 * value.
-	 * 
+	 *
 	 * @param mat
 	 *            the matrix.
 	 * @return the absolute matrix.
@@ -190,7 +190,7 @@ public class MatrixUtils {
 
 	/**
 	 * Check if two matrices are equal
-	 * 
+	 *
 	 * @param m1
 	 *            first matrix
 	 * @param m2
@@ -217,7 +217,7 @@ public class MatrixUtils {
 
 	/**
 	 * Return a copy of the matrix with all the values raised to a power.
-	 * 
+	 *
 	 * @param mat
 	 *            the matrix.
 	 * @param exp
@@ -236,7 +236,7 @@ public class MatrixUtils {
 
 	/**
 	 * Generate a {@link String} representation of a matrix.
-	 * 
+	 *
 	 * @param mat
 	 *            the matrix
 	 * @return a string representation
@@ -249,7 +249,7 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the sum of all elements of the matrix.
-	 * 
+	 *
 	 * @param mat
 	 *            the matrix.
 	 * @return the sum.
@@ -266,7 +266,7 @@ public class MatrixUtils {
 
 	/**
 	 * Zero the matrix
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 */
@@ -277,7 +277,7 @@ public class MatrixUtils {
 	/**
 	 * Compute the real Eigen decomposition of a symmetric 2x2 matrix. Warning:
 	 * Doesn't check the size or whether the input is symmetric.
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @return the Eigen vectors and values.
@@ -330,13 +330,12 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * An eigen decomposition that uses a deterministic method if the matrix is
-	 * 2x2.
-	 * 
-	 * This function returns values as in {@link EigenvalueDecomposition} i.e.
-	 * the largest eigen value is held in the [m.rows - 1,m.cols-1] (i.e. [1,1])
+	 * An eigen decomposition that uses a deterministic method if the matrix is 2x2.
+	 *
+	 * This function returns values as in {@link EigenvalueDecomposition} i.e. the
+	 * largest eigen value is held in the [m.rows - 1,m.cols-1] (i.e. [1,1])
 	 * location
-	 * 
+	 *
 	 * @param m
 	 * @return the decomposition
 	 */
@@ -347,7 +346,7 @@ public class MatrixUtils {
 		}
 		/**
 		 * A = 1 B = a + d C = ad - bc
-		 * 
+		 *
 		 * x = ( - B (+/-) sqrt(B^2 - 4AC) )/ (2A)
 		 */
 		final double a = m.get(0, 0);
@@ -410,7 +409,7 @@ public class MatrixUtils {
 
 	/**
 	 * Construct a matrix from a 2D float array of data.
-	 * 
+	 *
 	 * @param data
 	 *            the data.
 	 * @return the matrix.
@@ -419,16 +418,16 @@ public class MatrixUtils {
 		final Matrix out = new Matrix(data.length, data[0].length);
 		for (int i = 0; i < data.length; i++) {
 			for (int j = 0; j < data[i].length; j++) {
-				out.set(j, i, data[i][j]);
+				out.set(i, j, data[i][j]);
 			}
 		}
 		return out;
 	}
 
 	/**
-	 * Reduce the rank a matrix by estimating a the best (in a least-squares
-	 * sense) approximation using the thin SVD.
-	 * 
+	 * Reduce the rank a matrix by estimating a the best (in a least-squares sense)
+	 * approximation using the thin SVD.
+	 *
 	 * @param m
 	 *            the matrix to reduce.
 	 * @param rank
@@ -467,7 +466,7 @@ public class MatrixUtils {
 
 	/**
 	 * Convert a {@link DenseMatrix} to a {@link Matrix}.
-	 * 
+	 *
 	 * @param mjt
 	 *            {@link DenseMatrix} to convert
 	 * @return converted matrix.
@@ -478,7 +477,7 @@ public class MatrixUtils {
 
 	/**
 	 * Convert a {@link DenseMatrix} to a {@link Matrix}.
-	 * 
+	 *
 	 * @param mjt
 	 *            {@link DenseMatrix} to convert
 	 * @param nrows
@@ -501,7 +500,7 @@ public class MatrixUtils {
 
 	/**
 	 * Create a copy of a matrix with the columns in reverse order.
-	 * 
+	 *
 	 * @param m
 	 *            the input matrix
 	 * @return a copy with the column order reversed
@@ -512,7 +511,7 @@ public class MatrixUtils {
 
 	/**
 	 * Reverse the column order of the input matrix inplace.
-	 * 
+	 *
 	 * @param m
 	 *            the input matrix
 	 * @return the input matrix
@@ -536,7 +535,7 @@ public class MatrixUtils {
 
 	/**
 	 * Create a copy of a matrix with the rows in reverse order.
-	 * 
+	 *
 	 * @param m
 	 *            the input matrix
 	 * @return a copy with the row order reversed
@@ -547,7 +546,7 @@ public class MatrixUtils {
 
 	/**
 	 * Reverse the row order of the input matrix inplace.
-	 * 
+	 *
 	 * @param m
 	 *            the input matrix
 	 * @return the input matrix
@@ -568,7 +567,7 @@ public class MatrixUtils {
 
 	/**
 	 * Create a diagonal matrix
-	 * 
+	 *
 	 * @param s
 	 *            length diagonal numbers
 	 * @return new Matrix(s.length,s.length) s.t. diagonal element i,i = s[i]
@@ -583,7 +582,7 @@ public class MatrixUtils {
 
 	/**
 	 * Set the values of the elements in a single column to a constant value.
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @param c
@@ -604,7 +603,7 @@ public class MatrixUtils {
 
 	/**
 	 * Set the values of the elements in a single column to a constant value.
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @param r
@@ -625,7 +624,7 @@ public class MatrixUtils {
 
 	/**
 	 * Fill a matrix with a constant value.
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @param v
@@ -647,7 +646,7 @@ public class MatrixUtils {
 
 	/**
 	 * Subtract a constant from all values
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @param v
@@ -669,7 +668,7 @@ public class MatrixUtils {
 
 	/**
 	 * Add a constant to all values
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @param v
@@ -691,7 +690,7 @@ public class MatrixUtils {
 
 	/**
 	 * Get a reshaped copy of the input matrix
-	 * 
+	 *
 	 * @param m
 	 *            the matrix to reshape
 	 * @param newRows
@@ -729,14 +728,14 @@ public class MatrixUtils {
 
 	/**
 	 * Get a reshaped copy of the input matrix
-	 * 
+	 *
 	 * @param m
 	 *            the matrix to reshape
 	 * @param newRows
 	 *            the new number of rows
 	 * @param columnMajor
-	 *            if true, values are drawn and placed down columns first. if
-	 *            false values are drawn and placed across rows first
+	 *            if true, values are drawn and placed down columns first. if false
+	 *            values are drawn and placed across rows first
 	 * @return new matrix
 	 */
 	public static Matrix reshape(Matrix m, int newRows, boolean columnMajor) {
@@ -766,8 +765,7 @@ public class MatrixUtils {
 					r2++;
 				}
 			}
-		}
-		else {
+		} else {
 			for (int i = 0; i < length; i++) {
 				m2v[r2][c2] = m1v[r1][c1];
 
@@ -790,7 +788,7 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the sum of values in a single column
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @param col
@@ -810,7 +808,7 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the sum of values in a single row
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @param row
@@ -830,7 +828,7 @@ public class MatrixUtils {
 
 	/**
 	 * Increment values in a single column by a constant
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @param col
@@ -851,7 +849,7 @@ public class MatrixUtils {
 
 	/**
 	 * Increment values in a single column by a constant
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @param row
@@ -872,7 +870,7 @@ public class MatrixUtils {
 
 	/**
 	 * round (using {@link Math#round(double)} each value of the matrix
-	 * 
+	 *
 	 * @param times
 	 * @return same matrix as handed in
 	 */
@@ -887,9 +885,9 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * min(A,B) returns an array the same size as A and B with the smallest
-	 * elements taken from A or B. The dimensions of A and B must match
-	 * 
+	 * min(A,B) returns an array the same size as A and B with the smallest elements
+	 * taken from A or B. The dimensions of A and B must match
+	 *
 	 * @param A
 	 * @param B
 	 * @return new Matrix filled with min from A and B
@@ -908,12 +906,12 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * d to the power of each value in range. as with {@link #range} range is: -
-	 * a single number (a) (0:1:a) - two numbers (a,b) (a:1:b) - three numbers
-	 * (a,b,c) (a:b:c)
-	 * 
+	 * d to the power of each value in range. as with {@link #range} range is: - a
+	 * single number (a) (0:1:a) - two numbers (a,b) (a:1:b) - three numbers (a,b,c)
+	 * (a:b:c)
+	 *
 	 * any other amount of range results in a {@link RuntimeException}
-	 * 
+	 *
 	 * @param d
 	 * @param range
 	 * @return d to the power of each value in range
@@ -928,13 +926,11 @@ public class MatrixUtils {
 			start = range[0];
 			end = range[1];
 			delta = 1;
-		}
-		else if (range.length == 3) {
+		} else if (range.length == 3) {
 			start = range[0];
 			end = range[2];
 			delta = range[1];
-		}
-		else {
+		} else {
 			throw new RuntimeException("Invalid range options selected");
 		}
 		final int l = (int) ((end - start + 1) / delta);
@@ -946,9 +942,9 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * range is: - a single number (a) (0:1:a) - two numbers (a,b) (a:1:b) -
-	 * three numbers (a,b,c) (a:b:c)
-	 * 
+	 * range is: - a single number (a) (0:1:a) - two numbers (a,b) (a:1:b) - three
+	 * numbers (a,b,c) (a:b:c)
+	 *
 	 * @param range
 	 * @return the range defined
 	 */
@@ -962,13 +958,11 @@ public class MatrixUtils {
 			start = range[0];
 			end = range[1];
 			delta = 1;
-		}
-		else if (range.length == 3) {
+		} else if (range.length == 3) {
 			start = range[0];
 			end = range[2];
 			delta = range[1];
-		}
-		else {
+		} else {
 			throw new RuntimeException("Invalid range options selected");
 		}
 		final int l = (int) Math.floor((end - start) / delta) + 1;
@@ -980,9 +974,9 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * range is: - a single number (a) (0:1:a) - two numbers (a,b) (a:1:b) -
-	 * three numbers (a,b,c) (a:b:c)
-	 * 
+	 * range is: - a single number (a) (0:1:a) - two numbers (a,b) (a:1:b) - three
+	 * numbers (a,b,c) (a:b:c)
+	 *
 	 * @param range
 	 * @return the range defined
 	 */
@@ -996,13 +990,11 @@ public class MatrixUtils {
 			start = range[0];
 			end = range[1];
 			delta = 1;
-		}
-		else if (range.length == 3) {
+		} else if (range.length == 3) {
 			start = range[0];
 			end = range[2];
 			delta = range[1];
-		}
-		else {
+		} else {
 			throw new RuntimeException("Invalid range options selected");
 		}
 		final int l = (int) Math.floor((end - start) / delta) + 1;
@@ -1015,7 +1007,7 @@ public class MatrixUtils {
 
 	/**
 	 * Given two row vectors, construct the power set of rowvector combinations
-	 * 
+	 *
 	 * @param A
 	 * @param B
 	 * @return a new matrix of size A.cols * B.cols
@@ -1038,7 +1030,7 @@ public class MatrixUtils {
 
 	/**
 	 * Given a matrix, repeat the matrix over i rows and j columns
-	 * 
+	 *
 	 * @param x
 	 * @param i
 	 * @param j
@@ -1060,9 +1052,8 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * horizontally stack all the matrices provided. i.e. ret = [x1 x2 x3 x4 ...
-	 * xn]
-	 * 
+	 * horizontally stack all the matrices provided. i.e. ret = [x1 x2 x3 x4 ... xn]
+	 *
 	 * @param x
 	 * @return horizontally stacked
 	 */
@@ -1089,7 +1080,7 @@ public class MatrixUtils {
 	 * Add the rows to the mat at rowIndex. Assumes MANY things with no checks:
 	 * rows.rows == rowIndex.length mat.cols == rows.cols rowIndex.length &lt;
 	 * mat.rows for x in rowIndex: x &lt; mat.rows &amp;&amp; x &gt;= 0 etc.
-	 * 
+	 *
 	 * @param mat
 	 * @param rows
 	 * @param rowIndex
@@ -1144,7 +1135,8 @@ public class MatrixUtils {
 
 	/**
 	 * @param x
-	 * @return a new matrix for x1 &amp;&amp; x2 &amp;&amp; ... &amp;&amp; xn where &amp;&amp; means "!=0"
+	 * @return a new matrix for x1 &amp;&amp; x2 &amp;&amp; ... &amp;&amp; xn where
+	 *         &amp;&amp; means "!=0"
 	 */
 	public static Matrix and(Matrix... x) {
 		final Matrix retMat = MatrixUtils.ones(x[0].getRowDimension(), x[0].getColumnDimension());
@@ -1218,7 +1210,7 @@ public class MatrixUtils {
 
 	/**
 	 * for every value in x greater than val set toset
-	 * 
+	 *
 	 * @param x
 	 * @param val
 	 * @param toset
@@ -1236,7 +1228,7 @@ public class MatrixUtils {
 
 	/**
 	 * for every value in x less than val set toset
-	 * 
+	 *
 	 * @param x
 	 * @param val
 	 * @param toset
@@ -1253,9 +1245,9 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Subtract the given row vector from every row of the given matrix,
-	 * returning the result in a new matrix.
-	 * 
+	 * Subtract the given row vector from every row of the given matrix, returning
+	 * the result in a new matrix.
+	 *
 	 * @param in
 	 *            the matrix
 	 * @param row
@@ -1278,9 +1270,9 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Subtract the given col vector (held as a Matrix) from every col of the
-	 * given matrix, returning the result in a new matrix.
-	 * 
+	 * Subtract the given col vector (held as a Matrix) from every col of the given
+	 * matrix, returning the result in a new matrix.
+	 *
 	 * @param in
 	 *            the matrix
 	 * @param col
@@ -1305,7 +1297,7 @@ public class MatrixUtils {
 
 	/**
 	 * Add a matrix to another inline.
-	 * 
+	 *
 	 * @param result
 	 *            the matrix to add to
 	 * @param add
@@ -1330,7 +1322,7 @@ public class MatrixUtils {
 
 	/**
 	 * Multiply a matrix by a constant inplace, returning the matrix.
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @param val
@@ -1352,7 +1344,7 @@ public class MatrixUtils {
 
 	/**
 	 * Convert an mtj matrix into a 2d double array
-	 * 
+	 *
 	 * @param mat
 	 * @return a double array
 	 */
@@ -1370,7 +1362,7 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the sum of values in all rows
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @return the sum of values across all cols in all rows
@@ -1383,8 +1375,7 @@ public class MatrixUtils {
 		final Matrix sum = new Matrix(rows, 1);
 		final double[][] sumArr = sum.getArray();
 		for (int c = 0; c < cols; c++) {
-			for (int r = 0; r < rows; r++)
-			{
+			for (int r = 0; r < rows; r++) {
 				sumArr[r][0] += data[r][c];
 			}
 		}
@@ -1394,7 +1385,7 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the sum of values in all cols
-	 * 
+	 *
 	 * @param m
 	 *            the matrix
 	 * @return the sum of values across all rows in all cols
@@ -1407,8 +1398,7 @@ public class MatrixUtils {
 		final Matrix sum = new Matrix(1, cols);
 		final double[][] sumArr = sum.getArray();
 		for (int c = 0; c < cols; c++) {
-			for (int r = 0; r < rows; r++)
-			{
+			for (int r = 0; r < rows; r++) {
 				sumArr[0][c] += data[r][c];
 			}
 		}
@@ -1418,7 +1408,7 @@ public class MatrixUtils {
 
 	/**
 	 * Generate a matrix with Gaussian distributed randoms
-	 * 
+	 *
 	 * @param rows
 	 *            the number of rows
 	 * @param cols
@@ -1438,9 +1428,9 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Compute the sparsity (i.e. ratio of non-zero elements to matrix size) of
-	 * the given matrix
-	 * 
+	 * Compute the sparsity (i.e. ratio of non-zero elements to matrix size) of the
+	 * given matrix
+	 *
 	 * @param matrix
 	 *            the matrix
 	 * @return the sparsity
@@ -1452,11 +1442,11 @@ public class MatrixUtils {
 
 	/**
 	 * Extract the diagonal component from the given matrix
-	 * 
+	 *
 	 * @param cv
 	 *            the matrix
-	 * @return a new matrix with the diagonal values from the input matrix and
-	 *         other values set to zero.
+	 * @return a new matrix with the diagonal values from the input matrix and other
+	 *         values set to zero.
 	 */
 	public static Matrix diag(Matrix cv) {
 		final Matrix d = new Matrix(cv.getRowDimension(), cv.getColumnDimension());
@@ -1469,11 +1459,11 @@ public class MatrixUtils {
 
 	/**
 	 * Extract the diagonal component from the given matrix
-	 * 
+	 *
 	 * @param cv
 	 *            the matrix
-	 * @return a new matrix with the diagonal values from the input matrix and
-	 *         other values set to zero.
+	 * @return a new matrix with the diagonal values from the input matrix and other
+	 *         values set to zero.
 	 */
 	public static double[] diagVector(Matrix cv) {
 		final double[] d = new double[Math.min(cv.getRowDimension(), cv.getColumnDimension())];
@@ -1487,7 +1477,7 @@ public class MatrixUtils {
 	/**
 	 * Format a matrix as a single-line string suitable for using in matlab or
 	 * octave
-	 * 
+	 *
 	 * @param mat
 	 *            the matrix to format
 	 * @return the string
@@ -1498,7 +1488,7 @@ public class MatrixUtils {
 
 	/**
 	 * Format a matrix as a single-line string suitable for using in python
-	 * 
+	 *
 	 * @param mat
 	 *            the matrix to format
 	 * @return the string
@@ -1520,10 +1510,10 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Solves the system <code>Ax = 0</code>, returning the vector x as an
-	 * array. Internally computes the least-squares solution using the SVD of
+	 * Solves the system <code>Ax = 0</code>, returning the vector x as an array.
+	 * Internally computes the least-squares solution using the SVD of
 	 * <code>A</code>.
-	 * 
+	 *
 	 * @param A
 	 *            the matrix describing the system
 	 * @return the solution vector
@@ -1533,10 +1523,10 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Solves the system <code>Ax = 0</code>, returning the vector x as an
-	 * array. Internally computes the least-squares solution using the SVD of
+	 * Solves the system <code>Ax = 0</code>, returning the vector x as an array.
+	 * Internally computes the least-squares solution using the SVD of
 	 * <code>A</code>.
-	 * 
+	 *
 	 * @param A
 	 *            the matrix describing the system
 	 * @return the solution vector
@@ -1546,10 +1536,10 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Solves the system <code>Ax = 0</code>, returning the vector x as an
-	 * array. Internally computes the least-squares solution using the SVD of
+	 * Solves the system <code>Ax = 0</code>, returning the vector x as an array.
+	 * Internally computes the least-squares solution using the SVD of
 	 * <code>A</code>.
-	 * 
+	 *
 	 * @param A
 	 *            the matrix describing the system
 	 * @return the solution vector
@@ -1573,7 +1563,7 @@ public class MatrixUtils {
 
 	/**
 	 * Format a matrix as a single-line string suitable for using in java
-	 * 
+	 *
 	 * @param mat
 	 *            the matrix to format
 	 * @return the string
@@ -1583,9 +1573,8 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Construct a matrix from a row-packed (i.e. row-by-row) vector of the
-	 * data.
-	 * 
+	 * Construct a matrix from a row-packed (i.e. row-by-row) vector of the data.
+	 *
 	 * @param vector
 	 *            the row-packed vector
 	 * @param ncols
@@ -1605,9 +1594,9 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Compute the covariance matrix of the given samples (assumed each sample
-	 * is a row).
-	 * 
+	 * Compute the covariance matrix of the given samples (assumed each sample is a
+	 * row).
+	 *
 	 * @param m
 	 *            the samples matrix
 	 * @return the covariance matrix
@@ -1618,9 +1607,9 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * For each element of X, sign(X) returns 1 if the element is greater than
-	 * zero, 0 if it equals zero and -1 if it is less than zero.
-	 * 
+	 * For each element of X, sign(X) returns 1 if the element is greater than zero,
+	 * 0 if it equals zero and -1 if it is less than zero.
+	 *
 	 * @param m
 	 *            the matrix
 	 * @return the sign matrix
@@ -1643,9 +1632,9 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Return a copy of the input matrix where every value is the exponential of
-	 * the elements, e to the X.
-	 * 
+	 * Return a copy of the input matrix where every value is the exponential of the
+	 * elements, e to the X.
+	 *
 	 * @param m
 	 *            the input matrix
 	 * @return the exponential matrix
@@ -1665,9 +1654,9 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Return a copy of the input matrix where every value is the hyperbolic
-	 * tangent of the elements.
-	 * 
+	 * Return a copy of the input matrix where every value is the hyperbolic tangent
+	 * of the elements.
+	 *
 	 * @param m
 	 *            the input matrix
 	 * @return the tanh matrix
