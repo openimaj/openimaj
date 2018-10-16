@@ -3,7 +3,7 @@
   <parent>
     <artifactId>openimaj-hadoop-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3.8</version>
+    <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -22,7 +22,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-hadoop</artifactId>
-      <version>1.3.8</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 		<dependency>
@@ -33,13 +33,13 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>test-resources</artifactId>
-      <version>1.3.8</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>ImprovedArgs4J</artifactId>
-      <version>1.3.8</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
