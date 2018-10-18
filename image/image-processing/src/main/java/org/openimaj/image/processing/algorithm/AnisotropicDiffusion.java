@@ -29,8 +29,6 @@
  */
 package org.openimaj.image.processing.algorithm;
 
-import odk.lang.FastMath;
-
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
@@ -38,9 +36,11 @@ import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
+import net.jafama.FastMath;
+
 /**
- * Implementation of Perona &amp; Malik's image filtering by anisotropic diffusion.
- * Enables edge-preserving image smoothing.
+ * Implementation of Perona &amp; Malik's image filtering by anisotropic
+ * diffusion. Enables edge-preserving image smoothing.
  *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -66,8 +66,8 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 		})
 public class AnisotropicDiffusion implements SinglebandImageProcessor<Float, FImage> {
 	/**
-	 * Interface describing a function that computes the conduction coefficient
-	 * as a function of space and gradient magnitude.
+	 * Interface describing a function that computes the conduction coefficient as a
+	 * function of space and gradient magnitude.
 	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
@@ -181,13 +181,12 @@ public class AnisotropicDiffusion implements SinglebandImageProcessor<Float, FIm
 	 * @param numIterations
 	 *            number of iterations of filtering to apply
 	 * @param lambda
-	 *            the integration constant (bigger than 0 and less than or equal
-	 *            to 1/4)
+	 *            the integration constant (bigger than 0 and less than or equal to
+	 *            1/4)
 	 * @param function
 	 *            the conduction coefficient function
 	 */
-	public AnisotropicDiffusion(int numIterations, float lambda, ConductionCoefficientFunction function)
-	{
+	public AnisotropicDiffusion(int numIterations, float lambda, ConductionCoefficientFunction function) {
 		this.numIterations = numIterations;
 		this.lambda = lambda;
 		this.function = function;

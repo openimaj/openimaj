@@ -36,15 +36,15 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import odk.lang.FastMath;
-
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 
+import net.jafama.FastMath;
+
 /**
- * Graham Scan convex hull algorithm, based on the implementation by <a
- * href="https://github.com/bkiers/GrahamScan">Bart Kiers</a>.
- * 
+ * Graham Scan convex hull algorithm, based on the implementation by
+ * <a href="https://github.com/bkiers/GrahamScan">Bart Kiers</a>.
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Bart Kiers
  */
@@ -58,7 +58,7 @@ public final class GrahamScan {
 
 	/**
 	 * Returns true iff all Point2ds in <code>Point2ds</code> are collinear.
-	 * 
+	 *
 	 * @param Point2ds
 	 *            the list of Point2ds.
 	 * @return true iff all Point2ds in <code>Point2ds</code> are collinear.
@@ -86,9 +86,9 @@ public final class GrahamScan {
 
 	/**
 	 * Returns the convex hull of the Point2ds created from the list
-	 * <code>Point2ds</code>. Note that the first and last Point2d in the
-	 * returned <code>List&lt;java.awt.Point2d&gt;</code> are the same Point2d.
-	 * 
+	 * <code>Point2ds</code>. Note that the first and last Point2d in the returned
+	 * <code>List&lt;java.awt.Point2d&gt;</code> are the same Point2d.
+	 *
 	 * @param Point2ds
 	 *            the list of Point2ds.
 	 * @return the convex hull of the Point2ds created from the list
@@ -139,14 +139,13 @@ public final class GrahamScan {
 	}
 
 	/**
-	 * Returns the Point2ds with the lowest y coordinate. In case more than 1
-	 * such Point2d exists, the one with the lowest x coordinate is returned.
-	 * 
+	 * Returns the Point2ds with the lowest y coordinate. In case more than 1 such
+	 * Point2d exists, the one with the lowest x coordinate is returned.
+	 *
 	 * @param Point2ds
 	 *            the list of Point2ds to return the lowest Point2d from.
-	 * @return the Point2ds with the lowest y coordinate. In case more than 1
-	 *         such Point2d exists, the one with the lowest x coordinate is
-	 *         returned.
+	 * @return the Point2ds with the lowest y coordinate. In case more than 1 such
+	 *         Point2d exists, the one with the lowest x coordinate is returned.
 	 */
 	protected static Point2d getLowestPoint2d(List<Point2d> Point2ds) {
 
@@ -165,12 +164,11 @@ public final class GrahamScan {
 	}
 
 	/**
-	 * Returns a sorted set of Point2ds from the list <code>Point2ds</code>. The
-	 * set of Point2ds are sorted in increasing order of the angle they and the
-	 * lowest Point2d <tt>P</tt> make with the x-axis. If two (or more) Point2ds
-	 * form the same angle towards <tt>P</tt>, the one closest to <tt>P</tt>
-	 * comes first.
-	 * 
+	 * Returns a sorted set of Point2ds from the list <code>Point2ds</code>. The set
+	 * of Point2ds are sorted in increasing order of the angle they and the lowest
+	 * Point2d <tt>P</tt> make with the x-axis. If two (or more) Point2ds form the
+	 * same angle towards <tt>P</tt>, the one closest to <tt>P</tt> comes first.
+	 *
 	 * @param Point2ds
 	 *            the list of Point2ds to sort.
 	 * @return a sorted set of Point2ds from the list <code>Point2ds</code>.
@@ -193,11 +191,9 @@ public final class GrahamScan {
 
 				if (thetaA < thetaB) {
 					return -1;
-				}
-				else if (thetaA > thetaB) {
+				} else if (thetaA > thetaB) {
 					return 1;
-				}
-				else {
+				} else {
 					// collinear with the 'lowest' Point2d, let the Point2d
 					// closest to it come first
 					final double distanceA = FastMath.sqrt(((lowest.getX() - a.getX()) * (lowest.getX() - a
@@ -209,8 +205,7 @@ public final class GrahamScan {
 
 					if (distanceA < distanceB) {
 						return -1;
-					}
-					else {
+					} else {
 						return 1;
 					}
 				}
@@ -223,25 +218,24 @@ public final class GrahamScan {
 	}
 
 	/**
-	 * Returns the GrahamScan#Turn formed by traversing through the ordered
-	 * Point2ds <code>a</code>, <code>b</code> and <code>c</code>. More
-	 * specifically, the cross product <tt>C</tt> between the 3 Point2ds
-	 * (vectors) is calculated:
-	 * 
+	 * Returns the GrahamScan#Turn formed by traversing through the ordered Point2ds
+	 * <code>a</code>, <code>b</code> and <code>c</code>. More specifically, the
+	 * cross product <tt>C</tt> between the 3 Point2ds (vectors) is calculated:
+	 *
 	 * <tt>(b.getX()-a.getX() * c.getY()-a.getY()) - (b.getY()-a.getY() * c.getX()-a.getX())</tt>
-	 * 
+	 *
 	 * and if <tt>C</tt> is less than 0, the turn is CLOCKWISE, if <tt>C</tt> is
 	 * more than 0, the turn is COUNTER_CLOCKWISE, else the three Point2ds are
 	 * COLLINEAR.
-	 * 
+	 *
 	 * @param a
 	 *            the starting Point2d.
 	 * @param b
 	 *            the second Point2d.
 	 * @param c
 	 *            the end Point2d.
-	 * @return the GrahamScan#Turn formed by traversing through the ordered
-	 *         Point2ds <code>a</code>, <code>b</code> and <code>c</code>.
+	 * @return the GrahamScan#Turn formed by traversing through the ordered Point2ds
+	 *         <code>a</code>, <code>b</code> and <code>c</code>.
 	 */
 	protected static Turn getTurn(Point2d a, Point2d b, Point2d c) {
 		final double crossProduct = ((b.getX() - a.getX()) * (c.getY() - a.getY())) -
@@ -249,11 +243,9 @@ public final class GrahamScan {
 
 		if (crossProduct > 0) {
 			return Turn.COUNTER_CLOCKWISE;
-		}
-		else if (crossProduct < 0) {
+		} else if (crossProduct < 0) {
 			return Turn.CLOCKWISE;
-		}
-		else {
+		} else {
 			return Turn.COLLINEAR;
 		}
 	}

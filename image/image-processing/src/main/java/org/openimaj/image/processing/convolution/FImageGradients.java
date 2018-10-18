@@ -29,25 +29,25 @@
  */
 package org.openimaj.image.processing.convolution;
 
-import odk.lang.FastMath;
-
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
+
+import net.jafama.FastMath;
 
 /**
  * Image processor for calculating gradients and orientations using
  * finite-differences. Both signed (+/- PI) orientations and unsigned (+/- PI/2)
  * are computable.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class FImageGradients implements ImageAnalyser<FImage> {
 	/**
 	 * Modes of operation for signed and unsigned orientations
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public enum Mode {
 		/**
@@ -81,7 +81,7 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 
 		/**
 		 * Get the minimum angular value (in radians) computed by this mode.
-		 * 
+		 *
 		 * @return the minimum angular value.
 		 */
 		public float minAngle() {
@@ -90,7 +90,7 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 
 		/**
 		 * Get the maximum angular value (in radians) computed by this mode.
-		 * 
+		 *
 		 * @return the maximum angular value.
 		 */
 		public float maxAngle() {
@@ -126,7 +126,7 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 
 	/**
 	 * Construct using the given {@link Mode}.
-	 * 
+	 *
 	 * @param mode
 	 *            the mode
 	 */
@@ -136,7 +136,7 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image
 	 * .Image)
@@ -157,7 +157,7 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 	/**
 	 * Static helper to create a new {@link FImageGradients} and call
 	 * {@link FImageGradients#analyseImage(FImage)} with the image.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @return a FImageGradients for the image
@@ -172,7 +172,7 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 	/**
 	 * Static helper to create a new {@link FImageGradients} and call
 	 * {@link FImageGradients#analyseImage(FImage)} with the image.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param mode
@@ -189,12 +189,12 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 	/**
 	 * Estimate gradients magnitudes and orientations by calculating pixel
 	 * differences. Edges get special treatment. The resultant gradients and
-	 * orientations are returned though the gradients and orientations
-	 * parameters respectively. The images represented by the gradients and
-	 * orientations parameters are assumed to be initialized to the same size as
-	 * the input image. Gradients are computed using the <code>atan2</code>
-	 * function and will be in the range +/-PI.
-	 * 
+	 * orientations are returned though the gradients and orientations parameters
+	 * respectively. The images represented by the gradients and orientations
+	 * parameters are assumed to be initialized to the same size as the input image.
+	 * Gradients are computed using the <code>atan2</code> function and will be in
+	 * the range +/-PI.
+	 *
 	 * @param image
 	 *            the input image
 	 * @param magnitudes
@@ -202,8 +202,7 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 	 * @param orientations
 	 *            the output gradient orientations
 	 */
-	public static void gradientMagnitudesAndOrientations(FImage image, FImage magnitudes, FImage orientations)
-	{
+	public static void gradientMagnitudesAndOrientations(FImage image, FImage magnitudes, FImage orientations) {
 		// Note: unrolling this loop to remove the if's doesn't
 		// actually seem to make it faster!
 		for (int r = 0; r < image.height; r++) {
@@ -240,12 +239,12 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 	/**
 	 * Estimate gradients magnitudes and orientations by calculating pixel
 	 * differences. Edges get special treatment. The resultant gradients and
-	 * orientations are returned though the gradients and orientations
-	 * parameters respectively. The images represented by the gradients and
-	 * orientations parameters are assumed to be initialized to the same size as
-	 * the input image. Gradients are computed using the <code>atan</code>
-	 * function and will be in the range +/- PI/2.
-	 * 
+	 * orientations are returned though the gradients and orientations parameters
+	 * respectively. The images represented by the gradients and orientations
+	 * parameters are assumed to be initialized to the same size as the input image.
+	 * Gradients are computed using the <code>atan</code> function and will be in
+	 * the range +/- PI/2.
+	 *
 	 * @param image
 	 *            the input image
 	 * @param magnitudes
@@ -253,8 +252,7 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 	 * @param orientations
 	 *            the output gradient orientations
 	 */
-	public static void gradientMagnitudesAndUnsignedOrientations(FImage image, FImage magnitudes, FImage orientations)
-	{
+	public static void gradientMagnitudesAndUnsignedOrientations(FImage image, FImage magnitudes, FImage orientations) {
 		// Note: unrolling this loop to remove the if's doesn't
 		// actually seem to make it faster!
 		for (int r = 0; r < image.height; r++) {
@@ -287,17 +285,15 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 	 * Estimate gradients magnitudes and orientations by calculating pixel
 	 * differences. Edges get special treatment.
 	 * <p>
-	 * The orientations are quantised into <code>magnitudes.length</code> bins
-	 * and the magnitudes are spread to the adjacent bin through linear
-	 * interpolation. The magnitudes parameter must be fully allocated as an
-	 * array of num orientation bin images, each of the same size as the input
-	 * image.
-	 * 
+	 * The orientations are quantised into <code>magnitudes.length</code> bins and
+	 * the magnitudes are spread to the adjacent bin through linear interpolation.
+	 * The magnitudes parameter must be fully allocated as an array of num
+	 * orientation bin images, each of the same size as the input image.
+	 *
 	 * @param image
 	 * @param magnitudes
 	 */
-	public static void gradientMagnitudesAndQuantisedOrientations(FImage image, FImage[] magnitudes)
-	{
+	public static void gradientMagnitudesAndQuantisedOrientations(FImage image, FImage[] magnitudes) {
 		final int numOriBins = magnitudes.length;
 
 		// Note: unrolling this loop to remove the if's doesn't
@@ -351,10 +347,9 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 	 * <p>
 	 * The orientations are quantised into <code>magnitudes.length</code> bins.
 	 * Magnitudes are optionally spread to the adjacent bin through linear
-	 * interpolation. The magnitudes parameter must be fully allocated as an
-	 * array of num orientation bin images, each of the same size as the input
-	 * image.
-	 * 
+	 * interpolation. The magnitudes parameter must be fully allocated as an array
+	 * of num orientation bin images, each of the same size as the input image.
+	 *
 	 * @param image
 	 * @param magnitudes
 	 * @param interp
@@ -391,8 +386,9 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 
 				float po;
 				if (mode == Mode.Unsigned) {
-					final float ori = mag == 0 ? PI_OVER_TWO_FLOAT : (float) FastMath.atan(ygrad / xgrad)
-							+ PI_OVER_TWO_FLOAT;
+					final float ori = mag == 0 ? PI_OVER_TWO_FLOAT
+							: (float) FastMath.atan(ygrad / xgrad)
+									+ PI_OVER_TWO_FLOAT;
 
 					po = numOriBins * ori / PI_FLOAT; // po is now 0<=po<oriSize
 				} else {

@@ -32,8 +32,6 @@ package org.openimaj.image.feature.local.interest;
 import java.util.ArrayList;
 import java.util.List;
 
-import odk.lang.FastMath;
-
 import org.openimaj.algorithm.iterative.IterationState;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.convolution.FImageConvolveSeparable;
@@ -43,13 +41,14 @@ import org.openimaj.math.matrix.PseudoInverse;
 import org.openimaj.util.function.Predicate;
 
 import Jama.Matrix;
+import net.jafama.FastMath;
 
 /**
  * Refines detected corners (i.e. from {@link HarrisIPD} or other methods) to an
  * optimised sub-pixel estimate. The method works by iteratively updating the
  * sub-pixel position of a point based on the inverse of the local gradient
  * auto-correlation matrix.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SubPixelCorners {
@@ -63,15 +62,15 @@ public class SubPixelCorners {
 	private int zeroZoneHalfHeight = -1;
 
 	/**
-	 * Construct with the given search window size and predicate to <b>stop</b>
-	 * the iteration. No zeroing of weights is performed
-	 * 
+	 * Construct with the given search window size and predicate to <b>stop</b> the
+	 * iteration. No zeroing of weights is performed
+	 *
 	 * @param halfWidth
 	 *            half the search window width (actual size is 2*halfWidth + 1,
 	 *            centred on point)
 	 * @param halfHeight
-	 *            half the search window height (actual size is 2*halfHeight +
-	 *            1, centred on point)
+	 *            half the search window height (actual size is 2*halfHeight + 1,
+	 *            centred on point)
 	 * @param iter
 	 *            the predicate to stop iteration
 	 */
@@ -82,19 +81,19 @@ public class SubPixelCorners {
 	}
 
 	/**
-	 * Construct with the given search window size, zeroed window and predicate
-	 * to <b>stop</b> the iteration.
+	 * Construct with the given search window size, zeroed window and predicate to
+	 * <b>stop</b> the iteration.
 	 * <p>
 	 * The zeroed window is a dead region in the middle of the search zone over
-	 * which the summation over gradients is not done. It is used sometimes to
-	 * avoid possible singularities of the autocorrelation matrix.
-	 * 
+	 * which the summation over gradients is not done. It is used sometimes to avoid
+	 * possible singularities of the autocorrelation matrix.
+	 *
 	 * @param halfWidth
 	 *            half the search window width (actual size is 2*halfWidth + 1,
 	 *            centred on point)
 	 * @param halfHeight
-	 *            half the search window height (actual size is 2*halfHeight +
-	 *            1, centred on point)
+	 *            half the search window height (actual size is 2*halfHeight + 1,
+	 *            centred on point)
 	 * @param zeroZoneHalfWidth
 	 *            the half-width of the zeroed region in the weighting array
 	 * @param zeroZoneHalfHeight
@@ -114,15 +113,14 @@ public class SubPixelCorners {
 
 	/**
 	 * Find the sub-pixel estimated position of each corner
-	 * 
+	 *
 	 * @param src
 	 *            the image
 	 * @param corners
 	 *            the initial corner positions
 	 * @return the updated corners
 	 */
-	public List<Point2dImpl> findSubPixCorners(FImage src, List<? extends Point2d> corners)
-	{
+	public List<Point2dImpl> findSubPixCorners(FImage src, List<? extends Point2d> corners) {
 		final List<Point2dImpl> outCorners = new ArrayList<Point2dImpl>(corners.size());
 		final int windowWidth = halfWidth * 2 + 1;
 		final int windowHeight = halfHeight * 2 + 1;
@@ -139,8 +137,7 @@ public class SubPixelCorners {
 		final FImage roi = new FImage(windowWidth + 2, windowHeight + 2);
 
 		// loop for all the points
-		for (int i = 0; i < corners.size(); i++)
-		{
+		for (int i = 0; i < corners.size(); i++) {
 			final Point2d pt = corners.get(i);
 			outCorners.add(this.findCornerSubPix(src, pt, roi, gx, gy, weights, buffer));
 		}
@@ -150,15 +147,14 @@ public class SubPixelCorners {
 
 	/**
 	 * Find the sub-pixel estimated position of a corner
-	 * 
+	 *
 	 * @param src
 	 *            the image
 	 * @param corner
 	 *            the initial corner position
 	 * @return the updated corner position
 	 */
-	public Point2dImpl findSubPixCorner(FImage src, Point2d corner)
-	{
+	public Point2dImpl findSubPixCorner(FImage src, Point2d corner) {
 		final int windowWidth = halfWidth * 2 + 1;
 		final int windowHeight = halfHeight * 2 + 1;
 
@@ -175,7 +171,7 @@ public class SubPixelCorners {
 
 	/**
 	 * Build the Gaussian weighting image
-	 * 
+	 *
 	 * @param width
 	 *            the width
 	 * @param height
@@ -187,8 +183,7 @@ public class SubPixelCorners {
 		final float[] weightsX = new float[width];
 
 		double coeff = 1. / (halfWidth * halfWidth);
-		for (int i = -halfWidth, k = 0; i <= halfWidth; i++, k++)
-		{
+		for (int i = -halfWidth, k = 0; i <= halfWidth; i++, k++) {
 			weightsX[k] = (float) Math.exp(-i * i * coeff);
 		}
 
@@ -198,8 +193,7 @@ public class SubPixelCorners {
 		} else {
 			weightsY = new float[height];
 			coeff = 1. / (halfHeight * halfHeight);
-			for (int i = -halfHeight, k = 0; i <= halfHeight; i++, k++)
-			{
+			for (int i = -halfHeight, k = 0; i <= halfHeight; i++, k++) {
 				weightsY[k] = (float) Math.exp(-i * i * coeff);
 			}
 		}
@@ -243,12 +237,10 @@ public class SubPixelCorners {
 			final int win_h = weights.height;
 
 			// process gradient
-			for (int i = 0; i < win_h; i++)
-			{
+			for (int i = 0; i < win_h; i++) {
 				final double py = i - halfHeight;
 
-				for (int j = 0; j < win_w; j++)
-				{
+				for (int j = 0; j < win_w; j++) {
 					final double m = weights.pixels[i][j];
 					final double tgx = gx.pixels[i][j];
 					final double tgy = gy.pixels[i][j];
@@ -280,8 +272,7 @@ public class SubPixelCorners {
 
 		// if new point is too far from initial, it means poor convergence.
 		// return initial point as the result
-		if (Math.abs(current.x - pt.getX()) > halfWidth || Math.abs(current.y - pt.getY()) > halfHeight)
-		{
+		if (Math.abs(current.x - pt.getX()) > halfWidth || Math.abs(current.y - pt.getY()) > halfHeight) {
 			return new Point2dImpl(pt);
 		}
 

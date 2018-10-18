@@ -29,16 +29,16 @@
  */
 package org.openimaj.math.geometry.shape.util;
 
-import odk.lang.FastMath;
-
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.RotatedRectangle;
 
+import net.jafama.FastMath;
+
 /**
- * Rotating calipers algorithm, based on the implementation by <a
- * href="https://github.com/bkiers/RotatingCalipers">Bart Kiers</a>.
+ * Rotating calipers algorithm, based on the implementation by
+ * <a href="https://github.com/bkiers/RotatingCalipers">Bart Kiers</a>.
  * <p>
  * Modified to only use radians for angles and fit better within the OpenIMAJ
  * geometry classes.
@@ -150,14 +150,11 @@ public final class RotatingCalipers {
 
 		if (thetaI <= thetaJ && thetaI <= thetaK && thetaI <= thetaL) {
 			return thetaI;
-		}
-		else if (thetaJ <= thetaK && thetaJ <= thetaL) {
+		} else if (thetaJ <= thetaK && thetaJ <= thetaL) {
 			return thetaJ;
-		}
-		else if (thetaK <= thetaL) {
+		} else if (thetaK <= thetaL) {
 			return thetaK;
-		}
-		else {
+		} else {
 			return thetaL;
 		}
 	}
@@ -253,21 +250,17 @@ public final class RotatingCalipers {
 
 			if (this.isVertical()) {
 				x = convexHull.points.get(pointIndex).getX();
-			}
-			else if (this.isHorizontal()) {
+			} else if (this.isHorizontal()) {
 				x = that.convexHull.points.get(that.pointIndex).getX();
-			}
-			else {
+			} else {
 				x = (that.getConstant() - this.getConstant()) / (this.getSlope() - that.getSlope());
 			}
 
 			if (this.isVertical()) {
 				y = that.getConstant();
-			}
-			else if (this.isHorizontal()) {
+			} else if (this.isHorizontal()) {
 				y = this.getConstant();
-			}
-			else {
+			} else {
 				y = (this.getSlope() * x) + this.getConstant();
 			}
 
