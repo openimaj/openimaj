@@ -179,9 +179,9 @@ public final class StockPriceAggregator
 
 					@Override
 					public void perform(Context object) {
-						System.out.println(object.getTyped("timestamp"));
-						System.out.println(object.getTyped("bagofwords"));
-						System.out.println(object.getTyped("averageticks"));
+						System.out.println(object.getTyped("timestamp").toString());
+						System.out.println(object.getTyped("bagofwords").toString());
+						System.out.println(object.getTyped("averageticks").toString());
 					}
 				});
 
