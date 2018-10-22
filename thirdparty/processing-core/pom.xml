@@ -14,16 +14,14 @@
     <dependency>
       <groupId>org.processing</groupId>
       <artifactId>core</artifactId>
-      <version>2.0b8</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/core.jar</systemPath>
+      <version>3.3.7</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.processing</groupId>
       <artifactId>video</artifactId>
-      <version>2.0b8</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/video.jar</systemPath>
+      <version>3.2.3</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jogl</groupId>
