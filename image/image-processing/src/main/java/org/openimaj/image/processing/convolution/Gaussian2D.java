@@ -70,7 +70,7 @@ public class Gaussian2D extends FConvolution {
 	}
 
 	/**
-	 * Create a kernel image with given kernel size and variance.
+	 * Create a kernel image with given kernel size and standard deviation.
 	 * 
 	 * @param size
 	 *            image height/width.
@@ -83,7 +83,7 @@ public class Gaussian2D extends FConvolution {
 	}
 
 	/**
-	 * Create a kernel image with given kernel size and variance.
+	 * Create a kernel image with given kernel size and standard deviation.
 	 * 
 	 * @param width
 	 *            image width.
