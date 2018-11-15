@@ -43,44 +43,44 @@ import org.openimaj.util.pair.Pair;
  * Basic local feature matcher. Matches interest points by finding closest two
  * interest points to target and checking whether the distance between the two
  * matches is sufficiently large.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T>
  */
-@References(references = {
-		@Reference(
-				type = ReferenceType.Article,
-				author = { "David Lowe" },
-				title = "Distinctive image features from scale-invariant keypoints",
-				year = "2004",
-				journal = "IJCV",
-				pages = { "91", "110" },
-				month = "January",
-				number = "2",
-				volume = "60"),
-		@Reference(
-				type = ReferenceType.Inproceedings,
-				author = { "David Lowe" },
-				title = "Object recognition from local scale-invariant features",
-				year = "1999",
-				booktitle = "Proc. of the International Conference on Computer Vision {ICCV}",
-				pages = { "1150", "1157" }
-		)
-})
+@References(
+		references = {
+				@Reference(
+						type = ReferenceType.Article,
+						author = { "David Lowe" },
+						title = "Distinctive image features from scale-invariant keypoints",
+						year = "2004",
+						journal = "IJCV",
+						pages = { "91", "110" },
+						month = "January",
+						number = "2",
+						volume = "60"),
+				@Reference(
+						type = ReferenceType.Inproceedings,
+						author = { "David Lowe" },
+						title = "Object recognition from local scale-invariant features",
+						year = "1999",
+						booktitle = "Proc. of the International Conference on Computer Vision {ICCV}",
+						pages = { "1150", "1157" })
+		})
 public class BasicMatcher<T extends LocalFeature<?, ?>> implements LocalFeatureMatcher<T> {
 	protected List<T> modelKeypoints;
 	protected List<Pair<T>> matches;
 	protected int thresh = 8;
 
 	/**
-	 * Initialise the matcher setting the threshold which the difference between
-	 * the scores of the top two best matches must differ in order to count the
-	 * first as a good match.
-	 * 
+	 * Initialise the matcher setting the threshold which the difference between the
+	 * scores of the top two best matches must differ in order to count the first as
+	 * a good match.
+	 *
 	 * @param threshold
+	 *            (as an integer percentage)
 	 */
-	public BasicMatcher(int threshold)
-	{
+	public BasicMatcher(int threshold) {
 		matches = new ArrayList<Pair<T>>();
 		thresh = threshold;
 	}
@@ -94,8 +94,7 @@ public class BasicMatcher<T extends LocalFeature<?, ?>> implements LocalFeatureM
 	}
 
 	@Override
-	public boolean findMatches(List<T> keys1)
-	{
+	public boolean findMatches(List<T> keys1) {
 		matches = new ArrayList<Pair<T>>();
 
 		/*
@@ -113,19 +112,18 @@ public class BasicMatcher<T extends LocalFeature<?, ?>> implements LocalFeatureM
 	}
 
 	/**
-	 * This searches through the keypoints in klist for the two closest matches
-	 * to key. If the closest is less than <code>threshold</code> times distance
-	 * to second closest, then return the closest match. Otherwise, return NULL.
+	 * This searches through the keypoints in klist for the two closest matches to
+	 * key. If the closest is less than <code>threshold</code> times distance to
+	 * second closest, then return the closest match. Otherwise, return NULL.
 	 */
-	protected T checkForMatch(T query, List<T> features)
-	{
+	protected T checkForMatch(T query, List<T> features) {
 		double distsq1 = Double.MAX_VALUE, distsq2 = Double.MAX_VALUE;
 		T minkey = null;
 
 		// find two closest matches
 		for (final T target : features) {
 			final double dsq = target.getFeatureVector().asDoubleFV()
-					.compare(query.getFeatureVector().asDoubleFV(), DoubleFVComparison.EUCLIDEAN);
+					.compare(query.getFeatureVector().asDoubleFV(), DoubleFVComparison.SUM_SQUARE);
 
 			if (dsq < distsq1) {
 				distsq2 = distsq1;
@@ -139,8 +137,7 @@ public class BasicMatcher<T extends LocalFeature<?, ?>> implements LocalFeatureM
 		// check the distance against the threshold
 		if (10 * 10 * distsq1 < thresh * thresh * distsq2) {
 			return minkey;
-		}
-		else
+		} else
 			return null;
 	}
 
@@ -151,7 +148,7 @@ public class BasicMatcher<T extends LocalFeature<?, ?>> implements LocalFeatureM
 
 	/**
 	 * Set the matching threshold
-	 * 
+	 *
 	 * @param thresh
 	 *            the threshold
 	 */

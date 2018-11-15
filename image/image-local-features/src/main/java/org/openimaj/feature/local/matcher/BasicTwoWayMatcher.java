@@ -29,9 +29,6 @@
  */
 package org.openimaj.feature.local.matcher;
 
-import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.procedure.TObjectIntProcedure;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +36,16 @@ import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.util.pair.Pair;
 
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TObjectIntProcedure;
+
 /**
  * Matcher that uses minimum Euclidean distance to find matches. Model and
  * object are compared both ways. Matches that are oneway are rejected, as are
  * one->many matches.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  */
 public class BasicTwoWayMatcher<T extends LocalFeature<?, ?>> implements LocalFeatureMatcher<T> {
@@ -58,18 +58,16 @@ public class BasicTwoWayMatcher<T extends LocalFeature<?, ?>> implements LocalFe
 	}
 
 	/**
-	 * This searches through the keypoints in klist for the closest match to
-	 * key.
+	 * This searches through the keypoints in klist for the closest match to key.
 	 */
-	protected T findMatch(T query, List<T> features)
-	{
+	protected T findMatch(T query, List<T> features) {
 		double distsq = Double.MAX_VALUE;
 		T minkey = null;
 
 		// find closest match
 		for (final T target : features) {
 			final double dsq = target.getFeatureVector().asDoubleFV()
-					.compare(query.getFeatureVector().asDoubleFV(), DoubleFVComparison.EUCLIDEAN);
+					.compare(query.getFeatureVector().asDoubleFV(), DoubleFVComparison.SUM_SQUARE);
 
 			if (dsq < distsq) {
 				distsq = dsq;

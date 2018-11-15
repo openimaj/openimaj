@@ -37,16 +37,16 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 
 /**
  * {@link FImage} convolution performed in the fourier domain.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class FourierConvolve implements SinglebandImageProcessor<Float, FImage> {
 	private float[][] kernel;
 
 	/**
 	 * Construct the convolution operator with the given kernel
-	 * 
+	 *
 	 * @param kernel
 	 *            the kernel
 	 */
@@ -56,7 +56,7 @@ public class FourierConvolve implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Construct the convolution operator with the given kernel
-	 * 
+	 *
 	 * @param kernel
 	 *            the kernel
 	 */
@@ -71,14 +71,14 @@ public class FourierConvolve implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Convolve an image with a kernel using an FFT.
-	 * 
+	 *
 	 * @param image
 	 *            The image to convolve
 	 * @param kernel
 	 *            The kernel
 	 * @param inplace
-	 *            if true, then output overwrites the input, otherwise a new
-	 *            image is created.
+	 *            if true, then output overwrites the input, otherwise a new image
+	 *            is created.
 	 * @return convolved image
 	 */
 	public static FImage convolve(FImage image, float[][] kernel, boolean inplace) {
@@ -122,10 +122,10 @@ public class FourierConvolve implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Convolve an image with a pre-prepared frequency domain filter. The filter
-	 * must have the same height as the image and twice the width (to account
-	 * for the imaginary components). Real and imaginary components should be
-	 * interlaced across the rows.
-	 * 
+	 * must have the same height as the image and twice the width (to account for
+	 * the imaginary components). Real and imaginary components should be interlaced
+	 * across the rows.
+	 *
 	 * @param image
 	 *            The image to convolve
 	 * @param filter
@@ -141,8 +141,7 @@ public class FourierConvolve implements SinglebandImageProcessor<Float, FImage> 
 
 		final FloatFFT_2D fft = new FloatFFT_2D(rows, cols);
 
-		final float[][] preparedImage =
-				FourierTransform.prepareData(image.pixels, rows, cols, centered);
+		final float[][] preparedImage = FourierTransform.prepareData(image.pixels, rows, cols, centered);
 		fft.complexForward(preparedImage);
 
 		final float[][] preparedKernel = filter.pixels;
