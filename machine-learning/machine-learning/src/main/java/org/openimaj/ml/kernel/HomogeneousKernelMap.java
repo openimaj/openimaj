@@ -48,10 +48,10 @@ import org.openimaj.math.util.MathUtils.ExponentAndMantissa;
  * This implementation is based directly on the VLFeat implementation written by
  * Andrea Verdaldi, although it has been refactored to better fit with Java
  * conventions.
- * 
+ *
  * @see "http://www.vlfeat.org/api/homkermap.html"
  * @see "http://www.robots.ox.ac.uk/~vgg/software/homkermap/"
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Based on code originally written by Andrea Verdaldi
  */
@@ -67,32 +67,31 @@ import org.openimaj.math.util.MathUtils.ExponentAndMantissa;
 						number = "3",
 						volume = "34",
 						customData = {
-								"keywords", "approximation theory;computer vision;data handling;feature extraction;learning (artificial intelligence);spectral analysis;support vector machines;Nystrom approximation;additive homogeneous kernels;approximate finite-dimensional feature maps;approximation error;computer vision;data dependency;explicit feature maps;exponential decay;large scale nonlinear support vector machines;linear SVM;spectral analysis;Additives;Approximation methods;Histograms;Kernel;Measurement;Support vector machines;Training;Kernel methods;feature map;large scale learning;object detection.;object recognition",
+								"keywords",
+								"approximation theory;computer vision;data handling;feature extraction;learning (artificial intelligence);spectral analysis;support vector machines;Nystrom approximation;additive homogeneous kernels;approximate finite-dimensional feature maps;approximation error;computer vision;data dependency;explicit feature maps;exponential decay;large scale nonlinear support vector machines;linear SVM;spectral analysis;Additives;Approximation methods;Histograms;Kernel;Measurement;Support vector machines;Training;Kernel methods;feature map;large scale learning;object detection.;object recognition",
 								"doi", "10.1109/TPAMI.2011.153",
 								"ISSN", "0162-8828"
-						}
-				),
+						}),
 				@Reference(
 						type = ReferenceType.Inproceedings,
 						author = { "A. Vedaldi", "A. Zisserman" },
 						title = "Efficient Additive Kernels via Explicit Feature Maps",
 						year = "2010",
-						booktitle = "Proceedings of the IEEE Conf. on Computer Vision and Pattern Recognition (CVPR)"
-				)
+						booktitle = "Proceedings of the IEEE Conf. on Computer Vision and Pattern Recognition (CVPR)")
 		})
 public class HomogeneousKernelMap {
 	/**
 	 * Types of supported kernel for the {@link HomogeneousKernelMap}
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public enum KernelType {
 		/**
 		 * Intersection kernel
-		 * 
+		 *
 		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-		 * 
+		 *
 		 */
 		Intersection {
 			@Override
@@ -102,9 +101,9 @@ public class HomogeneousKernelMap {
 		},
 		/**
 		 * Chi^2 kernel
-		 * 
+		 *
 		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-		 * 
+		 *
 		 */
 		Chi2 {
 			@Override
@@ -114,9 +113,9 @@ public class HomogeneousKernelMap {
 		},
 		/**
 		 * Jenson-Shannon Kernel
-		 * 
+		 *
 		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-		 * 
+		 *
 		 */
 		JensonShannon {
 			@Override
@@ -131,16 +130,16 @@ public class HomogeneousKernelMap {
 
 	/**
 	 * Types of window supported by the {@link HomogeneousKernelMap}.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public enum WindowType {
 		/**
 		 * Uniform window
-		 * 
+		 *
 		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-		 * 
+		 *
 		 */
 		Uniform {
 			@Override
@@ -150,9 +149,9 @@ public class HomogeneousKernelMap {
 		},
 		/**
 		 * Rectangular window
-		 * 
+		 *
 		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-		 * 
+		 *
 		 */
 		Rectangular {
 			@Override
@@ -176,8 +175,7 @@ public class HomogeneousKernelMap {
 				return kappa_hat;
 			}
 
-			private double sinc(double x)
-			{
+			private double sinc(double x) {
 				if (x == 0.0)
 					return 1.0;
 				return Math.sin(x) / x;
@@ -193,11 +191,11 @@ public class HomogeneousKernelMap {
 
 	/**
 	 * Helper implementation of a {@link FeatureExtractor} that wraps another
-	 * {@link FeatureExtractor} and then applies the
-	 * {@link HomogeneousKernelMap} to the output before returning the vector.
-	 * 
+	 * {@link FeatureExtractor} and then applies the {@link HomogeneousKernelMap} to
+	 * the output before returning the vector.
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 * @param <T>
 	 *            Type of object that features can be extracted from
 	 */
@@ -206,9 +204,8 @@ public class HomogeneousKernelMap {
 		private HomogeneousKernelMap map;
 
 		/**
-		 * Construct with the given internal extractor and homogeneous kernel
-		 * map.
-		 * 
+		 * Construct with the given internal extractor and homogeneous kernel map.
+		 *
 		 * @param inner
 		 *            the internal extractor
 		 * @param map
@@ -236,14 +233,13 @@ public class HomogeneousKernelMap {
 	private double[] table;
 
 	/**
-	 * Construct with the given kernel and window. The Gamma and order values
-	 * are set at their defaults of 1. The period is computed automatically.
-	 * 
+	 * Construct with the given kernel and window. The Gamma and order values are
+	 * set at their defaults of 1. The period is computed automatically.
+	 *
 	 * @param kernelType
 	 *            the type of kernel
 	 * @param windowType
-	 *            the type of window (use {@link WindowType#Rectangular} if
-	 *            unsure)
+	 *            the type of window (use {@link WindowType#Rectangular} if unsure)
 	 */
 	public HomogeneousKernelMap(KernelType kernelType, WindowType windowType) {
 		this(kernelType, 1, 1, -1, windowType);
@@ -252,15 +248,14 @@ public class HomogeneousKernelMap {
 	/**
 	 * Construct with the given kernel, gamma and window. The period is computed
 	 * automatically and the approximation order is set to 1.
-	 * 
+	 *
 	 * @param kernelType
 	 *            the type of kernel
 	 * @param gamma
 	 *            the gamma value. the standard kernels are 1-homogeneous, but
 	 *            smaller values can work better in practice.
 	 * @param windowType
-	 *            the type of window (use {@link WindowType#Rectangular} if
-	 *            unsure)
+	 *            the type of window (use {@link WindowType#Rectangular} if unsure)
 	 */
 	public HomogeneousKernelMap(KernelType kernelType,
 			double gamma,
@@ -272,7 +267,7 @@ public class HomogeneousKernelMap {
 	/**
 	 * Construct with the given kernel, gamma, order and window. The period is
 	 * computed automatically.
-	 * 
+	 *
 	 * @param kernelType
 	 *            the type of kernel
 	 * @param gamma
@@ -281,8 +276,7 @@ public class HomogeneousKernelMap {
 	 * @param order
 	 *            the approximation order (usually 1 is enough)
 	 * @param windowType
-	 *            the type of window (use {@link WindowType#Rectangular} if
-	 *            unsure)
+	 *            the type of window (use {@link WindowType#Rectangular} if unsure)
 	 */
 	public HomogeneousKernelMap(KernelType kernelType,
 			double gamma,
@@ -295,7 +289,7 @@ public class HomogeneousKernelMap {
 	/**
 	 * Construct with the given kernel, gamma, order, period and window. If the
 	 * period is negative, it will be replaced by the default.
-	 * 
+	 *
 	 * @param kernelType
 	 *            the type of kernel
 	 * @param gamma
@@ -306,8 +300,7 @@ public class HomogeneousKernelMap {
 	 * @param period
 	 *            the periodicity of the kernel spectrum
 	 * @param windowType
-	 *            the type of window (use {@link WindowType#Rectangular} if
-	 *            unsure)
+	 *            the type of window (use {@link WindowType#Rectangular} if unsure)
 	 */
 	public HomogeneousKernelMap(KernelType kernelType,
 			double gamma,
@@ -319,14 +312,15 @@ public class HomogeneousKernelMap {
 			throw new IllegalArgumentException("Gamma must be > 0");
 		final int tableWidth, tableHeight;
 
-		if (period < 0) {
-			period = computeDefaultPeriod(windowType, kernelType);
-		}
-
 		this.kernelType = kernelType;
 		this.gamma = gamma;
 		this.order = order;
+
+		if (period < 0) {
+			period = computeDefaultPeriod(windowType, kernelType);
+		}
 		this.period = period;
+
 		this.numSubdivisions = 8 + 8 * order;
 		this.subdivision = 1.0 / this.numSubdivisions;
 		this.minExponent = -20;
@@ -411,10 +405,9 @@ public class HomogeneousKernelMap {
 
 	/**
 	 * Evaluate the kernel for the given <code>x</code> value. The output values
-	 * will be written into the destination array at
-	 * <code>offset + j*stride</code> intervals where <code>j</code> is between
-	 * 0 and <code>2 * order + 1</code>.
-	 * 
+	 * will be written into the destination array at <code>offset + j*stride</code>
+	 * intervals where <code>j</code> is between 0 and <code>2 * order + 1</code>.
+	 *
 	 * @param destination
 	 *            the destination array
 	 * @param stride
@@ -459,9 +452,8 @@ public class HomogeneousKernelMap {
 	}
 
 	/**
-	 * Compute the Homogeneous Kernel Map approximation of the given feature
-	 * vector
-	 * 
+	 * Compute the Homogeneous Kernel Map approximation of the given feature vector
+	 *
 	 * @param in
 	 *            the feature vector
 	 * @return the expanded feature vector
@@ -480,7 +472,7 @@ public class HomogeneousKernelMap {
 	/**
 	 * Construct a new {@link ExtractorWrapper} that applies the map to features
 	 * extracted by an internal extractor.
-	 * 
+	 *
 	 * @param inner
 	 *            the internal extractor
 	 * @return the wrapped {@link FeatureExtractor}
