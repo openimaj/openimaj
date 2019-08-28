@@ -35,27 +35,36 @@
 //  Copyright 2011 University of Southampton. All rights reserved.
 //
 
-#import <QTKit/QTKit.h>
+#import <Foundation/Foundation.h>
+#import <CoreVideo/CoreVideo.h>
+#import <AVFoundation/AVFoundation.h>
+#import <CoreMedia/CoreMedia.h>
 
 
-@interface CaptureDelegate : NSObject
+@interface CaptureDelegate : NSObject<AVCaptureVideoDataOutputSampleBufferDelegate>
 {
 	int newFrame; 
     CVImageBufferRef  mCurrentImageBuffer;
+    CVPixelBufferRef mGrabbedPixels;
 	unsigned char* imagedata; 
 	unsigned char* rgb_imagedata;
-	size_t currSize; 
+	size_t currSize;
+    NSCondition *mHasNewFrame;
 }
 
-- (void)captureOutput:(QTCaptureOutput *)captureOutput 
-  didOutputVideoFrame:(CVImageBufferRef)videoFrame 
-	 withSampleBuffer:(QTSampleBuffer *)sampleBuffer 
-	   fromConnection:(QTCaptureConnection *)connection;
+-  (void)captureOutput:(AVCaptureOutput*) output
+            didOutput: (CMSampleBufferRef)sampleBuffer
+                 from:(AVCaptureConnection*) connection;
 
-- (void)captureOutput:(QTCaptureOutput *)captureOutput 
-    didDropVideoFrameWithSampleBuffer:(QTSampleBuffer *)sampleBuffer 
-	   fromConnection:(QTCaptureConnection *)connection;
-
+//- (void)captureOutput:(AVCaptureOutput *)captureOutput
+//  didOutputVideoFrame:(CVImageBufferRef)videoFrame
+//     withSampleBuffer:(AVSampleBuffer *)sampleBuffer
+//       fromConnection:(AVCaptureConnection *)connection;
+//
+//- (void)captureOutput:(AVCaptureOutput *)captureOutput
+//    didDropVideoFrameWithSampleBuffer:(AVSampleBuffer *)sampleBuffer
+//       fromConnection:(AVCaptureConnection *)connection;
+- (BOOL)grabImageUntilDate: (NSDate *)limit;
 - (int)updateImage; 
 - (unsigned char*)getOutput;
 @end

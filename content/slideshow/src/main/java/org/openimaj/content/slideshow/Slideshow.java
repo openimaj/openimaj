@@ -228,11 +228,19 @@ public abstract class Slideshow implements KeyListener {
 				if (!hidden)
 					displayPrevSlide();
 				break;
+			case KeyEvent.VK_UP:
+				if (!hidden)
+					displayPrevSlide();
+				break;
 			case KeyEvent.VK_RIGHT:
 				if (!hidden)
 					displayNextSlide();
 				break;
 			case KeyEvent.VK_PAGE_DOWN:
+				if (!hidden)
+					displayNextSlide();
+				break;
+			case KeyEvent.VK_DOWN:
 				if (!hidden)
 					displayNextSlide();
 				break;

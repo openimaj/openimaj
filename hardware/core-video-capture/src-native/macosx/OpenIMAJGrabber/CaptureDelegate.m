@@ -41,7 +41,8 @@
 @implementation CaptureDelegate 
 
 - (id)init {
-	[super init]; 
+	[super init];
+    mHasNewFrame = [[NSCondition alloc] init];
 	newFrame = 0; 
 	imagedata = NULL; 
 	rgb_imagedata = NULL; 
@@ -49,33 +50,70 @@
 	return self; 
 }
 
-
 -(void)dealloc {
 	if (imagedata != NULL) free(imagedata); 
-	if (rgb_imagedata != NULL) free(rgb_imagedata); 
+	if (rgb_imagedata != NULL) free(rgb_imagedata);
+    [mHasNewFrame release];
+    CVBufferRelease(mCurrentImageBuffer);
+    CVBufferRelease(mGrabbedPixels);
 	[super dealloc]; 
 }
 
-- (void)captureOutput:(QTCaptureOutput *)captureOutput 
-  didOutputVideoFrame:(CVImageBufferRef)videoFrame 
-	 withSampleBuffer:(QTSampleBuffer *)sampleBuffer 
-	   fromConnection:(QTCaptureConnection *)connection {
-	
-    CVBufferRetain(videoFrame);
-	CVImageBufferRef imageBufferToRelease  = mCurrentImageBuffer;
+- (void)captureOutput:(AVCaptureOutput *)captureOutput
+didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+       fromConnection:(AVCaptureConnection *)connection {
+    (void)captureOutput;
+    (void)sampleBuffer;
+    (void)connection;
     
-    @synchronized (self) {
-        mCurrentImageBuffer = videoFrame;
-		newFrame = 1; 
-    }
-	
-	CVBufferRelease(imageBufferToRelease);
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    CVBufferRetain(imageBuffer);
     
+    [mHasNewFrame lock];
+    newFrame = 1;
+    CVBufferRelease(mCurrentImageBuffer);
+    mCurrentImageBuffer = imageBuffer;
+    [mHasNewFrame signal];
+    
+    [mHasNewFrame unlock];
 }
-- (void)captureOutput:(QTCaptureOutput *)captureOutput 
-didDropVideoFrameWithSampleBuffer:(QTSampleBuffer *)sampleBuffer 
-	   fromConnection:(QTCaptureConnection *)connection {
-    //do nothing
+
+//- (void)captureOutput:(AVCaptureOutput *)captureOutput
+//  didOutputVideoFrame:(CVImageBufferRef)videoFrame 
+//     withSampleBuffer:(AVSampleBuffer *)sampleBuffer
+//       fromConnection:(AVCaptureConnection *)connection {
+//    
+//    CVBufferRetain(videoFrame);
+//    CVImageBufferRef imageBufferToRelease  = mCurrentImageBuffer;
+//    
+//    @synchronized (self) {
+//        mCurrentImageBuffer = videoFrame;
+//        newFrame = 1; 
+//    }
+//    
+//    CVBufferRelease(imageBufferToRelease);
+//    
+//}
+//- (void)captureOutput:(AVCaptureOutput *)captureOutput
+//didDropVideoFrameWithSampleBuffer:(AVSampleBuffer *)sampleBuffer
+//       fromConnection:(AVCaptureConnection *)connection {
+//    //do nothing
+//}
+
+-(BOOL) grabImageUntilDate: (NSDate *)limit {
+    BOOL isGrabbed = NO;
+    [mHasNewFrame lock];
+    
+    if ( mGrabbedPixels ) {
+        CVBufferRelease(mGrabbedPixels);
+    }
+    if ( [mHasNewFrame waitUntilDate: limit] ) {
+        isGrabbed = YES;
+        mGrabbedPixels = CVBufferRetain(mCurrentImageBuffer);
+    }
+    
+    [mHasNewFrame unlock];
+    return isGrabbed;
 }
 
 -(unsigned char*) getOutput {
@@ -88,7 +126,7 @@ didDropVideoFrameWithSampleBuffer:(QTSampleBuffer *)sampleBuffer
 	CVPixelBufferRef pixels; 
 	
 	@synchronized (self) {
-		pixels = CVBufferRetain(mCurrentImageBuffer);
+		pixels = CVBufferRetain(mGrabbedPixels);
 		newFrame = 0; 
 	}
 	

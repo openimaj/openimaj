@@ -31,7 +31,7 @@
 #include "OpenIMAJGrabber.h"
 #include "OpenIMAJGrabberPriv.h"
 #include "CaptureUtilities.h"
-#include <vector>
+//#include <vector>
 
 #include <string.h>
 #include <stdlib.h>
@@ -77,7 +77,7 @@ const char* Device::getIdentifier() {
 }
 
 OpenIMAJGrabber::OpenIMAJGrabber() {
-    data = new OpenIMAJGrabberPriv::OpenIMAJGrabberPriv();
+    data = new OpenIMAJGrabberPriv();
 }
     
 OpenIMAJGrabberPriv::OpenIMAJGrabberPriv() {
@@ -121,8 +121,8 @@ DeviceList* OpenIMAJGrabber::getVideoDevices() {
     Device ** devices = new Device*[count];
     
     for (int i=0; i<count; i++) {
-        const char * name = [[[results objectAtIndex:i] localizedDisplayName] UTF8String];
-        const char * identifier = [[(QTCaptureDevice *)[results objectAtIndex:i] uniqueID] UTF8String];
+        const char * name = [[[results objectAtIndex:i] localizedName] UTF8String];
+        const char * identifier = [[(AVCaptureDevice *)[results objectAtIndex:i] uniqueID] UTF8String];
         
         devices[i] = new Device(name, identifier);
     }
@@ -143,23 +143,43 @@ double getTime() {
     return (((tv.tv_sec * 1000.0) + (tv.tv_usec / 1000.0))) / 1000;
 }
 
+int OpenIMAJGrabberPriv::nextFrame(double timeOut) {
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    
+    int ret = -1;
+    NSDate *limit = [NSDate dateWithTimeIntervalSinceNow: timeOut];
+    if ( [delegate grabImageUntilDate: limit] ) {
+        [delegate updateImage];
+        ret = 1;
+    }
+    
+    [pool drain];
+    
+    return ret;
+}
+
 int OpenIMAJGrabberPriv::nextFrame() {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
-	double sleepTime = 0.005;
-    double accum = 0;
+//    double sleepTime = 0.005;
+//    double accum = 0;
     int ret = -1;
     
-    while (accum < timeout) {
-        if ([delegate updateImage]) {
-            ret = 1;
-            break;
-        }
-    
-        double t1 = getTime();
-        NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:sleepTime];
-        [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil];
-        accum += getTime() - t1;
+//    while (accum < timeout) {
+//        if ([delegate updateImage]) {
+//            ret = 1;
+//            break;
+//        }
+//
+//        double t1 = getTime();
+//        NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:sleepTime];
+//        [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil];
+//        accum += getTime() - t1;
+//    }
+    NSDate *limit = [NSDate dateWithTimeIntervalSinceNow: timeout];
+    if ( [delegate grabImageUntilDate: limit] ) {
+        [delegate updateImage];
+        ret = 1;
     }
     
     [pool drain];
@@ -193,7 +213,7 @@ bool OpenIMAJGrabber::startSession(int w, int h, int reqMillisPerFrame, Device *
 
 bool OpenIMAJGrabberPriv::startSession(int w, int h, int reqMillisPerFrame, Device * dev) {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-    QTCaptureDevice* device = NULL;
+    AVCaptureDevice* device = NULL;
     
     if (dev == NULL) {
         device = getDefaultVideoDevice();
@@ -208,91 +228,85 @@ bool OpenIMAJGrabberPriv::startSession(int w, int h, int reqMillisPerFrame, Devi
         return false;
     }
     
+    if (@available(macOS 10.14, *))
+    {
+        AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+        if (status == AVAuthorizationStatusDenied)
+        {
+            error("Camera access has been denied. Either run 'tccutil reset Camera' "
+                    "command in same terminal to reset application authorization status, "
+                    "either modify 'System Preferences -> Security & Privacy -> Camera' "
+                    "settings for your application.\n");
+            [pool drain];
+            return 0;
+        }
+        else if (status != AVAuthorizationStatusAuthorized)
+        {
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL) { }];
+            [pool drain];
+            return 0;
+        }
+    }
+    
     width = w;
     height = h;
-
-    NSError *err = NULL;
     
-    // If we've already started with this device, return
-    if( [device isEqual:[mCaptureDeviceInput device]] &&
-        mCaptureSession != NULL &&
-       [mCaptureSession isRunning] ) {
+    // get input device
+    NSError *err = nil;
+    mCaptureDeviceInput = [[AVCaptureDeviceInput alloc] initWithDevice: device
+                                                                 error: &err];
+    if ( err ) {
+        error( "Could not create capture session.\n" );
         [pool drain];
-        
-        return true;
-    } else if( mCaptureSession != NULL ){
-        stopSession();
+        return 0;
     }
-    	
-	// Create the capture session
-    mCaptureSession = [[QTCaptureSession alloc] init];
-	if( ![device open:&err] ){
-		error( "Could not create capture session.\n" );
-        
-        [mCaptureSession release];
-        mCaptureSession = NULL;
-		
-        [pool drain];
-        return false;
-	}
     
-	// Create input object from the device
-	mCaptureDeviceInput = [[QTCaptureDeviceInput alloc] initWithDevice:device];
-	if (![mCaptureSession addInput:mCaptureDeviceInput error:&err]) {
-		error( "Could not convert device to input device.\n");
-        
-        [mCaptureSession release];
-        [mCaptureDeviceInput release];
-        mCaptureSession = NULL;
-        mCaptureDeviceInput = NULL;
-        
-        [pool drain];
-		return false;
-	}
+//    if (reqMillisPerFrame > 0) {
+//        [device  lockForConfiguration: &err];
+//        if ( err ) {
+//            error( "Error configuring frame rate.\n" );
+//        } else {
+//            device.activeVideoMinFrameDuration = CMTimeMake(reqMillisPerFrame, 1000.0);
+//            [device unlockForConfiguration];
+//        }
+//    }
     
-	// Decompressed video output
-	mCaptureDecompressedVideoOutput = [[QTCaptureDecompressedVideoOutput alloc] init];
-    
-    NSDictionary * options = [NSDictionary dictionaryWithObjectsAndKeys:
-                              [NSNumber numberWithDouble:w], (id)kCVPixelBufferWidthKey,
-                              [NSNumber numberWithDouble:h], (id)kCVPixelBufferHeightKey,
-                              [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32ARGB], (id)kCVPixelBufferPixelFormatTypeKey,
-                              NULL];
-    
-    [mCaptureDecompressedVideoOutput setPixelBufferAttributes:options];
-    
+    // create output
     delegate = [[CaptureDelegate alloc] init];
-	[mCaptureDecompressedVideoOutput setDelegate:delegate];
+    mCaptureDecompressedVideoOutput = [[AVCaptureVideoDataOutput alloc] init];
+    dispatch_queue_t queue = dispatch_queue_create("cameraQueue", DISPATCH_QUEUE_SERIAL);
+    [mCaptureDecompressedVideoOutput setSampleBufferDelegate: delegate queue: queue];
+    dispatch_release(queue);
     
-    [mCaptureDecompressedVideoOutput setAutomaticallyDropsLateVideoFrames:YES];
-
-    if (reqMillisPerFrame > 0)
-        [mCaptureDecompressedVideoOutput setMinimumVideoFrameInterval: ((double)reqMillisPerFrame / 1000.0)];
+    OSType pixelFormat = kCVPixelFormatType_32ARGB;
+    //OSType pixelFormat = kCVPixelFormatType_422YpCbCr8;
+    NSDictionary *pixelBufferOptions;
+    if (width > 0 && height > 0) {
+        pixelBufferOptions =
+        @{
+          (id)kCVPixelBufferWidthKey:  @(1.0*width),
+          (id)kCVPixelBufferHeightKey: @(1.0*height),
+          (id)kCVPixelBufferPixelFormatTypeKey: @(pixelFormat)
+          };
+    } else {
+        pixelBufferOptions =
+        @{
+          (id)kCVPixelBufferPixelFormatTypeKey: @(pixelFormat)
+          };
+    }
+    mCaptureDecompressedVideoOutput.videoSettings = pixelBufferOptions;
+    mCaptureDecompressedVideoOutput.alwaysDiscardsLateVideoFrames = YES;
     
-	if (![mCaptureSession addOutput:mCaptureDecompressedVideoOutput error:&err]) {
-		error( "Could not create decompressed output.\n");
-        
-        [mCaptureSession release];
-        [mCaptureDeviceInput release];
-        [mCaptureDecompressedVideoOutput release];
-        [delegate release];
-        
-        mCaptureSession = NULL;
-        mCaptureDeviceInput = NULL;
-        mCaptureDecompressedVideoOutput = NULL;
-        delegate = NULL;
-        
-        [pool drain];
-        
-		return false;
-	}
-        
-	[mCaptureSession startRunning];
+    mCaptureSession = [[AVCaptureSession alloc] init];
+    mCaptureSession.sessionPreset = AVCaptureSessionPresetMedium;
+    [mCaptureSession addInput: mCaptureDeviceInput];
+    [mCaptureSession addOutput: mCaptureDecompressedVideoOutput];
+    
+    [mCaptureSession startRunning];
+    
+    nextFrame(1);
     
     [pool drain];
-    
-    getImage();
-    
     return true;
 }
 
@@ -314,7 +328,7 @@ void OpenIMAJGrabberPriv::stopSession() {
             mCaptureSession = NULL;
             mCaptureDeviceInput = NULL;
 	
-            [mCaptureDecompressedVideoOutput setDelegate:mCaptureDecompressedVideoOutput]; 
+            //[mCaptureDecompressedVideoOutput setDelegate:mCaptureDecompressedVideoOutput]; 
             [mCaptureDecompressedVideoOutput release]; 
             mCaptureDecompressedVideoOutput = NULL;
 	

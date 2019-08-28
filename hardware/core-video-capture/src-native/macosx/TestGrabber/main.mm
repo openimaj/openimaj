@@ -42,6 +42,9 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#import <Foundation/Foundation.h>
+#include <unistd.h>
+
 using namespace std;
 
 int main (int argc, const char * argv[])
@@ -49,7 +52,7 @@ int main (int argc, const char * argv[])
     int w = 640;
     int h = 480;
     
-    OpenIMAJGrabber * grabber = new OpenIMAJGrabber::OpenIMAJGrabber();
+    OpenIMAJGrabber * grabber = new OpenIMAJGrabber();
     DeviceList * devices = grabber->getVideoDevices();
     
     for (int i=0; i<devices->getNumDevices(); i++) {
@@ -59,18 +62,18 @@ int main (int argc, const char * argv[])
     
     int sz = devices->getNumDevices();
     
-    OpenIMAJGrabber ** grabbers = new OpenIMAJGrabber::OpenIMAJGrabber*[sz];
+    OpenIMAJGrabber ** grabbers = new OpenIMAJGrabber*[sz];
     
     for (int i=0; i<sz; i++) {
-        grabbers[i] = new OpenIMAJGrabber::OpenIMAJGrabber();
+        grabbers[i] = new OpenIMAJGrabber();
         
         if (!grabbers[i]->startSession(w, h, 1.0, devices->getDevice(i))) {
             std::cout << "Error starting grabber\n";
             return 1;
         }
     }
-    
-    for (int j=0; j<10; j++) {
+
+    for (int j=0; j<1000; j++) {
         for (int i=0; i<sz; i++) {
             grabbers[i]->nextFrame();
             unsigned char * data = grabbers[i]->getImage();
@@ -79,15 +82,15 @@ int main (int argc, const char * argv[])
             std::ostringstream stringStream;
             stringStream << "/Users/jsh2/Desktop/capture/" << i << "-" << j << ".dat";
             
-            ofstream myfile;
-            myfile.open (stringStream.str().c_str());
-            myfile.write((const char *)data, 3*w * h);
-            myfile.close();
+//            ofstream myfile;
+//            myfile.open (stringStream.str().c_str());
+//            myfile.write((const char *)data, 3*w * h);
+//            myfile.close();
             
             printf("done\n");
         }
-        //usleep(1000 * 1000 / 25);
-        usleep(1000 * 1000 * 1);
+        usleep(1000 * 1000 / 25);
+//        usleep(1000 * 1000 * 1);
     }
     
     for (int i=0; i<sz; i++) {

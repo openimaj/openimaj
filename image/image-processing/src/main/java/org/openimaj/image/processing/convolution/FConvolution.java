@@ -60,8 +60,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 					this.rowMode = true;
 					this.kernel = image.pixels[0];
 
-				}
-				else {
+				} else {
 					this.rowMode = false;
 					this.kernel = new float[image.height];
 					for (int i = 0; i < image.height; i++)
@@ -176,8 +175,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 		}
 		if (this.kernel.width == 1 || this.kernel.height == 1) {
 			this.mode = new ConvolveMode.OneD(kernel);
-		}
-		else {
+		} else {
 			final SingularValueDecomposition svd = new SingularValueDecomposition(
 					MatrixUtils.matrixFromFloat(this.kernel.pixels));
 			if (svd.rank() == 1)
@@ -189,9 +187,8 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj
+	 *
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj
 	 * .image.Image)
 	 */
 	@Override
@@ -202,8 +199,8 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 	/**
 	 * Return the kernel response at the x,y in the given image.
 	 *
-	 * This method will throw an array index out of bounds if x,y requests
-	 * pixels outside the image bounds
+	 * This method will throw an array index out of bounds if x,y requests pixels
+	 * outside the image bounds
 	 *
 	 * @param x
 	 * @param y
@@ -226,5 +223,10 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 			}
 		}
 		return sum;
+	}
+
+	public static void main(String[] args) {
+		for (int i = 0; i < 10; i++)
+			System.out.println("foo");
 	}
 }

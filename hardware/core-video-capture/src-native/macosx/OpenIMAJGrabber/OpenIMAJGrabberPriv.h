@@ -31,7 +31,7 @@
 #define OpenIMAJGrabberPriv_
 
 #import "OpenIMAJGrabber.h"
-#import <QTKit/QTKit.h>
+#import <AVFoundation/AVFoundation.h>
 #import "CaptureDelegate.h"
 
 class OpenIMAJGrabberPriv
@@ -42,6 +42,7 @@ class OpenIMAJGrabberPriv
         
         unsigned char* getImage();
         int nextFrame();
+        int nextFrame(double timeOut);
         void setTimeout(int timeout);
         bool startSession(int width, int height, int reqMillisPerFrame, Device * device);
         void stopSession();
@@ -50,9 +51,9 @@ class OpenIMAJGrabberPriv
         int getHeight();
 
     private:
-        QTCaptureSession                    *mCaptureSession;
-        QTCaptureDeviceInput                *mCaptureDeviceInput;
-        QTCaptureDecompressedVideoOutput    *mCaptureDecompressedVideoOutput;
+        AVCaptureSession                    *mCaptureSession;
+        AVCaptureDeviceInput                *mCaptureDeviceInput;
+        AVCaptureVideoDataOutput            *mCaptureDecompressedVideoOutput;
         CaptureDelegate                     *delegate;
         int height, width;
         double timeout; //in secs

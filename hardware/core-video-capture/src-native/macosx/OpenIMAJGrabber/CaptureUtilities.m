@@ -28,13 +28,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #import "CaptureUtilities.h"
+#import <Foundation/Foundation.h>
 
 /*
- * Helper functions to get information from QTKit on the
+ * Helper functions to get information from AVKit on the
  * main thread. 
  * Note: doing these calls directly on a background thread
  * seems to cause segfaults in 32-bit mode, although it works
- * OK in 64-bit mode. In particular, it seems QTCaptureDevice
+ * OK in 64-bit mode. In particular, it seems AVCaptureDevice
  * needs to be created on the main thread...
  */
 
@@ -47,11 +48,11 @@
 
 @implementation GrabberHelper
 - (void)getDefaultVideoDevice:(NSMutableDictionary*)data {
-    QTCaptureDevice *device = nil;
+    AVCaptureDevice *device = nil;
     
-	device = [QTCaptureDevice defaultInputDeviceWithMediaType:QTMediaTypeVideo];
+    device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
 	if( device == nil ) {
-        device = [QTCaptureDevice defaultInputDeviceWithMediaType:QTMediaTypeMuxed];
+        device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeMuxed];
 	}
     
     if (device) [data setObject:device forKey:@"result"];
@@ -59,9 +60,9 @@
 
 - (void)getDevices:(NSMutableDictionary*)data {
     NSMutableArray *results = [NSMutableArray arrayWithCapacity:3];
-    
-    [results addObjectsFromArray:[QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeVideo]];
-    [results addObjectsFromArray:[QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeMuxed]];
+        
+    [results addObjectsFromArray:[AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]];
+    [results addObjectsFromArray:[AVCaptureDevice devicesWithMediaType:AVMediaTypeMuxed]];
     
     [data setObject:results forKey:@"result"];
 }
@@ -69,9 +70,9 @@
 - (void)getDeviceByIdentifier:(NSMutableDictionary*)data {
     NSArray *devices = getDevices();
     NSString * identifier = [data objectForKey:@"identifier"];
-    QTCaptureDevice * device = nil;
+    AVCaptureDevice * device = nil;
     
-	for( QTCaptureDevice *dev in devices ){
+	for( AVCaptureDevice *dev in devices ){
         if ( [identifier isEqualToString:[dev uniqueID]] ) {
             device = dev;
             break;
@@ -83,12 +84,12 @@
 @end
 
 // Returns the default video device or nil if none found.
-QTCaptureDevice* getDefaultVideoDevice() {
+AVCaptureDevice* getDefaultVideoDevice() {
 	GrabberHelper * helper = [[GrabberHelper alloc] init];
     NSMutableDictionary * wrapper = [[NSMutableDictionary alloc] init];
     
     [helper performSelectorOnMainThread:@selector(getDefaultVideoDevice:) withObject:wrapper waitUntilDone:YES];
-    QTCaptureDevice * device = [[wrapper objectForKey:@"result"] retain];
+    AVCaptureDevice * device = [[wrapper objectForKey:@"result"] retain];
     
     [wrapper release];
     [helper release];
@@ -110,13 +111,13 @@ NSArray * getDevices() {
 }
 
 // Returns the named capture device or nil if not found.
-QTCaptureDevice* getDeviceByIdentifier(NSString * identifier) {
+AVCaptureDevice* getDeviceByIdentifier(NSString * identifier) {
     GrabberHelper * helper = [[GrabberHelper alloc] init];
     NSMutableDictionary * wrapper = [[NSMutableDictionary alloc] init];
     
     [wrapper setObject:identifier forKey:@"identifier"];
     [helper performSelectorOnMainThread:@selector(getDeviceByIdentifier:) withObject:wrapper waitUntilDone:YES];
-    QTCaptureDevice * device = [[wrapper objectForKey:@"result"] retain];
+    AVCaptureDevice * device = [[wrapper objectForKey:@"result"] retain];
     
     [wrapper release];
     [helper release];
