@@ -59,6 +59,7 @@ public class ZScore implements TrainableNormaliser, Denormaliser {
 	 *            divided by sqrt(var + eps).
 	 */
 	public ZScore(double eps) {
+		this.eps = eps;
 	}
 
 	@Override
