@@ -243,8 +243,9 @@ bool OpenIMAJGrabberPriv::startSession(int w, int h, int reqMillisPerFrame, Devi
         else if (status != AVAuthorizationStatusAuthorized)
         {
             [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL) { }];
-            [pool drain];
-            return 0;
+            //[pool drain];
+            //return 0;
+            //Just continue... the capture subsystem is supposed to just throw black images our way until the user decides...
         }
     }
     
