@@ -98,8 +98,8 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 
 			@Override
 			public void convolve(FImage f) {
-				FImageConvolveSeparable.convolveHorizontal(f, row);
-				FImageConvolveSeparable.convolveVertical(f, col);
+				FImageConvolveSeparable.convolveHorizontal(f, col);
+				FImageConvolveSeparable.convolveVertical(f, row);
 			}
 		}
 
@@ -223,10 +223,5 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 			}
 		}
 		return sum;
-	}
-
-	public static void main(String[] args) {
-		for (int i = 0; i < 10; i++)
-			System.out.println("foo");
 	}
 }
