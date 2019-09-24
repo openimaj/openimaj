@@ -37,15 +37,15 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
 /**
  * Simple 2D Gaussian convolution. In most cases the {@link FGaussianConvolve}
  * filter will do the same thing, but much much faster!
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class Gaussian2D extends FConvolution {
 
 	/**
 	 * Construct with given kernel size and variance.
-	 * 
+	 *
 	 * @param width
 	 *            kernel width
 	 * @param height
@@ -59,11 +59,11 @@ public class Gaussian2D extends FConvolution {
 
 	/**
 	 * Construct with given kernel size and variance.
-	 * 
+	 *
 	 * @param size
 	 *            kernel width/height
 	 * @param sigma
-	 *            variance
+	 *            standard deviation
 	 */
 	public Gaussian2D(int size, float sigma) {
 		super(createKernelImage(size, size, sigma));
@@ -71,11 +71,11 @@ public class Gaussian2D extends FConvolution {
 
 	/**
 	 * Create a kernel image with given kernel size and standard deviation.
-	 * 
+	 *
 	 * @param size
 	 *            image height/width.
 	 * @param sigma
-	 *            variance.
+	 *            standard deviation.
 	 * @return new kernel image.
 	 */
 	public static FImage createKernelImage(int size, float sigma) {
@@ -84,13 +84,13 @@ public class Gaussian2D extends FConvolution {
 
 	/**
 	 * Create a kernel image with given kernel size and standard deviation.
-	 * 
+	 *
 	 * @param width
 	 *            image width.
 	 * @param height
 	 *            image height.
 	 * @param sigma
-	 *            variance.
+	 *            standard deviation.
 	 * @return new kernel image.
 	 */
 	public static FImage createKernelImage(int width, int height, float sigma) {
