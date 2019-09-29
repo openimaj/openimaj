@@ -40,263 +40,254 @@
 <span class="sourceLineNo">032</span>import java.util.ArrayList;<a name="line.32"></a>
 <span class="sourceLineNo">033</span>import java.util.List;<a name="line.33"></a>
 <span class="sourceLineNo">034</span><a name="line.34"></a>
-<span class="sourceLineNo">035</span>import odk.lang.FastMath;<a name="line.35"></a>
-<span class="sourceLineNo">036</span><a name="line.36"></a>
-<span class="sourceLineNo">037</span>import org.openimaj.algorithm.iterative.IterationState;<a name="line.37"></a>
-<span class="sourceLineNo">038</span>import org.openimaj.image.FImage;<a name="line.38"></a>
-<span class="sourceLineNo">039</span>import org.openimaj.image.processing.convolution.FImageConvolveSeparable;<a name="line.39"></a>
-<span class="sourceLineNo">040</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.40"></a>
-<span class="sourceLineNo">041</span>import org.openimaj.math.geometry.point.Point2dImpl;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>import org.openimaj.math.matrix.PseudoInverse;<a name="line.42"></a>
-<span class="sourceLineNo">043</span>import org.openimaj.util.function.Predicate;<a name="line.43"></a>
-<span class="sourceLineNo">044</span><a name="line.44"></a>
-<span class="sourceLineNo">045</span>import Jama.Matrix;<a name="line.45"></a>
-<span class="sourceLineNo">046</span><a name="line.46"></a>
-<span class="sourceLineNo">047</span>/**<a name="line.47"></a>
-<span class="sourceLineNo">048</span> * Refines detected corners (i.e. from {@link HarrisIPD} or other methods) to an<a name="line.48"></a>
-<span class="sourceLineNo">049</span> * optimised sub-pixel estimate. The method works by iteratively updating the<a name="line.49"></a>
-<span class="sourceLineNo">050</span> * sub-pixel position of a point based on the inverse of the local gradient<a name="line.50"></a>
-<span class="sourceLineNo">051</span> * auto-correlation matrix.<a name="line.51"></a>
-<span class="sourceLineNo">052</span> * <a name="line.52"></a>
-<span class="sourceLineNo">053</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.53"></a>
-<span class="sourceLineNo">054</span> */<a name="line.54"></a>
-<span class="sourceLineNo">055</span>public class SubPixelCorners {<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        private static final float GRAD_X_KERNEL[] = { -1.f, 0.f, 1.f };<a name="line.56"></a>
-<span class="sourceLineNo">057</span>        private static final float GRAD_Y_KERNEL[] = { 0.f, 0.5f, 0.f };<a name="line.57"></a>
-<span class="sourceLineNo">058</span><a name="line.58"></a>
-<span class="sourceLineNo">059</span>        private Predicate&lt;IterationState&gt; iter;<a name="line.59"></a>
-<span class="sourceLineNo">060</span>        private int halfWidth;<a name="line.60"></a>
-<span class="sourceLineNo">061</span>        private int halfHeight;<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        private int zeroZoneHalfWidth = -1;<a name="line.62"></a>
-<span class="sourceLineNo">063</span>        private int zeroZoneHalfHeight = -1;<a name="line.63"></a>
-<span class="sourceLineNo">064</span><a name="line.64"></a>
-<span class="sourceLineNo">065</span>        /**<a name="line.65"></a>
-<span class="sourceLineNo">066</span>         * Construct with the given search window size and predicate to &lt;b&gt;stop&lt;/b&gt;<a name="line.66"></a>
-<span class="sourceLineNo">067</span>         * the iteration. No zeroing of weights is performed<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         * <a name="line.68"></a>
-<span class="sourceLineNo">069</span>         * @param halfWidth<a name="line.69"></a>
-<span class="sourceLineNo">070</span>         *            half the search window width (actual size is 2*halfWidth + 1,<a name="line.70"></a>
-<span class="sourceLineNo">071</span>         *            centred on point)<a name="line.71"></a>
-<span class="sourceLineNo">072</span>         * @param halfHeight<a name="line.72"></a>
-<span class="sourceLineNo">073</span>         *            half the search window height (actual size is 2*halfHeight +<a name="line.73"></a>
-<span class="sourceLineNo">074</span>         *            1, centred on point)<a name="line.74"></a>
-<span class="sourceLineNo">075</span>         * @param iter<a name="line.75"></a>
-<span class="sourceLineNo">076</span>         *            the predicate to stop iteration<a name="line.76"></a>
-<span class="sourceLineNo">077</span>         */<a name="line.77"></a>
-<span class="sourceLineNo">078</span>        public SubPixelCorners(int halfWidth, int halfHeight, Predicate&lt;IterationState&gt; iter) {<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                this.halfWidth = halfWidth;<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                this.halfHeight = halfHeight;<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                this.iter = iter;<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        }<a name="line.82"></a>
-<span class="sourceLineNo">083</span><a name="line.83"></a>
-<span class="sourceLineNo">084</span>        /**<a name="line.84"></a>
-<span class="sourceLineNo">085</span>         * Construct with the given search window size, zeroed window and predicate<a name="line.85"></a>
-<span class="sourceLineNo">086</span>         * to &lt;b&gt;stop&lt;/b&gt; the iteration.<a name="line.86"></a>
-<span class="sourceLineNo">087</span>         * &lt;p&gt;<a name="line.87"></a>
-<span class="sourceLineNo">088</span>         * The zeroed window is a dead region in the middle of the search zone over<a name="line.88"></a>
-<span class="sourceLineNo">089</span>         * which the summation over gradients is not done. It is used sometimes to<a name="line.89"></a>
-<span class="sourceLineNo">090</span>         * avoid possible singularities of the autocorrelation matrix.<a name="line.90"></a>
-<span class="sourceLineNo">091</span>         * <a name="line.91"></a>
-<span class="sourceLineNo">092</span>         * @param halfWidth<a name="line.92"></a>
-<span class="sourceLineNo">093</span>         *            half the search window width (actual size is 2*halfWidth + 1,<a name="line.93"></a>
-<span class="sourceLineNo">094</span>         *            centred on point)<a name="line.94"></a>
-<span class="sourceLineNo">095</span>         * @param halfHeight<a name="line.95"></a>
-<span class="sourceLineNo">096</span>         *            half the search window height (actual size is 2*halfHeight +<a name="line.96"></a>
-<span class="sourceLineNo">097</span>         *            1, centred on point)<a name="line.97"></a>
-<span class="sourceLineNo">098</span>         * @param zeroZoneHalfWidth<a name="line.98"></a>
-<span class="sourceLineNo">099</span>         *            the half-width of the zeroed region in the weighting array<a name="line.99"></a>
-<span class="sourceLineNo">100</span>         * @param zeroZoneHalfHeight<a name="line.100"></a>
-<span class="sourceLineNo">101</span>         *            the half-height of the zeroed region in the weighting array<a name="line.101"></a>
-<span class="sourceLineNo">102</span>         * @param iter<a name="line.102"></a>
-<span class="sourceLineNo">103</span>         *            the predicate to stop iteration<a name="line.103"></a>
-<span class="sourceLineNo">104</span>         */<a name="line.104"></a>
-<span class="sourceLineNo">105</span>        public SubPixelCorners(int halfWidth, int halfHeight, int zeroZoneHalfWidth, int zeroZoneHalfHeight,<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                        Predicate&lt;IterationState&gt; iter)<a name="line.106"></a>
-<span class="sourceLineNo">107</span>        {<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                this.halfWidth = halfWidth;<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                this.halfHeight = halfHeight;<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                this.zeroZoneHalfWidth = zeroZoneHalfWidth;<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                this.zeroZoneHalfHeight = zeroZoneHalfHeight;<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                this.iter = iter;<a name="line.112"></a>
-<span class="sourceLineNo">113</span>        }<a name="line.113"></a>
-<span class="sourceLineNo">114</span><a name="line.114"></a>
-<span class="sourceLineNo">115</span>        /**<a name="line.115"></a>
-<span class="sourceLineNo">116</span>         * Find the sub-pixel estimated position of each corner<a name="line.116"></a>
-<span class="sourceLineNo">117</span>         * <a name="line.117"></a>
-<span class="sourceLineNo">118</span>         * @param src<a name="line.118"></a>
-<span class="sourceLineNo">119</span>         *            the image<a name="line.119"></a>
-<span class="sourceLineNo">120</span>         * @param corners<a name="line.120"></a>
-<span class="sourceLineNo">121</span>         *            the initial corner positions<a name="line.121"></a>
-<span class="sourceLineNo">122</span>         * @return the updated corners<a name="line.122"></a>
-<span class="sourceLineNo">123</span>         */<a name="line.123"></a>
-<span class="sourceLineNo">124</span>        public List&lt;Point2dImpl&gt; findSubPixCorners(FImage src, List&lt;? extends Point2d&gt; corners)<a name="line.124"></a>
-<span class="sourceLineNo">125</span>        {<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                final List&lt;Point2dImpl&gt; outCorners = new ArrayList&lt;Point2dImpl&gt;(corners.size());<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                final int windowWidth = halfWidth * 2 + 1;<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                final int windowHeight = halfHeight * 2 + 1;<a name="line.128"></a>
-<span class="sourceLineNo">129</span><a name="line.129"></a>
-<span class="sourceLineNo">130</span>                if (corners.size() == 0)<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                        return outCorners;<a name="line.131"></a>
-<span class="sourceLineNo">132</span><a name="line.132"></a>
-<span class="sourceLineNo">133</span>                final FImage weights = this.buildGaussianWeights(windowWidth, windowHeight);<a name="line.133"></a>
-<span class="sourceLineNo">134</span>                final FImage gx = new FImage(windowWidth, windowHeight);<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                final FImage gy = new FImage(windowWidth, windowHeight);<a name="line.135"></a>
-<span class="sourceLineNo">136</span>                final float[] buffer = new float[windowWidth + 2];<a name="line.136"></a>
-<span class="sourceLineNo">137</span><a name="line.137"></a>
-<span class="sourceLineNo">138</span>                // note 2px padding as conv reduces size:<a name="line.138"></a>
-<span class="sourceLineNo">139</span>                final FImage roi = new FImage(windowWidth + 2, windowHeight + 2);<a name="line.139"></a>
-<span class="sourceLineNo">140</span><a name="line.140"></a>
-<span class="sourceLineNo">141</span>                // loop for all the points<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                for (int i = 0; i &lt; corners.size(); i++)<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                {<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                        final Point2d pt = corners.get(i);<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                        outCorners.add(this.findCornerSubPix(src, pt, roi, gx, gy, weights, buffer));<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                }<a name="line.146"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.algorithm.iterative.IterationState;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.image.FImage;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.image.processing.convolution.FImageConvolveSeparable;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import org.openimaj.math.geometry.point.Point2dImpl;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.openimaj.math.matrix.PseudoInverse;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.util.function.Predicate;<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>import Jama.Matrix;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import net.jafama.FastMath;<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>/**<a name="line.46"></a>
+<span class="sourceLineNo">047</span> * Refines detected corners (i.e. from {@link HarrisIPD} or other methods) to an<a name="line.47"></a>
+<span class="sourceLineNo">048</span> * optimised sub-pixel estimate. The method works by iteratively updating the<a name="line.48"></a>
+<span class="sourceLineNo">049</span> * sub-pixel position of a point based on the inverse of the local gradient<a name="line.49"></a>
+<span class="sourceLineNo">050</span> * auto-correlation matrix.<a name="line.50"></a>
+<span class="sourceLineNo">051</span> *<a name="line.51"></a>
+<span class="sourceLineNo">052</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.52"></a>
+<span class="sourceLineNo">053</span> */<a name="line.53"></a>
+<span class="sourceLineNo">054</span>public class SubPixelCorners {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        private static final float GRAD_X_KERNEL[] = { -1.f, 0.f, 1.f };<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        private static final float GRAD_Y_KERNEL[] = { 0.f, 0.5f, 0.f };<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>        private Predicate&lt;IterationState&gt; iter;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        private int halfWidth;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        private int halfHeight;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        private int zeroZoneHalfWidth = -1;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        private int zeroZoneHalfHeight = -1;<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /**<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * Construct with the given search window size and predicate to &lt;b&gt;stop&lt;/b&gt; the<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         * iteration. No zeroing of weights is performed<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         *<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         * @param halfWidth<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         *            half the search window width (actual size is 2*halfWidth + 1,<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         *            centred on point)<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         * @param halfHeight<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         *            half the search window height (actual size is 2*halfHeight + 1,<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         *            centred on point)<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         * @param iter<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         *            the predicate to stop iteration<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         */<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        public SubPixelCorners(int halfWidth, int halfHeight, Predicate&lt;IterationState&gt; iter) {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                this.halfWidth = halfWidth;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                this.halfHeight = halfHeight;<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                this.iter = iter;<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * Construct with the given search window size, zeroed window and predicate to<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * &lt;b&gt;stop&lt;/b&gt; the iteration.<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * &lt;p&gt;<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * The zeroed window is a dead region in the middle of the search zone over<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         * which the summation over gradients is not done. It is used sometimes to avoid<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         * possible singularities of the autocorrelation matrix.<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         *<a name="line.90"></a>
+<span class="sourceLineNo">091</span>         * @param halfWidth<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         *            half the search window width (actual size is 2*halfWidth + 1,<a name="line.92"></a>
+<span class="sourceLineNo">093</span>         *            centred on point)<a name="line.93"></a>
+<span class="sourceLineNo">094</span>         * @param halfHeight<a name="line.94"></a>
+<span class="sourceLineNo">095</span>         *            half the search window height (actual size is 2*halfHeight + 1,<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         *            centred on point)<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         * @param zeroZoneHalfWidth<a name="line.97"></a>
+<span class="sourceLineNo">098</span>         *            the half-width of the zeroed region in the weighting array<a name="line.98"></a>
+<span class="sourceLineNo">099</span>         * @param zeroZoneHalfHeight<a name="line.99"></a>
+<span class="sourceLineNo">100</span>         *            the half-height of the zeroed region in the weighting array<a name="line.100"></a>
+<span class="sourceLineNo">101</span>         * @param iter<a name="line.101"></a>
+<span class="sourceLineNo">102</span>         *            the predicate to stop iteration<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         */<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        public SubPixelCorners(int halfWidth, int halfHeight, int zeroZoneHalfWidth, int zeroZoneHalfHeight,<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                        Predicate&lt;IterationState&gt; iter)<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                this.halfWidth = halfWidth;<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                this.halfHeight = halfHeight;<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                this.zeroZoneHalfWidth = zeroZoneHalfWidth;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                this.zeroZoneHalfHeight = zeroZoneHalfHeight;<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                this.iter = iter;<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        }<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>        /**<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         * Find the sub-pixel estimated position of each corner<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         *<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         * @param src<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         *            the image<a name="line.118"></a>
+<span class="sourceLineNo">119</span>         * @param corners<a name="line.119"></a>
+<span class="sourceLineNo">120</span>         *            the initial corner positions<a name="line.120"></a>
+<span class="sourceLineNo">121</span>         * @return the updated corners<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         */<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        public List&lt;Point2dImpl&gt; findSubPixCorners(FImage src, List&lt;? extends Point2d&gt; corners) {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                final List&lt;Point2dImpl&gt; outCorners = new ArrayList&lt;Point2dImpl&gt;(corners.size());<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                final int windowWidth = halfWidth * 2 + 1;<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                final int windowHeight = halfHeight * 2 + 1;<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>                if (corners.size() == 0)<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                        return outCorners;<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>                final FImage weights = this.buildGaussianWeights(windowWidth, windowHeight);<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                final FImage gx = new FImage(windowWidth, windowHeight);<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                final FImage gy = new FImage(windowWidth, windowHeight);<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                final float[] buffer = new float[windowWidth + 2];<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>                // note 2px padding as conv reduces size:<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                final FImage roi = new FImage(windowWidth + 2, windowHeight + 2);<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
+<span class="sourceLineNo">139</span>                // loop for all the points<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                for (int i = 0; i &lt; corners.size(); i++) {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        final Point2d pt = corners.get(i);<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        outCorners.add(this.findCornerSubPix(src, pt, roi, gx, gy, weights, buffer));<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                }<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>                return outCorners;<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        }<a name="line.146"></a>
 <span class="sourceLineNo">147</span><a name="line.147"></a>
-<span class="sourceLineNo">148</span>                return outCorners;<a name="line.148"></a>
-<span class="sourceLineNo">149</span>        }<a name="line.149"></a>
-<span class="sourceLineNo">150</span><a name="line.150"></a>
-<span class="sourceLineNo">151</span>        /**<a name="line.151"></a>
-<span class="sourceLineNo">152</span>         * Find the sub-pixel estimated position of a corner<a name="line.152"></a>
-<span class="sourceLineNo">153</span>         * <a name="line.153"></a>
-<span class="sourceLineNo">154</span>         * @param src<a name="line.154"></a>
-<span class="sourceLineNo">155</span>         *            the image<a name="line.155"></a>
-<span class="sourceLineNo">156</span>         * @param corner<a name="line.156"></a>
-<span class="sourceLineNo">157</span>         *            the initial corner position<a name="line.157"></a>
-<span class="sourceLineNo">158</span>         * @return the updated corner position<a name="line.158"></a>
-<span class="sourceLineNo">159</span>         */<a name="line.159"></a>
-<span class="sourceLineNo">160</span>        public Point2dImpl findSubPixCorner(FImage src, Point2d corner)<a name="line.160"></a>
-<span class="sourceLineNo">161</span>        {<a name="line.161"></a>
-<span class="sourceLineNo">162</span>                final int windowWidth = halfWidth * 2 + 1;<a name="line.162"></a>
-<span class="sourceLineNo">163</span>                final int windowHeight = halfHeight * 2 + 1;<a name="line.163"></a>
-<span class="sourceLineNo">164</span><a name="line.164"></a>
-<span class="sourceLineNo">165</span>                final FImage weights = this.buildGaussianWeights(windowWidth, windowHeight);<a name="line.165"></a>
-<span class="sourceLineNo">166</span>                final FImage gx = new FImage(windowWidth, windowHeight);<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                final FImage gy = new FImage(windowWidth, windowHeight);<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                final float[] buffer = new float[windowWidth + 2];<a name="line.168"></a>
-<span class="sourceLineNo">169</span><a name="line.169"></a>
-<span class="sourceLineNo">170</span>                // note 2px padding as conv reduces size:<a name="line.170"></a>
-<span class="sourceLineNo">171</span>                final FImage roi = new FImage(windowWidth + 2, windowHeight + 2);<a name="line.171"></a>
-<span class="sourceLineNo">172</span><a name="line.172"></a>
-<span class="sourceLineNo">173</span>                return this.findCornerSubPix(src, corner, roi, gx, gy, weights, buffer);<a name="line.173"></a>
-<span class="sourceLineNo">174</span>        }<a name="line.174"></a>
-<span class="sourceLineNo">175</span><a name="line.175"></a>
-<span class="sourceLineNo">176</span>        /**<a name="line.176"></a>
-<span class="sourceLineNo">177</span>         * Build the Gaussian weighting image<a name="line.177"></a>
-<span class="sourceLineNo">178</span>         * <a name="line.178"></a>
-<span class="sourceLineNo">179</span>         * @param width<a name="line.179"></a>
-<span class="sourceLineNo">180</span>         *            the width<a name="line.180"></a>
-<span class="sourceLineNo">181</span>         * @param height<a name="line.181"></a>
-<span class="sourceLineNo">182</span>         *            the height<a name="line.182"></a>
-<span class="sourceLineNo">183</span>         * @return<a name="line.183"></a>
-<span class="sourceLineNo">184</span>         */<a name="line.184"></a>
-<span class="sourceLineNo">185</span>        private FImage buildGaussianWeights(int width, int height) {<a name="line.185"></a>
-<span class="sourceLineNo">186</span>                final FImage weights = new FImage(width, height);<a name="line.186"></a>
-<span class="sourceLineNo">187</span>                final float[] weightsX = new float[width];<a name="line.187"></a>
-<span class="sourceLineNo">188</span><a name="line.188"></a>
-<span class="sourceLineNo">189</span>                double coeff = 1. / (halfWidth * halfWidth);<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                for (int i = -halfWidth, k = 0; i &lt;= halfWidth; i++, k++)<a name="line.190"></a>
-<span class="sourceLineNo">191</span>                {<a name="line.191"></a>
-<span class="sourceLineNo">192</span>                        weightsX[k] = (float) Math.exp(-i * i * coeff);<a name="line.192"></a>
-<span class="sourceLineNo">193</span>                }<a name="line.193"></a>
-<span class="sourceLineNo">194</span><a name="line.194"></a>
-<span class="sourceLineNo">195</span>                float[] weightsY;<a name="line.195"></a>
-<span class="sourceLineNo">196</span>                if (halfWidth == halfHeight) {<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                        weightsY = weightsX;<a name="line.197"></a>
-<span class="sourceLineNo">198</span>                } else {<a name="line.198"></a>
-<span class="sourceLineNo">199</span>                        weightsY = new float[height];<a name="line.199"></a>
-<span class="sourceLineNo">200</span>                        coeff = 1. / (halfHeight * halfHeight);<a name="line.200"></a>
-<span class="sourceLineNo">201</span>                        for (int i = -halfHeight, k = 0; i &lt;= halfHeight; i++, k++)<a name="line.201"></a>
-<span class="sourceLineNo">202</span>                        {<a name="line.202"></a>
-<span class="sourceLineNo">203</span>                                weightsY[k] = (float) Math.exp(-i * i * coeff);<a name="line.203"></a>
+<span class="sourceLineNo">148</span>        /**<a name="line.148"></a>
+<span class="sourceLineNo">149</span>         * Find the sub-pixel estimated position of a corner<a name="line.149"></a>
+<span class="sourceLineNo">150</span>         *<a name="line.150"></a>
+<span class="sourceLineNo">151</span>         * @param src<a name="line.151"></a>
+<span class="sourceLineNo">152</span>         *            the image<a name="line.152"></a>
+<span class="sourceLineNo">153</span>         * @param corner<a name="line.153"></a>
+<span class="sourceLineNo">154</span>         *            the initial corner position<a name="line.154"></a>
+<span class="sourceLineNo">155</span>         * @return the updated corner position<a name="line.155"></a>
+<span class="sourceLineNo">156</span>         */<a name="line.156"></a>
+<span class="sourceLineNo">157</span>        public Point2dImpl findSubPixCorner(FImage src, Point2d corner) {<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                final int windowWidth = halfWidth * 2 + 1;<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                final int windowHeight = halfHeight * 2 + 1;<a name="line.159"></a>
+<span class="sourceLineNo">160</span><a name="line.160"></a>
+<span class="sourceLineNo">161</span>                final FImage weights = this.buildGaussianWeights(windowWidth, windowHeight);<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                final FImage gx = new FImage(windowWidth, windowHeight);<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                final FImage gy = new FImage(windowWidth, windowHeight);<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                final float[] buffer = new float[windowWidth + 2];<a name="line.164"></a>
+<span class="sourceLineNo">165</span><a name="line.165"></a>
+<span class="sourceLineNo">166</span>                // note 2px padding as conv reduces size:<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                final FImage roi = new FImage(windowWidth + 2, windowHeight + 2);<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>                return this.findCornerSubPix(src, corner, roi, gx, gy, weights, buffer);<a name="line.169"></a>
+<span class="sourceLineNo">170</span>        }<a name="line.170"></a>
+<span class="sourceLineNo">171</span><a name="line.171"></a>
+<span class="sourceLineNo">172</span>        /**<a name="line.172"></a>
+<span class="sourceLineNo">173</span>         * Build the Gaussian weighting image<a name="line.173"></a>
+<span class="sourceLineNo">174</span>         *<a name="line.174"></a>
+<span class="sourceLineNo">175</span>         * @param width<a name="line.175"></a>
+<span class="sourceLineNo">176</span>         *            the width<a name="line.176"></a>
+<span class="sourceLineNo">177</span>         * @param height<a name="line.177"></a>
+<span class="sourceLineNo">178</span>         *            the height<a name="line.178"></a>
+<span class="sourceLineNo">179</span>         * @return<a name="line.179"></a>
+<span class="sourceLineNo">180</span>         */<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        private FImage buildGaussianWeights(int width, int height) {<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                final FImage weights = new FImage(width, height);<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                final float[] weightsX = new float[width];<a name="line.183"></a>
+<span class="sourceLineNo">184</span><a name="line.184"></a>
+<span class="sourceLineNo">185</span>                double coeff = 1. / (halfWidth * halfWidth);<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                for (int i = -halfWidth, k = 0; i &lt;= halfWidth; i++, k++) {<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                        weightsX[k] = (float) Math.exp(-i * i * coeff);<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                }<a name="line.188"></a>
+<span class="sourceLineNo">189</span><a name="line.189"></a>
+<span class="sourceLineNo">190</span>                float[] weightsY;<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                if (halfWidth == halfHeight) {<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                        weightsY = weightsX;<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                } else {<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                        weightsY = new float[height];<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                        coeff = 1. / (halfHeight * halfHeight);<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                        for (int i = -halfHeight, k = 0; i &lt;= halfHeight; i++, k++) {<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                                weightsY[k] = (float) Math.exp(-i * i * coeff);<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                        }<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                }<a name="line.199"></a>
+<span class="sourceLineNo">200</span><a name="line.200"></a>
+<span class="sourceLineNo">201</span>                for (int i = 0; i &lt; height; i++) {<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                        for (int j = 0; j &lt; width; j++) {<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                                weights.pixels[i][j] = weightsX[j] * weightsY[i];<a name="line.203"></a>
 <span class="sourceLineNo">204</span>                        }<a name="line.204"></a>
 <span class="sourceLineNo">205</span>                }<a name="line.205"></a>
 <span class="sourceLineNo">206</span><a name="line.206"></a>
-<span class="sourceLineNo">207</span>                for (int i = 0; i &lt; height; i++) {<a name="line.207"></a>
-<span class="sourceLineNo">208</span>                        for (int j = 0; j &lt; width; j++) {<a name="line.208"></a>
-<span class="sourceLineNo">209</span>                                weights.pixels[i][j] = weightsX[j] * weightsY[i];<a name="line.209"></a>
-<span class="sourceLineNo">210</span>                        }<a name="line.210"></a>
-<span class="sourceLineNo">211</span>                }<a name="line.211"></a>
-<span class="sourceLineNo">212</span><a name="line.212"></a>
-<span class="sourceLineNo">213</span>                // if necessary, mask off the centre portion<a name="line.213"></a>
-<span class="sourceLineNo">214</span>                if (zeroZoneHalfWidth &gt;= 0 &amp;&amp; zeroZoneHalfHeight &gt;= 0 &amp;&amp;<a name="line.214"></a>
-<span class="sourceLineNo">215</span>                                zeroZoneHalfWidth * 2 + 1 &lt; width &amp;&amp; zeroZoneHalfHeight * 2 + 1 &lt; height)<a name="line.215"></a>
-<span class="sourceLineNo">216</span>                {<a name="line.216"></a>
-<span class="sourceLineNo">217</span>                        for (int i = halfHeight - zeroZoneHalfHeight; i &lt;= halfHeight + zeroZoneHalfHeight; i++) {<a name="line.217"></a>
-<span class="sourceLineNo">218</span>                                for (int j = halfWidth - zeroZoneHalfWidth; j &lt;= halfWidth + zeroZoneHalfWidth; j++) {<a name="line.218"></a>
-<span class="sourceLineNo">219</span>                                        weights.pixels[i][j] = 0;<a name="line.219"></a>
-<span class="sourceLineNo">220</span>                                }<a name="line.220"></a>
-<span class="sourceLineNo">221</span>                        }<a name="line.221"></a>
-<span class="sourceLineNo">222</span>                }<a name="line.222"></a>
-<span class="sourceLineNo">223</span><a name="line.223"></a>
-<span class="sourceLineNo">224</span>                return weights;<a name="line.224"></a>
-<span class="sourceLineNo">225</span>        }<a name="line.225"></a>
+<span class="sourceLineNo">207</span>                // if necessary, mask off the centre portion<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                if (zeroZoneHalfWidth &gt;= 0 &amp;&amp; zeroZoneHalfHeight &gt;= 0 &amp;&amp;<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                                zeroZoneHalfWidth * 2 + 1 &lt; width &amp;&amp; zeroZoneHalfHeight * 2 + 1 &lt; height)<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                {<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                        for (int i = halfHeight - zeroZoneHalfHeight; i &lt;= halfHeight + zeroZoneHalfHeight; i++) {<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                                for (int j = halfWidth - zeroZoneHalfWidth; j &lt;= halfWidth + zeroZoneHalfWidth; j++) {<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                                        weights.pixels[i][j] = 0;<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                                }<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                        }<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                }<a name="line.216"></a>
+<span class="sourceLineNo">217</span><a name="line.217"></a>
+<span class="sourceLineNo">218</span>                return weights;<a name="line.218"></a>
+<span class="sourceLineNo">219</span>        }<a name="line.219"></a>
+<span class="sourceLineNo">220</span><a name="line.220"></a>
+<span class="sourceLineNo">221</span>        private Point2dImpl findCornerSubPix(FImage src, Point2d pt, FImage roi, FImage gx, FImage gy, FImage weights,<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                        final float[] buffer)<a name="line.222"></a>
+<span class="sourceLineNo">223</span>        {<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                final IterationState state = new IterationState();<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                Point2dImpl current = new Point2dImpl(pt);<a name="line.225"></a>
 <span class="sourceLineNo">226</span><a name="line.226"></a>
-<span class="sourceLineNo">227</span>        private Point2dImpl findCornerSubPix(FImage src, Point2d pt, FImage roi, FImage gx, FImage gy, FImage weights,<a name="line.227"></a>
-<span class="sourceLineNo">228</span>                        final float[] buffer)<a name="line.228"></a>
-<span class="sourceLineNo">229</span>        {<a name="line.229"></a>
-<span class="sourceLineNo">230</span>                final IterationState state = new IterationState();<a name="line.230"></a>
-<span class="sourceLineNo">231</span>                Point2dImpl current = new Point2dImpl(pt);<a name="line.231"></a>
-<span class="sourceLineNo">232</span><a name="line.232"></a>
-<span class="sourceLineNo">233</span>                while (!iter.test(state)) {<a name="line.233"></a>
-<span class="sourceLineNo">234</span>                        // get window around pt<a name="line.234"></a>
-<span class="sourceLineNo">235</span>                        src.extractCentreSubPix(current, roi);<a name="line.235"></a>
-<span class="sourceLineNo">236</span><a name="line.236"></a>
-<span class="sourceLineNo">237</span>                        // calc derivatives<a name="line.237"></a>
-<span class="sourceLineNo">238</span>                        FImageConvolveSeparable.fastConvolve3(roi, gx, GRAD_X_KERNEL, GRAD_Y_KERNEL, buffer);<a name="line.238"></a>
-<span class="sourceLineNo">239</span>                        FImageConvolveSeparable.fastConvolve3(roi, gy, GRAD_Y_KERNEL, GRAD_X_KERNEL, buffer);<a name="line.239"></a>
-<span class="sourceLineNo">240</span><a name="line.240"></a>
-<span class="sourceLineNo">241</span>                        double a = 0, b = 0, c = 0, bb1 = 0, bb2 = 0;<a name="line.241"></a>
-<span class="sourceLineNo">242</span>                        final int win_w = weights.width;<a name="line.242"></a>
-<span class="sourceLineNo">243</span>                        final int win_h = weights.height;<a name="line.243"></a>
-<span class="sourceLineNo">244</span><a name="line.244"></a>
-<span class="sourceLineNo">245</span>                        // process gradient<a name="line.245"></a>
-<span class="sourceLineNo">246</span>                        for (int i = 0; i &lt; win_h; i++)<a name="line.246"></a>
-<span class="sourceLineNo">247</span>                        {<a name="line.247"></a>
-<span class="sourceLineNo">248</span>                                final double py = i - halfHeight;<a name="line.248"></a>
-<span class="sourceLineNo">249</span><a name="line.249"></a>
-<span class="sourceLineNo">250</span>                                for (int j = 0; j &lt; win_w; j++)<a name="line.250"></a>
-<span class="sourceLineNo">251</span>                                {<a name="line.251"></a>
-<span class="sourceLineNo">252</span>                                        final double m = weights.pixels[i][j];<a name="line.252"></a>
-<span class="sourceLineNo">253</span>                                        final double tgx = gx.pixels[i][j];<a name="line.253"></a>
-<span class="sourceLineNo">254</span>                                        final double tgy = gy.pixels[i][j];<a name="line.254"></a>
-<span class="sourceLineNo">255</span>                                        final double gxx = tgx * tgx * m;<a name="line.255"></a>
-<span class="sourceLineNo">256</span>                                        final double gxy = tgx * tgy * m;<a name="line.256"></a>
-<span class="sourceLineNo">257</span>                                        final double gyy = tgy * tgy * m;<a name="line.257"></a>
-<span class="sourceLineNo">258</span>                                        final double px = j - halfWidth;<a name="line.258"></a>
-<span class="sourceLineNo">259</span><a name="line.259"></a>
-<span class="sourceLineNo">260</span>                                        a += gxx;<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                                        b += gxy;<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                                        c += gyy;<a name="line.262"></a>
-<span class="sourceLineNo">263</span><a name="line.263"></a>
-<span class="sourceLineNo">264</span>                                        bb1 += gxx * px + gxy * py;<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                                        bb2 += gxy * px + gyy * py;<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                                }<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                        }<a name="line.267"></a>
-<span class="sourceLineNo">268</span><a name="line.268"></a>
-<span class="sourceLineNo">269</span>                        final Matrix m = new Matrix(new double[][] { { a, b }, { b, c } });<a name="line.269"></a>
-<span class="sourceLineNo">270</span>                        final Matrix mInv = PseudoInverse.pseudoInverse(m);<a name="line.270"></a>
-<span class="sourceLineNo">271</span>                        final Point2dImpl cI2 = new Point2dImpl();<a name="line.271"></a>
-<span class="sourceLineNo">272</span>                        cI2.x = (float) (current.x + mInv.get(0, 0) * bb1 + mInv.get(0, 1) * bb2);<a name="line.272"></a>
-<span class="sourceLineNo">273</span>                        cI2.y = (float) (current.y + mInv.get(1, 0) * bb1 + mInv.get(1, 1) * bb2);<a name="line.273"></a>
-<span class="sourceLineNo">274</span><a name="line.274"></a>
-<span class="sourceLineNo">275</span>                        state.epsilon = FastMath.sqrt((cI2.x - current.x) * (cI2.x - current.x) + (cI2.y - current.y)<a name="line.275"></a>
-<span class="sourceLineNo">276</span>                                        * (cI2.y - current.y));<a name="line.276"></a>
-<span class="sourceLineNo">277</span>                        state.iteration++;<a name="line.277"></a>
-<span class="sourceLineNo">278</span>                        current = cI2;<a name="line.278"></a>
-<span class="sourceLineNo">279</span>                }<a name="line.279"></a>
-<span class="sourceLineNo">280</span><a name="line.280"></a>
-<span class="sourceLineNo">281</span>                // if new point is too far from initial, it means poor convergence.<a name="line.281"></a>
-<span class="sourceLineNo">282</span>                // return initial point as the result<a name="line.282"></a>
-<span class="sourceLineNo">283</span>                if (Math.abs(current.x - pt.getX()) &gt; halfWidth || Math.abs(current.y - pt.getY()) &gt; halfHeight)<a name="line.283"></a>
-<span class="sourceLineNo">284</span>                {<a name="line.284"></a>
-<span class="sourceLineNo">285</span>                        return new Point2dImpl(pt);<a name="line.285"></a>
-<span class="sourceLineNo">286</span>                }<a name="line.286"></a>
-<span class="sourceLineNo">287</span><a name="line.287"></a>
-<span class="sourceLineNo">288</span>                // otherwise return the updated point<a name="line.288"></a>
-<span class="sourceLineNo">289</span>                return current;<a name="line.289"></a>
-<span class="sourceLineNo">290</span>        }<a name="line.290"></a>
-<span class="sourceLineNo">291</span>}<a name="line.291"></a>
+<span class="sourceLineNo">227</span>                while (!iter.test(state)) {<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                        // get window around pt<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                        src.extractCentreSubPix(current, roi);<a name="line.229"></a>
+<span class="sourceLineNo">230</span><a name="line.230"></a>
+<span class="sourceLineNo">231</span>                        // calc derivatives<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                        FImageConvolveSeparable.fastConvolve3(roi, gx, GRAD_X_KERNEL, GRAD_Y_KERNEL, buffer);<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                        FImageConvolveSeparable.fastConvolve3(roi, gy, GRAD_Y_KERNEL, GRAD_X_KERNEL, buffer);<a name="line.233"></a>
+<span class="sourceLineNo">234</span><a name="line.234"></a>
+<span class="sourceLineNo">235</span>                        double a = 0, b = 0, c = 0, bb1 = 0, bb2 = 0;<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                        final int win_w = weights.width;<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                        final int win_h = weights.height;<a name="line.237"></a>
+<span class="sourceLineNo">238</span><a name="line.238"></a>
+<span class="sourceLineNo">239</span>                        // process gradient<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                        for (int i = 0; i &lt; win_h; i++) {<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                                final double py = i - halfHeight;<a name="line.241"></a>
+<span class="sourceLineNo">242</span><a name="line.242"></a>
+<span class="sourceLineNo">243</span>                                for (int j = 0; j &lt; win_w; j++) {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                                        final double m = weights.pixels[i][j];<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                                        final double tgx = gx.pixels[i][j];<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                                        final double tgy = gy.pixels[i][j];<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                                        final double gxx = tgx * tgx * m;<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                                        final double gxy = tgx * tgy * m;<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                                        final double gyy = tgy * tgy * m;<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                                        final double px = j - halfWidth;<a name="line.250"></a>
+<span class="sourceLineNo">251</span><a name="line.251"></a>
+<span class="sourceLineNo">252</span>                                        a += gxx;<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                                        b += gxy;<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                                        c += gyy;<a name="line.254"></a>
+<span class="sourceLineNo">255</span><a name="line.255"></a>
+<span class="sourceLineNo">256</span>                                        bb1 += gxx * px + gxy * py;<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                                        bb2 += gxy * px + gyy * py;<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                                }<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                        }<a name="line.259"></a>
+<span class="sourceLineNo">260</span><a name="line.260"></a>
+<span class="sourceLineNo">261</span>                        final Matrix m = new Matrix(new double[][] { { a, b }, { b, c } });<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                        final Matrix mInv = PseudoInverse.pseudoInverse(m);<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                        final Point2dImpl cI2 = new Point2dImpl();<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                        cI2.x = (float) (current.x + mInv.get(0, 0) * bb1 + mInv.get(0, 1) * bb2);<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                        cI2.y = (float) (current.y + mInv.get(1, 0) * bb1 + mInv.get(1, 1) * bb2);<a name="line.265"></a>
+<span class="sourceLineNo">266</span><a name="line.266"></a>
+<span class="sourceLineNo">267</span>                        state.epsilon = FastMath.sqrt((cI2.x - current.x) * (cI2.x - current.x) + (cI2.y - current.y)<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                                        * (cI2.y - current.y));<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                        state.iteration++;<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                        current = cI2;<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                }<a name="line.271"></a>
+<span class="sourceLineNo">272</span><a name="line.272"></a>
+<span class="sourceLineNo">273</span>                // if new point is too far from initial, it means poor convergence.<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                // return initial point as the result<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                if (Math.abs(current.x - pt.getX()) &gt; halfWidth || Math.abs(current.y - pt.getY()) &gt; halfHeight) {<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                        return new Point2dImpl(pt);<a name="line.276"></a>
+<span class="sourceLineNo">277</span>                }<a name="line.277"></a>
+<span class="sourceLineNo">278</span><a name="line.278"></a>
+<span class="sourceLineNo">279</span>                // otherwise return the updated point<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                return current;<a name="line.280"></a>
+<span class="sourceLineNo">281</span>        }<a name="line.281"></a>
+<span class="sourceLineNo">282</span>}<a name="line.282"></a>
 
 
 

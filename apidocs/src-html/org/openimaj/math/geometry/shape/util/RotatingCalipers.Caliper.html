@@ -37,16 +37,16 @@
 <span class="sourceLineNo">029</span> */<a name="line.29"></a>
 <span class="sourceLineNo">030</span>package org.openimaj.math.geometry.shape.util;<a name="line.30"></a>
 <span class="sourceLineNo">031</span><a name="line.31"></a>
-<span class="sourceLineNo">032</span>import odk.lang.FastMath;<a name="line.32"></a>
-<span class="sourceLineNo">033</span><a name="line.33"></a>
-<span class="sourceLineNo">034</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.34"></a>
-<span class="sourceLineNo">035</span>import org.openimaj.math.geometry.point.Point2dImpl;<a name="line.35"></a>
-<span class="sourceLineNo">036</span>import org.openimaj.math.geometry.shape.Polygon;<a name="line.36"></a>
-<span class="sourceLineNo">037</span>import org.openimaj.math.geometry.shape.RotatedRectangle;<a name="line.37"></a>
+<span class="sourceLineNo">032</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import org.openimaj.math.geometry.point.Point2dImpl;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import org.openimaj.math.geometry.shape.Polygon;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.math.geometry.shape.RotatedRectangle;<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>import net.jafama.FastMath;<a name="line.37"></a>
 <span class="sourceLineNo">038</span><a name="line.38"></a>
 <span class="sourceLineNo">039</span>/**<a name="line.39"></a>
-<span class="sourceLineNo">040</span> * Rotating calipers algorithm, based on the implementation by &lt;a<a name="line.40"></a>
-<span class="sourceLineNo">041</span> * href="https://github.com/bkiers/RotatingCalipers"&gt;Bart Kiers&lt;/a&gt;.<a name="line.41"></a>
+<span class="sourceLineNo">040</span> * Rotating calipers algorithm, based on the implementation by<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * &lt;a href="https://github.com/bkiers/RotatingCalipers"&gt;Bart Kiers&lt;/a&gt;.<a name="line.41"></a>
 <span class="sourceLineNo">042</span> * &lt;p&gt;<a name="line.42"></a>
 <span class="sourceLineNo">043</span> * Modified to only use radians for angles and fit better within the OpenIMAJ<a name="line.43"></a>
 <span class="sourceLineNo">044</span> * geometry classes.<a name="line.44"></a>
@@ -158,153 +158,146 @@
 <span class="sourceLineNo">150</span><a name="line.150"></a>
 <span class="sourceLineNo">151</span>                if (thetaI &lt;= thetaJ &amp;&amp; thetaI &lt;= thetaK &amp;&amp; thetaI &lt;= thetaL) {<a name="line.151"></a>
 <span class="sourceLineNo">152</span>                        return thetaI;<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                }<a name="line.153"></a>
-<span class="sourceLineNo">154</span>                else if (thetaJ &lt;= thetaK &amp;&amp; thetaJ &lt;= thetaL) {<a name="line.154"></a>
-<span class="sourceLineNo">155</span>                        return thetaJ;<a name="line.155"></a>
-<span class="sourceLineNo">156</span>                }<a name="line.156"></a>
-<span class="sourceLineNo">157</span>                else if (thetaK &lt;= thetaL) {<a name="line.157"></a>
-<span class="sourceLineNo">158</span>                        return thetaK;<a name="line.158"></a>
+<span class="sourceLineNo">153</span>                } else if (thetaJ &lt;= thetaK &amp;&amp; thetaJ &lt;= thetaL) {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                        return thetaJ;<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                } else if (thetaK &lt;= thetaL) {<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                        return thetaK;<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                } else {<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                        return thetaL;<a name="line.158"></a>
 <span class="sourceLineNo">159</span>                }<a name="line.159"></a>
-<span class="sourceLineNo">160</span>                else {<a name="line.160"></a>
-<span class="sourceLineNo">161</span>                        return thetaL;<a name="line.161"></a>
-<span class="sourceLineNo">162</span>                }<a name="line.162"></a>
-<span class="sourceLineNo">163</span>        }<a name="line.163"></a>
-<span class="sourceLineNo">164</span><a name="line.164"></a>
-<span class="sourceLineNo">165</span>        protected static int getIndex(Polygon convexHull, Corner corner) {<a name="line.165"></a>
-<span class="sourceLineNo">166</span><a name="line.166"></a>
-<span class="sourceLineNo">167</span>                int index = 0;<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                final Point2d point = convexHull.points.get(index);<a name="line.168"></a>
-<span class="sourceLineNo">169</span>                float px = point.getX();<a name="line.169"></a>
-<span class="sourceLineNo">170</span>                float py = point.getY();<a name="line.170"></a>
-<span class="sourceLineNo">171</span><a name="line.171"></a>
-<span class="sourceLineNo">172</span>                for (int i = 1; i &lt; convexHull.size() - 1; i++) {<a name="line.172"></a>
+<span class="sourceLineNo">160</span>        }<a name="line.160"></a>
+<span class="sourceLineNo">161</span><a name="line.161"></a>
+<span class="sourceLineNo">162</span>        protected static int getIndex(Polygon convexHull, Corner corner) {<a name="line.162"></a>
+<span class="sourceLineNo">163</span><a name="line.163"></a>
+<span class="sourceLineNo">164</span>                int index = 0;<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                final Point2d point = convexHull.points.get(index);<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                float px = point.getX();<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                float py = point.getY();<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>                for (int i = 1; i &lt; convexHull.size() - 1; i++) {<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        final Point2d temp = convexHull.points.get(i);<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                        boolean change = false;<a name="line.172"></a>
 <span class="sourceLineNo">173</span><a name="line.173"></a>
-<span class="sourceLineNo">174</span>                        final Point2d temp = convexHull.points.get(i);<a name="line.174"></a>
-<span class="sourceLineNo">175</span>                        boolean change = false;<a name="line.175"></a>
+<span class="sourceLineNo">174</span>                        final float tx = temp.getX();<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                        final float ty = temp.getY();<a name="line.175"></a>
 <span class="sourceLineNo">176</span><a name="line.176"></a>
-<span class="sourceLineNo">177</span>                        final float tx = temp.getX();<a name="line.177"></a>
-<span class="sourceLineNo">178</span>                        final float ty = temp.getY();<a name="line.178"></a>
-<span class="sourceLineNo">179</span><a name="line.179"></a>
-<span class="sourceLineNo">180</span>                        switch (corner) {<a name="line.180"></a>
-<span class="sourceLineNo">181</span>                        case UPPER_RIGHT:<a name="line.181"></a>
-<span class="sourceLineNo">182</span>                                change = (tx &gt; px || (tx == px &amp;&amp; ty &gt; py));<a name="line.182"></a>
+<span class="sourceLineNo">177</span>                        switch (corner) {<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                        case UPPER_RIGHT:<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                                change = (tx &gt; px || (tx == px &amp;&amp; ty &gt; py));<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                                break;<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                        case UPPER_LEFT:<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                                change = (ty &gt; py || (ty == py &amp;&amp; tx &lt; px));<a name="line.182"></a>
 <span class="sourceLineNo">183</span>                                break;<a name="line.183"></a>
-<span class="sourceLineNo">184</span>                        case UPPER_LEFT:<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                                change = (ty &gt; py || (ty == py &amp;&amp; tx &lt; px));<a name="line.185"></a>
+<span class="sourceLineNo">184</span>                        case LOWER_LEFT:<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                                change = (tx &lt; px || (tx == px &amp;&amp; ty &lt; py));<a name="line.185"></a>
 <span class="sourceLineNo">186</span>                                break;<a name="line.186"></a>
-<span class="sourceLineNo">187</span>                        case LOWER_LEFT:<a name="line.187"></a>
-<span class="sourceLineNo">188</span>                                change = (tx &lt; px || (tx == px &amp;&amp; ty &lt; py));<a name="line.188"></a>
+<span class="sourceLineNo">187</span>                        case LOWER_RIGHT:<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                                change = (ty &lt; py || (ty == py &amp;&amp; tx &gt; px));<a name="line.188"></a>
 <span class="sourceLineNo">189</span>                                break;<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                        case LOWER_RIGHT:<a name="line.190"></a>
-<span class="sourceLineNo">191</span>                                change = (ty &lt; py || (ty == py &amp;&amp; tx &gt; px));<a name="line.191"></a>
-<span class="sourceLineNo">192</span>                                break;<a name="line.192"></a>
-<span class="sourceLineNo">193</span>                        }<a name="line.193"></a>
-<span class="sourceLineNo">194</span><a name="line.194"></a>
-<span class="sourceLineNo">195</span>                        if (change) {<a name="line.195"></a>
-<span class="sourceLineNo">196</span>                                index = i;<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                                px = tx;<a name="line.197"></a>
-<span class="sourceLineNo">198</span>                                py = ty;<a name="line.198"></a>
-<span class="sourceLineNo">199</span>                        }<a name="line.199"></a>
-<span class="sourceLineNo">200</span>                }<a name="line.200"></a>
+<span class="sourceLineNo">190</span>                        }<a name="line.190"></a>
+<span class="sourceLineNo">191</span><a name="line.191"></a>
+<span class="sourceLineNo">192</span>                        if (change) {<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                                index = i;<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                                px = tx;<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                                py = ty;<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                        }<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                }<a name="line.197"></a>
+<span class="sourceLineNo">198</span><a name="line.198"></a>
+<span class="sourceLineNo">199</span>                return index;<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        }<a name="line.200"></a>
 <span class="sourceLineNo">201</span><a name="line.201"></a>
-<span class="sourceLineNo">202</span>                return index;<a name="line.202"></a>
-<span class="sourceLineNo">203</span>        }<a name="line.203"></a>
-<span class="sourceLineNo">204</span><a name="line.204"></a>
-<span class="sourceLineNo">205</span>        protected static class Caliper {<a name="line.205"></a>
-<span class="sourceLineNo">206</span><a name="line.206"></a>
-<span class="sourceLineNo">207</span>                final static double SIGMA = 0.00000000001;<a name="line.207"></a>
-<span class="sourceLineNo">208</span><a name="line.208"></a>
-<span class="sourceLineNo">209</span>                final Polygon convexHull;<a name="line.209"></a>
-<span class="sourceLineNo">210</span>                int pointIndex;<a name="line.210"></a>
-<span class="sourceLineNo">211</span>                double currentAngle;<a name="line.211"></a>
-<span class="sourceLineNo">212</span><a name="line.212"></a>
-<span class="sourceLineNo">213</span>                Caliper(Polygon convexHull, int pointIndex, double currentAngle) {<a name="line.213"></a>
-<span class="sourceLineNo">214</span>                        this.convexHull = convexHull;<a name="line.214"></a>
-<span class="sourceLineNo">215</span>                        this.pointIndex = pointIndex;<a name="line.215"></a>
-<span class="sourceLineNo">216</span>                        this.currentAngle = currentAngle;<a name="line.216"></a>
-<span class="sourceLineNo">217</span>                }<a name="line.217"></a>
-<span class="sourceLineNo">218</span><a name="line.218"></a>
-<span class="sourceLineNo">219</span>                double getAngleNextPoint() {<a name="line.219"></a>
-<span class="sourceLineNo">220</span>                        final Point2d p1 = convexHull.get(pointIndex);<a name="line.220"></a>
-<span class="sourceLineNo">221</span>                        final Point2d p2 = convexHull.get((pointIndex + 1) % convexHull.size());<a name="line.221"></a>
+<span class="sourceLineNo">202</span>        protected static class Caliper {<a name="line.202"></a>
+<span class="sourceLineNo">203</span><a name="line.203"></a>
+<span class="sourceLineNo">204</span>                final static double SIGMA = 0.00000000001;<a name="line.204"></a>
+<span class="sourceLineNo">205</span><a name="line.205"></a>
+<span class="sourceLineNo">206</span>                final Polygon convexHull;<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                int pointIndex;<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                double currentAngle;<a name="line.208"></a>
+<span class="sourceLineNo">209</span><a name="line.209"></a>
+<span class="sourceLineNo">210</span>                Caliper(Polygon convexHull, int pointIndex, double currentAngle) {<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                        this.convexHull = convexHull;<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                        this.pointIndex = pointIndex;<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                        this.currentAngle = currentAngle;<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                }<a name="line.214"></a>
+<span class="sourceLineNo">215</span><a name="line.215"></a>
+<span class="sourceLineNo">216</span>                double getAngleNextPoint() {<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                        final Point2d p1 = convexHull.get(pointIndex);<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                        final Point2d p2 = convexHull.get((pointIndex + 1) % convexHull.size());<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>                        final double deltaX = p2.getX() - p1.getX();<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                        final double deltaY = p2.getY() - p1.getY();<a name="line.221"></a>
 <span class="sourceLineNo">222</span><a name="line.222"></a>
-<span class="sourceLineNo">223</span>                        final double deltaX = p2.getX() - p1.getX();<a name="line.223"></a>
-<span class="sourceLineNo">224</span>                        final double deltaY = p2.getY() - p1.getY();<a name="line.224"></a>
-<span class="sourceLineNo">225</span><a name="line.225"></a>
-<span class="sourceLineNo">226</span>                        final double angle = FastMath.atan2(deltaY, deltaX);<a name="line.226"></a>
+<span class="sourceLineNo">223</span>                        final double angle = FastMath.atan2(deltaY, deltaX);<a name="line.223"></a>
+<span class="sourceLineNo">224</span><a name="line.224"></a>
+<span class="sourceLineNo">225</span>                        return angle &lt; 0 ? ANGLE_360DEG_IN_RADS + angle : angle;<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                }<a name="line.226"></a>
 <span class="sourceLineNo">227</span><a name="line.227"></a>
-<span class="sourceLineNo">228</span>                        return angle &lt; 0 ? ANGLE_360DEG_IN_RADS + angle : angle;<a name="line.228"></a>
-<span class="sourceLineNo">229</span>                }<a name="line.229"></a>
-<span class="sourceLineNo">230</span><a name="line.230"></a>
-<span class="sourceLineNo">231</span>                double getConstant() {<a name="line.231"></a>
-<span class="sourceLineNo">232</span><a name="line.232"></a>
-<span class="sourceLineNo">233</span>                        final Point2d p = convexHull.get(pointIndex);<a name="line.233"></a>
+<span class="sourceLineNo">228</span>                double getConstant() {<a name="line.228"></a>
+<span class="sourceLineNo">229</span><a name="line.229"></a>
+<span class="sourceLineNo">230</span>                        final Point2d p = convexHull.get(pointIndex);<a name="line.230"></a>
+<span class="sourceLineNo">231</span><a name="line.231"></a>
+<span class="sourceLineNo">232</span>                        return p.getY() - (getSlope() * p.getX());<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                }<a name="line.233"></a>
 <span class="sourceLineNo">234</span><a name="line.234"></a>
-<span class="sourceLineNo">235</span>                        return p.getY() - (getSlope() * p.getX());<a name="line.235"></a>
-<span class="sourceLineNo">236</span>                }<a name="line.236"></a>
-<span class="sourceLineNo">237</span><a name="line.237"></a>
-<span class="sourceLineNo">238</span>                double getDeltaAngleNextPoint() {<a name="line.238"></a>
-<span class="sourceLineNo">239</span><a name="line.239"></a>
-<span class="sourceLineNo">240</span>                        double angle = getAngleNextPoint();<a name="line.240"></a>
-<span class="sourceLineNo">241</span><a name="line.241"></a>
-<span class="sourceLineNo">242</span>                        angle = angle &lt; 0 ? ANGLE_360DEG_IN_RADS + angle - currentAngle : angle - currentAngle;<a name="line.242"></a>
+<span class="sourceLineNo">235</span>                double getDeltaAngleNextPoint() {<a name="line.235"></a>
+<span class="sourceLineNo">236</span><a name="line.236"></a>
+<span class="sourceLineNo">237</span>                        double angle = getAngleNextPoint();<a name="line.237"></a>
+<span class="sourceLineNo">238</span><a name="line.238"></a>
+<span class="sourceLineNo">239</span>                        angle = angle &lt; 0 ? ANGLE_360DEG_IN_RADS + angle - currentAngle : angle - currentAngle;<a name="line.239"></a>
+<span class="sourceLineNo">240</span><a name="line.240"></a>
+<span class="sourceLineNo">241</span>                        return angle &lt; 0 ? ANGLE_360DEG_IN_RADS : angle;<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                }<a name="line.242"></a>
 <span class="sourceLineNo">243</span><a name="line.243"></a>
-<span class="sourceLineNo">244</span>                        return angle &lt; 0 ? ANGLE_360DEG_IN_RADS : angle;<a name="line.244"></a>
-<span class="sourceLineNo">245</span>                }<a name="line.245"></a>
-<span class="sourceLineNo">246</span><a name="line.246"></a>
-<span class="sourceLineNo">247</span>                Point2dImpl getIntersection(Caliper that) {<a name="line.247"></a>
-<span class="sourceLineNo">248</span><a name="line.248"></a>
-<span class="sourceLineNo">249</span>                        // the x-intercept of 'this' and 'that': x = ((c2 - c1) / (m1 - m2))<a name="line.249"></a>
-<span class="sourceLineNo">250</span>                        double x;<a name="line.250"></a>
-<span class="sourceLineNo">251</span>                        // the y-intercept of 'this' and 'that', given 'x': (m*x) + c<a name="line.251"></a>
-<span class="sourceLineNo">252</span>                        double y;<a name="line.252"></a>
-<span class="sourceLineNo">253</span><a name="line.253"></a>
-<span class="sourceLineNo">254</span>                        if (this.isVertical()) {<a name="line.254"></a>
-<span class="sourceLineNo">255</span>                                x = convexHull.points.get(pointIndex).getX();<a name="line.255"></a>
-<span class="sourceLineNo">256</span>                        }<a name="line.256"></a>
-<span class="sourceLineNo">257</span>                        else if (this.isHorizontal()) {<a name="line.257"></a>
-<span class="sourceLineNo">258</span>                                x = that.convexHull.points.get(that.pointIndex).getX();<a name="line.258"></a>
-<span class="sourceLineNo">259</span>                        }<a name="line.259"></a>
-<span class="sourceLineNo">260</span>                        else {<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                                x = (that.getConstant() - this.getConstant()) / (this.getSlope() - that.getSlope());<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                        }<a name="line.262"></a>
-<span class="sourceLineNo">263</span><a name="line.263"></a>
-<span class="sourceLineNo">264</span>                        if (this.isVertical()) {<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                                y = that.getConstant();<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                        }<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                        else if (this.isHorizontal()) {<a name="line.267"></a>
-<span class="sourceLineNo">268</span>                                y = this.getConstant();<a name="line.268"></a>
-<span class="sourceLineNo">269</span>                        }<a name="line.269"></a>
-<span class="sourceLineNo">270</span>                        else {<a name="line.270"></a>
-<span class="sourceLineNo">271</span>                                y = (this.getSlope() * x) + this.getConstant();<a name="line.271"></a>
-<span class="sourceLineNo">272</span>                        }<a name="line.272"></a>
+<span class="sourceLineNo">244</span>                Point2dImpl getIntersection(Caliper that) {<a name="line.244"></a>
+<span class="sourceLineNo">245</span><a name="line.245"></a>
+<span class="sourceLineNo">246</span>                        // the x-intercept of 'this' and 'that': x = ((c2 - c1) / (m1 - m2))<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                        double x;<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                        // the y-intercept of 'this' and 'that', given 'x': (m*x) + c<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                        double y;<a name="line.249"></a>
+<span class="sourceLineNo">250</span><a name="line.250"></a>
+<span class="sourceLineNo">251</span>                        if (this.isVertical()) {<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                                x = convexHull.points.get(pointIndex).getX();<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                        } else if (this.isHorizontal()) {<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                                x = that.convexHull.points.get(that.pointIndex).getX();<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                        } else {<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                                x = (that.getConstant() - this.getConstant()) / (this.getSlope() - that.getSlope());<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                        }<a name="line.257"></a>
+<span class="sourceLineNo">258</span><a name="line.258"></a>
+<span class="sourceLineNo">259</span>                        if (this.isVertical()) {<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                                y = that.getConstant();<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                        } else if (this.isHorizontal()) {<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                                y = this.getConstant();<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                        } else {<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                                y = (this.getSlope() * x) + this.getConstant();<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                        }<a name="line.265"></a>
+<span class="sourceLineNo">266</span><a name="line.266"></a>
+<span class="sourceLineNo">267</span>                        return new Point2dImpl(x, y);<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                }<a name="line.268"></a>
+<span class="sourceLineNo">269</span><a name="line.269"></a>
+<span class="sourceLineNo">270</span>                double getSlope() {<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                        return Math.tan(currentAngle);<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                }<a name="line.272"></a>
 <span class="sourceLineNo">273</span><a name="line.273"></a>
-<span class="sourceLineNo">274</span>                        return new Point2dImpl(x, y);<a name="line.274"></a>
-<span class="sourceLineNo">275</span>                }<a name="line.275"></a>
-<span class="sourceLineNo">276</span><a name="line.276"></a>
-<span class="sourceLineNo">277</span>                double getSlope() {<a name="line.277"></a>
-<span class="sourceLineNo">278</span>                        return Math.tan(currentAngle);<a name="line.278"></a>
-<span class="sourceLineNo">279</span>                }<a name="line.279"></a>
-<span class="sourceLineNo">280</span><a name="line.280"></a>
-<span class="sourceLineNo">281</span>                boolean isHorizontal() {<a name="line.281"></a>
-<span class="sourceLineNo">282</span>                        return (Math.abs(currentAngle) &lt; SIGMA) || (Math.abs(currentAngle - ANGLE_180DEG_IN_RADS) &lt; SIGMA);<a name="line.282"></a>
-<span class="sourceLineNo">283</span>                }<a name="line.283"></a>
+<span class="sourceLineNo">274</span>                boolean isHorizontal() {<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                        return (Math.abs(currentAngle) &lt; SIGMA) || (Math.abs(currentAngle - ANGLE_180DEG_IN_RADS) &lt; SIGMA);<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                }<a name="line.276"></a>
+<span class="sourceLineNo">277</span><a name="line.277"></a>
+<span class="sourceLineNo">278</span>                boolean isVertical() {<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                        return (Math.abs(currentAngle - ANGLE_90DEG_IN_RADS) &lt; SIGMA)<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                                        || (Math.abs(currentAngle - ANGLE_270DEG_IN_RADS) &lt; SIGMA);<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                }<a name="line.281"></a>
+<span class="sourceLineNo">282</span><a name="line.282"></a>
+<span class="sourceLineNo">283</span>                void rotateBy(double angle) {<a name="line.283"></a>
 <span class="sourceLineNo">284</span><a name="line.284"></a>
-<span class="sourceLineNo">285</span>                boolean isVertical() {<a name="line.285"></a>
-<span class="sourceLineNo">286</span>                        return (Math.abs(currentAngle - ANGLE_90DEG_IN_RADS) &lt; SIGMA)<a name="line.286"></a>
-<span class="sourceLineNo">287</span>                                        || (Math.abs(currentAngle - ANGLE_270DEG_IN_RADS) &lt; SIGMA);<a name="line.287"></a>
-<span class="sourceLineNo">288</span>                }<a name="line.288"></a>
-<span class="sourceLineNo">289</span><a name="line.289"></a>
-<span class="sourceLineNo">290</span>                void rotateBy(double angle) {<a name="line.290"></a>
-<span class="sourceLineNo">291</span><a name="line.291"></a>
-<span class="sourceLineNo">292</span>                        if (this.getDeltaAngleNextPoint() == angle) {<a name="line.292"></a>
-<span class="sourceLineNo">293</span>                                pointIndex++;<a name="line.293"></a>
-<span class="sourceLineNo">294</span>                        }<a name="line.294"></a>
-<span class="sourceLineNo">295</span><a name="line.295"></a>
-<span class="sourceLineNo">296</span>                        this.currentAngle += angle;<a name="line.296"></a>
-<span class="sourceLineNo">297</span>                }<a name="line.297"></a>
-<span class="sourceLineNo">298</span>        }<a name="line.298"></a>
-<span class="sourceLineNo">299</span>}<a name="line.299"></a>
+<span class="sourceLineNo">285</span>                        if (this.getDeltaAngleNextPoint() == angle) {<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                                pointIndex++;<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                        }<a name="line.287"></a>
+<span class="sourceLineNo">288</span><a name="line.288"></a>
+<span class="sourceLineNo">289</span>                        this.currentAngle += angle;<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                }<a name="line.290"></a>
+<span class="sourceLineNo">291</span>        }<a name="line.291"></a>
+<span class="sourceLineNo">292</span>}<a name="line.292"></a>
 
 
 

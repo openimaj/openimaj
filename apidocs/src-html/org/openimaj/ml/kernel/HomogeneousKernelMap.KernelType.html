@@ -56,10 +56,10 @@
 <span class="sourceLineNo">048</span> * This implementation is based directly on the VLFeat implementation written by<a name="line.48"></a>
 <span class="sourceLineNo">049</span> * Andrea Verdaldi, although it has been refactored to better fit with Java<a name="line.49"></a>
 <span class="sourceLineNo">050</span> * conventions.<a name="line.50"></a>
-<span class="sourceLineNo">051</span> * <a name="line.51"></a>
+<span class="sourceLineNo">051</span> *<a name="line.51"></a>
 <span class="sourceLineNo">052</span> * @see "http://www.vlfeat.org/api/homkermap.html"<a name="line.52"></a>
 <span class="sourceLineNo">053</span> * @see "http://www.robots.ox.ac.uk/~vgg/software/homkermap/"<a name="line.53"></a>
-<span class="sourceLineNo">054</span> * <a name="line.54"></a>
+<span class="sourceLineNo">054</span> *<a name="line.54"></a>
 <span class="sourceLineNo">055</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.55"></a>
 <span class="sourceLineNo">056</span> * @author Based on code originally written by Andrea Verdaldi<a name="line.56"></a>
 <span class="sourceLineNo">057</span> */<a name="line.57"></a>
@@ -75,430 +75,422 @@
 <span class="sourceLineNo">067</span>                                                number = "3",<a name="line.67"></a>
 <span class="sourceLineNo">068</span>                                                volume = "34",<a name="line.68"></a>
 <span class="sourceLineNo">069</span>                                                customData = {<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                                                                "keywords", "approximation theory;computer vision;data handling;feature extraction;learning (artificial intelligence);spectral analysis;support vector machines;Nystrom approximation;additive homogeneous kernels;approximate finite-dimensional feature maps;approximation error;computer vision;data dependency;explicit feature maps;exponential decay;large scale nonlinear support vector machines;linear SVM;spectral analysis;Additives;Approximation methods;Histograms;Kernel;Measurement;Support vector machines;Training;Kernel methods;feature map;large scale learning;object detection.;object recognition",<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                                                                "doi", "10.1109/TPAMI.2011.153",<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                                                                "ISSN", "0162-8828"<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                                                }<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                                ),<a name="line.74"></a>
+<span class="sourceLineNo">070</span>                                                                "keywords",<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                                                                "approximation theory;computer vision;data handling;feature extraction;learning (artificial intelligence);spectral analysis;support vector machines;Nystrom approximation;additive homogeneous kernels;approximate finite-dimensional feature maps;approximation error;computer vision;data dependency;explicit feature maps;exponential decay;large scale nonlinear support vector machines;linear SVM;spectral analysis;Additives;Approximation methods;Histograms;Kernel;Measurement;Support vector machines;Training;Kernel methods;feature map;large scale learning;object detection.;object recognition",<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                                                "doi", "10.1109/TPAMI.2011.153",<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                                                                "ISSN", "0162-8828"<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                                                }),<a name="line.74"></a>
 <span class="sourceLineNo">075</span>                                @Reference(<a name="line.75"></a>
 <span class="sourceLineNo">076</span>                                                type = ReferenceType.Inproceedings,<a name="line.76"></a>
 <span class="sourceLineNo">077</span>                                                author = { "A. Vedaldi", "A. Zisserman" },<a name="line.77"></a>
 <span class="sourceLineNo">078</span>                                                title = "Efficient Additive Kernels via Explicit Feature Maps",<a name="line.78"></a>
 <span class="sourceLineNo">079</span>                                                year = "2010",<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                                                booktitle = "Proceedings of the IEEE Conf. on Computer Vision and Pattern Recognition (CVPR)"<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                                )<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                })<a name="line.82"></a>
-<span class="sourceLineNo">083</span>public class HomogeneousKernelMap {<a name="line.83"></a>
-<span class="sourceLineNo">084</span>        /**<a name="line.84"></a>
-<span class="sourceLineNo">085</span>         * Types of supported kernel for the {@link HomogeneousKernelMap}<a name="line.85"></a>
-<span class="sourceLineNo">086</span>         * <a name="line.86"></a>
-<span class="sourceLineNo">087</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.87"></a>
-<span class="sourceLineNo">088</span>         * <a name="line.88"></a>
-<span class="sourceLineNo">089</span>         */<a name="line.89"></a>
-<span class="sourceLineNo">090</span>        public enum KernelType {<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                /**<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                 * Intersection kernel<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                 * <a name="line.93"></a>
-<span class="sourceLineNo">094</span>                 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                 * <a name="line.95"></a>
-<span class="sourceLineNo">096</span>                 */<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                Intersection {<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                        @Override<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                        protected double getSpectrum(double omega) {<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                                return (2.0 / Math.PI) / (1 + 4 * omega * omega);<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                        }<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                },<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                /**<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                 * Chi^2 kernel<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                 * <a name="line.105"></a>
-<span class="sourceLineNo">106</span>                 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                 * <a name="line.107"></a>
-<span class="sourceLineNo">108</span>                 */<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                Chi2 {<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                        @Override<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                        protected double getSpectrum(double omega) {<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                                return 2.0 / (Math.exp(Math.PI * omega) + Math.exp(-Math.PI * omega));<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                        }<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                },<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                /**<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                 * Jenson-Shannon Kernel<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                 * <a name="line.117"></a>
-<span class="sourceLineNo">118</span>                 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                 * <a name="line.119"></a>
-<span class="sourceLineNo">120</span>                 */<a name="line.120"></a>
-<span class="sourceLineNo">121</span>                JensonShannon {<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                        @Override<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                        protected double getSpectrum(double omega) {<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                                return (2.0 / Math.log(4.0)) * 2.0 / (Math.exp(Math.PI * omega) + Math.exp(-Math.PI * omega))<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                                                / (1 + 4 * omega * omega);<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                        }<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                };<a name="line.127"></a>
-<span class="sourceLineNo">128</span><a name="line.128"></a>
-<span class="sourceLineNo">129</span>                protected abstract double getSpectrum(double omega);<a name="line.129"></a>
-<span class="sourceLineNo">130</span>        }<a name="line.130"></a>
-<span class="sourceLineNo">131</span><a name="line.131"></a>
-<span class="sourceLineNo">132</span>        /**<a name="line.132"></a>
-<span class="sourceLineNo">133</span>         * Types of window supported by the {@link HomogeneousKernelMap}.<a name="line.133"></a>
-<span class="sourceLineNo">134</span>         * <a name="line.134"></a>
-<span class="sourceLineNo">135</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.135"></a>
-<span class="sourceLineNo">136</span>         * <a name="line.136"></a>
-<span class="sourceLineNo">137</span>         */<a name="line.137"></a>
-<span class="sourceLineNo">138</span>        public enum WindowType {<a name="line.138"></a>
-<span class="sourceLineNo">139</span>                /**<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                 * Uniform window<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                 * <a name="line.141"></a>
-<span class="sourceLineNo">142</span>                 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                 * <a name="line.143"></a>
-<span class="sourceLineNo">144</span>                 */<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                Uniform {<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                        @Override<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                        double computeKappaHat(KernelType type, double omega, HomogeneousKernelMap map) {<a name="line.147"></a>
-<span class="sourceLineNo">148</span>                                return type.getSpectrum(omega);<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                        }<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                },<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                /**<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                 * Rectangular window<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                 * <a name="line.153"></a>
-<span class="sourceLineNo">154</span>                 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.154"></a>
-<span class="sourceLineNo">155</span>                 * <a name="line.155"></a>
-<span class="sourceLineNo">156</span>                 */<a name="line.156"></a>
-<span class="sourceLineNo">157</span>                Rectangular {<a name="line.157"></a>
-<span class="sourceLineNo">158</span>                        @Override<a name="line.158"></a>
-<span class="sourceLineNo">159</span>                        double computeKappaHat(KernelType type, double omega, HomogeneousKernelMap map) {<a name="line.159"></a>
-<span class="sourceLineNo">160</span>                                double kappa_hat = 0;<a name="line.160"></a>
-<span class="sourceLineNo">161</span>                                final double epsilon = 1e-2;<a name="line.161"></a>
-<span class="sourceLineNo">162</span>                                final double omegaRange = 2.0 / (map.period * epsilon);<a name="line.162"></a>
-<span class="sourceLineNo">163</span>                                final double domega = 2 * omegaRange / (2 * 1024.0 + 1);<a name="line.163"></a>
-<span class="sourceLineNo">164</span><a name="line.164"></a>
-<span class="sourceLineNo">165</span>                                for (double omegap = -omegaRange; omegap &lt;= omegaRange; omegap += domega) {<a name="line.165"></a>
-<span class="sourceLineNo">166</span>                                        double win = sinc((map.period / 2.0) * omegap);<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                                        win *= (map.period / (2.0 * Math.PI));<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                                        kappa_hat += win * type.getSpectrum(omegap + omega);<a name="line.168"></a>
-<span class="sourceLineNo">169</span>                                }<a name="line.169"></a>
-<span class="sourceLineNo">170</span><a name="line.170"></a>
-<span class="sourceLineNo">171</span>                                kappa_hat *= domega;<a name="line.171"></a>
-<span class="sourceLineNo">172</span><a name="line.172"></a>
-<span class="sourceLineNo">173</span>                                // project on the positive orthant (see PAMI)<a name="line.173"></a>
-<span class="sourceLineNo">174</span>                                kappa_hat = Math.max(kappa_hat, 0.0);<a name="line.174"></a>
-<span class="sourceLineNo">175</span><a name="line.175"></a>
-<span class="sourceLineNo">176</span>                                return kappa_hat;<a name="line.176"></a>
-<span class="sourceLineNo">177</span>                        }<a name="line.177"></a>
-<span class="sourceLineNo">178</span><a name="line.178"></a>
-<span class="sourceLineNo">179</span>                        private double sinc(double x)<a name="line.179"></a>
-<span class="sourceLineNo">180</span>                        {<a name="line.180"></a>
-<span class="sourceLineNo">181</span>                                if (x == 0.0)<a name="line.181"></a>
-<span class="sourceLineNo">182</span>                                        return 1.0;<a name="line.182"></a>
-<span class="sourceLineNo">183</span>                                return Math.sin(x) / x;<a name="line.183"></a>
-<span class="sourceLineNo">184</span>                        }<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                };<a name="line.185"></a>
+<span class="sourceLineNo">080</span>                                                booktitle = "Proceedings of the IEEE Conf. on Computer Vision and Pattern Recognition (CVPR)")<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                })<a name="line.81"></a>
+<span class="sourceLineNo">082</span>public class HomogeneousKernelMap {<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * Types of supported kernel for the {@link HomogeneousKernelMap}<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         *<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         *<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         */<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        public enum KernelType {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                /**<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                 * Intersection kernel<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                 *<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                 *<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                 */<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                Intersection {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        @Override<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        protected double getSpectrum(double omega) {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                                return (2.0 / Math.PI) / (1 + 4 * omega * omega);<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                        }<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                },<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                /**<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                 * Chi^2 kernel<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                 *<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                 *<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                 */<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                Chi2 {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        @Override<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                        protected double getSpectrum(double omega) {<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                                return 2.0 / (Math.exp(Math.PI * omega) + Math.exp(-Math.PI * omega));<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                        }<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                },<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                /**<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                 * Jenson-Shannon Kernel<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                 *<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                 *<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                 */<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                JensonShannon {<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        @Override<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        protected double getSpectrum(double omega) {<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                                return (2.0 / Math.log(4.0)) * 2.0 / (Math.exp(Math.PI * omega) + Math.exp(-Math.PI * omega))<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                                                / (1 + 4 * omega * omega);<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        }<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                };<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>                protected abstract double getSpectrum(double omega);<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        }<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>        /**<a name="line.131"></a>
+<span class="sourceLineNo">132</span>         * Types of window supported by the {@link HomogeneousKernelMap}.<a name="line.132"></a>
+<span class="sourceLineNo">133</span>         *<a name="line.133"></a>
+<span class="sourceLineNo">134</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.134"></a>
+<span class="sourceLineNo">135</span>         *<a name="line.135"></a>
+<span class="sourceLineNo">136</span>         */<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        public enum WindowType {<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                /**<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                 * Uniform window<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                 *<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                 *<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                 */<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                Uniform {<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                        @Override<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                        double computeKappaHat(KernelType type, double omega, HomogeneousKernelMap map) {<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                                return type.getSpectrum(omega);<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        }<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                },<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                /**<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                 * Rectangular window<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                 *<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                 *<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                 */<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                Rectangular {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                        @Override<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                        double computeKappaHat(KernelType type, double omega, HomogeneousKernelMap map) {<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                                double kappa_hat = 0;<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                                final double epsilon = 1e-2;<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                                final double omegaRange = 2.0 / (map.period * epsilon);<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                                final double domega = 2 * omegaRange / (2 * 1024.0 + 1);<a name="line.162"></a>
+<span class="sourceLineNo">163</span><a name="line.163"></a>
+<span class="sourceLineNo">164</span>                                for (double omegap = -omegaRange; omegap &lt;= omegaRange; omegap += domega) {<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                                        double win = sinc((map.period / 2.0) * omegap);<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                                        win *= (map.period / (2.0 * Math.PI));<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                                        kappa_hat += win * type.getSpectrum(omegap + omega);<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                                }<a name="line.168"></a>
+<span class="sourceLineNo">169</span><a name="line.169"></a>
+<span class="sourceLineNo">170</span>                                kappa_hat *= domega;<a name="line.170"></a>
+<span class="sourceLineNo">171</span><a name="line.171"></a>
+<span class="sourceLineNo">172</span>                                // project on the positive orthant (see PAMI)<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                                kappa_hat = Math.max(kappa_hat, 0.0);<a name="line.173"></a>
+<span class="sourceLineNo">174</span><a name="line.174"></a>
+<span class="sourceLineNo">175</span>                                return kappa_hat;<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                        }<a name="line.176"></a>
+<span class="sourceLineNo">177</span><a name="line.177"></a>
+<span class="sourceLineNo">178</span>                        private double sinc(double x) {<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                                if (x == 0.0)<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                                        return 1.0;<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                                return Math.sin(x) / x;<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                        }<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                };<a name="line.183"></a>
+<span class="sourceLineNo">184</span><a name="line.184"></a>
+<span class="sourceLineNo">185</span>                abstract double computeKappaHat(KernelType type, double omega, HomogeneousKernelMap map);<a name="line.185"></a>
 <span class="sourceLineNo">186</span><a name="line.186"></a>
-<span class="sourceLineNo">187</span>                abstract double computeKappaHat(KernelType type, double omega, HomogeneousKernelMap map);<a name="line.187"></a>
-<span class="sourceLineNo">188</span><a name="line.188"></a>
-<span class="sourceLineNo">189</span>                protected double getSmoothSpectrum(double omega, HomogeneousKernelMap map) {<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                        return computeKappaHat(map.kernelType, omega, map);<a name="line.190"></a>
-<span class="sourceLineNo">191</span>                }<a name="line.191"></a>
-<span class="sourceLineNo">192</span>        }<a name="line.192"></a>
-<span class="sourceLineNo">193</span><a name="line.193"></a>
-<span class="sourceLineNo">194</span>        /**<a name="line.194"></a>
-<span class="sourceLineNo">195</span>         * Helper implementation of a {@link FeatureExtractor} that wraps another<a name="line.195"></a>
-<span class="sourceLineNo">196</span>         * {@link FeatureExtractor} and then applies the<a name="line.196"></a>
-<span class="sourceLineNo">197</span>         * {@link HomogeneousKernelMap} to the output before returning the vector.<a name="line.197"></a>
-<span class="sourceLineNo">198</span>         * <a name="line.198"></a>
-<span class="sourceLineNo">199</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.199"></a>
-<span class="sourceLineNo">200</span>         * <a name="line.200"></a>
-<span class="sourceLineNo">201</span>         * @param &lt;T&gt;<a name="line.201"></a>
-<span class="sourceLineNo">202</span>         *            Type of object that features can be extracted from<a name="line.202"></a>
-<span class="sourceLineNo">203</span>         */<a name="line.203"></a>
-<span class="sourceLineNo">204</span>        public static class ExtractorWrapper&lt;T&gt; implements FeatureExtractor&lt;DoubleFV, T&gt; {<a name="line.204"></a>
-<span class="sourceLineNo">205</span>                private FeatureExtractor&lt;? extends FeatureVector, T&gt; inner;<a name="line.205"></a>
-<span class="sourceLineNo">206</span>                private HomogeneousKernelMap map;<a name="line.206"></a>
-<span class="sourceLineNo">207</span><a name="line.207"></a>
-<span class="sourceLineNo">208</span>                /**<a name="line.208"></a>
-<span class="sourceLineNo">209</span>                 * Construct with the given internal extractor and homogeneous kernel<a name="line.209"></a>
-<span class="sourceLineNo">210</span>                 * map.<a name="line.210"></a>
-<span class="sourceLineNo">211</span>                 * <a name="line.211"></a>
-<span class="sourceLineNo">212</span>                 * @param inner<a name="line.212"></a>
-<span class="sourceLineNo">213</span>                 *            the internal extractor<a name="line.213"></a>
-<span class="sourceLineNo">214</span>                 * @param map<a name="line.214"></a>
-<span class="sourceLineNo">215</span>                 *            the homogeneous kernel map<a name="line.215"></a>
-<span class="sourceLineNo">216</span>                 */<a name="line.216"></a>
-<span class="sourceLineNo">217</span>                public ExtractorWrapper(FeatureExtractor&lt;? extends FeatureVector, T&gt; inner, HomogeneousKernelMap map) {<a name="line.217"></a>
-<span class="sourceLineNo">218</span>                        this.inner = inner;<a name="line.218"></a>
-<span class="sourceLineNo">219</span>                        this.map = map;<a name="line.219"></a>
-<span class="sourceLineNo">220</span>                }<a name="line.220"></a>
-<span class="sourceLineNo">221</span><a name="line.221"></a>
-<span class="sourceLineNo">222</span>                @Override<a name="line.222"></a>
-<span class="sourceLineNo">223</span>                public DoubleFV extractFeature(T object) {<a name="line.223"></a>
-<span class="sourceLineNo">224</span>                        return map.evaluate(inner.extractFeature(object).asDoubleFV());<a name="line.224"></a>
-<span class="sourceLineNo">225</span>                }<a name="line.225"></a>
-<span class="sourceLineNo">226</span>        }<a name="line.226"></a>
-<span class="sourceLineNo">227</span><a name="line.227"></a>
-<span class="sourceLineNo">228</span>        private KernelType kernelType;<a name="line.228"></a>
-<span class="sourceLineNo">229</span>        private double period;<a name="line.229"></a>
-<span class="sourceLineNo">230</span>        private double gamma;<a name="line.230"></a>
-<span class="sourceLineNo">231</span>        private int order;<a name="line.231"></a>
-<span class="sourceLineNo">232</span>        private int numSubdivisions;<a name="line.232"></a>
-<span class="sourceLineNo">233</span>        private double subdivision;<a name="line.233"></a>
-<span class="sourceLineNo">234</span>        private int minExponent;<a name="line.234"></a>
-<span class="sourceLineNo">235</span>        private int maxExponent;<a name="line.235"></a>
-<span class="sourceLineNo">236</span>        private double[] table;<a name="line.236"></a>
-<span class="sourceLineNo">237</span><a name="line.237"></a>
-<span class="sourceLineNo">238</span>        /**<a name="line.238"></a>
-<span class="sourceLineNo">239</span>         * Construct with the given kernel and window. The Gamma and order values<a name="line.239"></a>
-<span class="sourceLineNo">240</span>         * are set at their defaults of 1. The period is computed automatically.<a name="line.240"></a>
-<span class="sourceLineNo">241</span>         * <a name="line.241"></a>
-<span class="sourceLineNo">242</span>         * @param kernelType<a name="line.242"></a>
-<span class="sourceLineNo">243</span>         *            the type of kernel<a name="line.243"></a>
-<span class="sourceLineNo">244</span>         * @param windowType<a name="line.244"></a>
-<span class="sourceLineNo">245</span>         *            the type of window (use {@link WindowType#Rectangular} if<a name="line.245"></a>
-<span class="sourceLineNo">246</span>         *            unsure)<a name="line.246"></a>
-<span class="sourceLineNo">247</span>         */<a name="line.247"></a>
-<span class="sourceLineNo">248</span>        public HomogeneousKernelMap(KernelType kernelType, WindowType windowType) {<a name="line.248"></a>
-<span class="sourceLineNo">249</span>                this(kernelType, 1, 1, -1, windowType);<a name="line.249"></a>
-<span class="sourceLineNo">250</span>        }<a name="line.250"></a>
-<span class="sourceLineNo">251</span><a name="line.251"></a>
-<span class="sourceLineNo">252</span>        /**<a name="line.252"></a>
-<span class="sourceLineNo">253</span>         * Construct with the given kernel, gamma and window. The period is computed<a name="line.253"></a>
-<span class="sourceLineNo">254</span>         * automatically and the approximation order is set to 1.<a name="line.254"></a>
-<span class="sourceLineNo">255</span>         * <a name="line.255"></a>
-<span class="sourceLineNo">256</span>         * @param kernelType<a name="line.256"></a>
-<span class="sourceLineNo">257</span>         *            the type of kernel<a name="line.257"></a>
-<span class="sourceLineNo">258</span>         * @param gamma<a name="line.258"></a>
-<span class="sourceLineNo">259</span>         *            the gamma value. the standard kernels are 1-homogeneous, but<a name="line.259"></a>
-<span class="sourceLineNo">260</span>         *            smaller values can work better in practice.<a name="line.260"></a>
-<span class="sourceLineNo">261</span>         * @param windowType<a name="line.261"></a>
-<span class="sourceLineNo">262</span>         *            the type of window (use {@link WindowType#Rectangular} if<a name="line.262"></a>
-<span class="sourceLineNo">263</span>         *            unsure)<a name="line.263"></a>
-<span class="sourceLineNo">264</span>         */<a name="line.264"></a>
-<span class="sourceLineNo">265</span>        public HomogeneousKernelMap(KernelType kernelType,<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                        double gamma,<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                        WindowType windowType)<a name="line.267"></a>
-<span class="sourceLineNo">268</span>        {<a name="line.268"></a>
-<span class="sourceLineNo">269</span>                this(kernelType, gamma, 1, -1, windowType);<a name="line.269"></a>
-<span class="sourceLineNo">270</span>        }<a name="line.270"></a>
-<span class="sourceLineNo">271</span><a name="line.271"></a>
-<span class="sourceLineNo">272</span>        /**<a name="line.272"></a>
-<span class="sourceLineNo">273</span>         * Construct with the given kernel, gamma, order and window. The period is<a name="line.273"></a>
-<span class="sourceLineNo">274</span>         * computed automatically.<a name="line.274"></a>
-<span class="sourceLineNo">275</span>         * <a name="line.275"></a>
-<span class="sourceLineNo">276</span>         * @param kernelType<a name="line.276"></a>
-<span class="sourceLineNo">277</span>         *            the type of kernel<a name="line.277"></a>
-<span class="sourceLineNo">278</span>         * @param gamma<a name="line.278"></a>
-<span class="sourceLineNo">279</span>         *            the gamma value. the standard kernels are 1-homogeneous, but<a name="line.279"></a>
-<span class="sourceLineNo">280</span>         *            smaller values can work better in practice.<a name="line.280"></a>
-<span class="sourceLineNo">281</span>         * @param order<a name="line.281"></a>
-<span class="sourceLineNo">282</span>         *            the approximation order (usually 1 is enough)<a name="line.282"></a>
-<span class="sourceLineNo">283</span>         * @param windowType<a name="line.283"></a>
-<span class="sourceLineNo">284</span>         *            the type of window (use {@link WindowType#Rectangular} if<a name="line.284"></a>
-<span class="sourceLineNo">285</span>         *            unsure)<a name="line.285"></a>
-<span class="sourceLineNo">286</span>         */<a name="line.286"></a>
-<span class="sourceLineNo">287</span>        public HomogeneousKernelMap(KernelType kernelType,<a name="line.287"></a>
-<span class="sourceLineNo">288</span>                        double gamma,<a name="line.288"></a>
-<span class="sourceLineNo">289</span>                        int order,<a name="line.289"></a>
-<span class="sourceLineNo">290</span>                        WindowType windowType)<a name="line.290"></a>
-<span class="sourceLineNo">291</span>        {<a name="line.291"></a>
-<span class="sourceLineNo">292</span>                this(kernelType, gamma, order, -1, windowType);<a name="line.292"></a>
-<span class="sourceLineNo">293</span>        }<a name="line.293"></a>
-<span class="sourceLineNo">294</span><a name="line.294"></a>
-<span class="sourceLineNo">295</span>        /**<a name="line.295"></a>
-<span class="sourceLineNo">296</span>         * Construct with the given kernel, gamma, order, period and window. If the<a name="line.296"></a>
-<span class="sourceLineNo">297</span>         * period is negative, it will be replaced by the default.<a name="line.297"></a>
-<span class="sourceLineNo">298</span>         * <a name="line.298"></a>
-<span class="sourceLineNo">299</span>         * @param kernelType<a name="line.299"></a>
-<span class="sourceLineNo">300</span>         *            the type of kernel<a name="line.300"></a>
-<span class="sourceLineNo">301</span>         * @param gamma<a name="line.301"></a>
-<span class="sourceLineNo">302</span>         *            the gamma value. the standard kernels are 1-homogeneous, but<a name="line.302"></a>
-<span class="sourceLineNo">303</span>         *            smaller values can work better in practice.<a name="line.303"></a>
-<span class="sourceLineNo">304</span>         * @param order<a name="line.304"></a>
-<span class="sourceLineNo">305</span>         *            the approximation order (usually 1 is enough)<a name="line.305"></a>
-<span class="sourceLineNo">306</span>         * @param period<a name="line.306"></a>
-<span class="sourceLineNo">307</span>         *            the periodicity of the kernel spectrum<a name="line.307"></a>
-<span class="sourceLineNo">308</span>         * @param windowType<a name="line.308"></a>
-<span class="sourceLineNo">309</span>         *            the type of window (use {@link WindowType#Rectangular} if<a name="line.309"></a>
-<span class="sourceLineNo">310</span>         *            unsure)<a name="line.310"></a>
-<span class="sourceLineNo">311</span>         */<a name="line.311"></a>
-<span class="sourceLineNo">312</span>        public HomogeneousKernelMap(KernelType kernelType,<a name="line.312"></a>
-<span class="sourceLineNo">313</span>                        double gamma,<a name="line.313"></a>
-<span class="sourceLineNo">314</span>                        int order,<a name="line.314"></a>
-<span class="sourceLineNo">315</span>                        double period,<a name="line.315"></a>
-<span class="sourceLineNo">316</span>                        WindowType windowType)<a name="line.316"></a>
-<span class="sourceLineNo">317</span>        {<a name="line.317"></a>
-<span class="sourceLineNo">318</span>                if (gamma &lt;= 0)<a name="line.318"></a>
-<span class="sourceLineNo">319</span>                        throw new IllegalArgumentException("Gamma must be &gt; 0");<a name="line.319"></a>
-<span class="sourceLineNo">320</span>                final int tableWidth, tableHeight;<a name="line.320"></a>
-<span class="sourceLineNo">321</span><a name="line.321"></a>
-<span class="sourceLineNo">322</span>                if (period &lt; 0) {<a name="line.322"></a>
-<span class="sourceLineNo">323</span>                        period = computeDefaultPeriod(windowType, kernelType);<a name="line.323"></a>
-<span class="sourceLineNo">324</span>                }<a name="line.324"></a>
-<span class="sourceLineNo">325</span><a name="line.325"></a>
-<span class="sourceLineNo">326</span>                this.kernelType = kernelType;<a name="line.326"></a>
-<span class="sourceLineNo">327</span>                this.gamma = gamma;<a name="line.327"></a>
-<span class="sourceLineNo">328</span>                this.order = order;<a name="line.328"></a>
-<span class="sourceLineNo">329</span>                this.period = period;<a name="line.329"></a>
-<span class="sourceLineNo">330</span>                this.numSubdivisions = 8 + 8 * order;<a name="line.330"></a>
-<span class="sourceLineNo">331</span>                this.subdivision = 1.0 / this.numSubdivisions;<a name="line.331"></a>
-<span class="sourceLineNo">332</span>                this.minExponent = -20;<a name="line.332"></a>
-<span class="sourceLineNo">333</span>                this.maxExponent = 8;<a name="line.333"></a>
-<span class="sourceLineNo">334</span><a name="line.334"></a>
-<span class="sourceLineNo">335</span>                tableHeight = 2 * this.order + 1;<a name="line.335"></a>
-<span class="sourceLineNo">336</span>                tableWidth = this.numSubdivisions * (this.maxExponent - this.minExponent + 1);<a name="line.336"></a>
-<span class="sourceLineNo">337</span>                this.table = new double[tableHeight * tableWidth + 2 * (1 + this.order)];<a name="line.337"></a>
-<span class="sourceLineNo">338</span><a name="line.338"></a>
-<span class="sourceLineNo">339</span>                int tableOffset = 0;<a name="line.339"></a>
-<span class="sourceLineNo">340</span>                final int kappaOffset = tableHeight * tableWidth;<a name="line.340"></a>
-<span class="sourceLineNo">341</span>                final int freqOffset = kappaOffset + 1 + order;<a name="line.341"></a>
-<span class="sourceLineNo">342</span>                final double L = 2.0 * Math.PI / this.period;<a name="line.342"></a>
-<span class="sourceLineNo">343</span><a name="line.343"></a>
-<span class="sourceLineNo">344</span>                /* precompute the sampled periodicized spectrum */<a name="line.344"></a>
-<span class="sourceLineNo">345</span>                int j = 0;<a name="line.345"></a>
-<span class="sourceLineNo">346</span>                int i = 0;<a name="line.346"></a>
-<span class="sourceLineNo">347</span>                while (i &lt;= this.order) {<a name="line.347"></a>
-<span class="sourceLineNo">348</span>                        table[freqOffset + i] = j;<a name="line.348"></a>
-<span class="sourceLineNo">349</span>                        table[kappaOffset + i] = windowType.getSmoothSpectrum(j * L, this);<a name="line.349"></a>
-<span class="sourceLineNo">350</span>                        j++;<a name="line.350"></a>
-<span class="sourceLineNo">351</span>                        if (table[kappaOffset + i] &gt; 0 || j &gt;= 3 * i)<a name="line.351"></a>
-<span class="sourceLineNo">352</span>                                i++;<a name="line.352"></a>
-<span class="sourceLineNo">353</span>                }<a name="line.353"></a>
+<span class="sourceLineNo">187</span>                protected double getSmoothSpectrum(double omega, HomogeneousKernelMap map) {<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                        return computeKappaHat(map.kernelType, omega, map);<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                }<a name="line.189"></a>
+<span class="sourceLineNo">190</span>        }<a name="line.190"></a>
+<span class="sourceLineNo">191</span><a name="line.191"></a>
+<span class="sourceLineNo">192</span>        /**<a name="line.192"></a>
+<span class="sourceLineNo">193</span>         * Helper implementation of a {@link FeatureExtractor} that wraps another<a name="line.193"></a>
+<span class="sourceLineNo">194</span>         * {@link FeatureExtractor} and then applies the {@link HomogeneousKernelMap} to<a name="line.194"></a>
+<span class="sourceLineNo">195</span>         * the output before returning the vector.<a name="line.195"></a>
+<span class="sourceLineNo">196</span>         *<a name="line.196"></a>
+<span class="sourceLineNo">197</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.197"></a>
+<span class="sourceLineNo">198</span>         *<a name="line.198"></a>
+<span class="sourceLineNo">199</span>         * @param &lt;T&gt;<a name="line.199"></a>
+<span class="sourceLineNo">200</span>         *            Type of object that features can be extracted from<a name="line.200"></a>
+<span class="sourceLineNo">201</span>         */<a name="line.201"></a>
+<span class="sourceLineNo">202</span>        public static class ExtractorWrapper&lt;T&gt; implements FeatureExtractor&lt;DoubleFV, T&gt; {<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                private FeatureExtractor&lt;? extends FeatureVector, T&gt; inner;<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                private HomogeneousKernelMap map;<a name="line.204"></a>
+<span class="sourceLineNo">205</span><a name="line.205"></a>
+<span class="sourceLineNo">206</span>                /**<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                 * Construct with the given internal extractor and homogeneous kernel map.<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                 *<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                 * @param inner<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                 *            the internal extractor<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                 * @param map<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                 *            the homogeneous kernel map<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                 */<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                public ExtractorWrapper(FeatureExtractor&lt;? extends FeatureVector, T&gt; inner, HomogeneousKernelMap map) {<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                        this.inner = inner;<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                        this.map = map;<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                }<a name="line.217"></a>
+<span class="sourceLineNo">218</span><a name="line.218"></a>
+<span class="sourceLineNo">219</span>                @Override<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                public DoubleFV extractFeature(T object) {<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                        return map.evaluate(inner.extractFeature(object).asDoubleFV());<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                }<a name="line.222"></a>
+<span class="sourceLineNo">223</span>        }<a name="line.223"></a>
+<span class="sourceLineNo">224</span><a name="line.224"></a>
+<span class="sourceLineNo">225</span>        private KernelType kernelType;<a name="line.225"></a>
+<span class="sourceLineNo">226</span>        private double period;<a name="line.226"></a>
+<span class="sourceLineNo">227</span>        private double gamma;<a name="line.227"></a>
+<span class="sourceLineNo">228</span>        private int order;<a name="line.228"></a>
+<span class="sourceLineNo">229</span>        private int numSubdivisions;<a name="line.229"></a>
+<span class="sourceLineNo">230</span>        private double subdivision;<a name="line.230"></a>
+<span class="sourceLineNo">231</span>        private int minExponent;<a name="line.231"></a>
+<span class="sourceLineNo">232</span>        private int maxExponent;<a name="line.232"></a>
+<span class="sourceLineNo">233</span>        private double[] table;<a name="line.233"></a>
+<span class="sourceLineNo">234</span><a name="line.234"></a>
+<span class="sourceLineNo">235</span>        /**<a name="line.235"></a>
+<span class="sourceLineNo">236</span>         * Construct with the given kernel and window. The Gamma and order values are<a name="line.236"></a>
+<span class="sourceLineNo">237</span>         * set at their defaults of 1. The period is computed automatically.<a name="line.237"></a>
+<span class="sourceLineNo">238</span>         *<a name="line.238"></a>
+<span class="sourceLineNo">239</span>         * @param kernelType<a name="line.239"></a>
+<span class="sourceLineNo">240</span>         *            the type of kernel<a name="line.240"></a>
+<span class="sourceLineNo">241</span>         * @param windowType<a name="line.241"></a>
+<span class="sourceLineNo">242</span>         *            the type of window (use {@link WindowType#Rectangular} if unsure)<a name="line.242"></a>
+<span class="sourceLineNo">243</span>         */<a name="line.243"></a>
+<span class="sourceLineNo">244</span>        public HomogeneousKernelMap(KernelType kernelType, WindowType windowType) {<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                this(kernelType, 1, 1, -1, windowType);<a name="line.245"></a>
+<span class="sourceLineNo">246</span>        }<a name="line.246"></a>
+<span class="sourceLineNo">247</span><a name="line.247"></a>
+<span class="sourceLineNo">248</span>        /**<a name="line.248"></a>
+<span class="sourceLineNo">249</span>         * Construct with the given kernel, gamma and window. The period is computed<a name="line.249"></a>
+<span class="sourceLineNo">250</span>         * automatically and the approximation order is set to 1.<a name="line.250"></a>
+<span class="sourceLineNo">251</span>         *<a name="line.251"></a>
+<span class="sourceLineNo">252</span>         * @param kernelType<a name="line.252"></a>
+<span class="sourceLineNo">253</span>         *            the type of kernel<a name="line.253"></a>
+<span class="sourceLineNo">254</span>         * @param gamma<a name="line.254"></a>
+<span class="sourceLineNo">255</span>         *            the gamma value. the standard kernels are 1-homogeneous, but<a name="line.255"></a>
+<span class="sourceLineNo">256</span>         *            smaller values can work better in practice.<a name="line.256"></a>
+<span class="sourceLineNo">257</span>         * @param windowType<a name="line.257"></a>
+<span class="sourceLineNo">258</span>         *            the type of window (use {@link WindowType#Rectangular} if unsure)<a name="line.258"></a>
+<span class="sourceLineNo">259</span>         */<a name="line.259"></a>
+<span class="sourceLineNo">260</span>        public HomogeneousKernelMap(KernelType kernelType,<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                        double gamma,<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                        WindowType windowType)<a name="line.262"></a>
+<span class="sourceLineNo">263</span>        {<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                this(kernelType, gamma, 1, -1, windowType);<a name="line.264"></a>
+<span class="sourceLineNo">265</span>        }<a name="line.265"></a>
+<span class="sourceLineNo">266</span><a name="line.266"></a>
+<span class="sourceLineNo">267</span>        /**<a name="line.267"></a>
+<span class="sourceLineNo">268</span>         * Construct with the given kernel, gamma, order and window. The period is<a name="line.268"></a>
+<span class="sourceLineNo">269</span>         * computed automatically.<a name="line.269"></a>
+<span class="sourceLineNo">270</span>         *<a name="line.270"></a>
+<span class="sourceLineNo">271</span>         * @param kernelType<a name="line.271"></a>
+<span class="sourceLineNo">272</span>         *            the type of kernel<a name="line.272"></a>
+<span class="sourceLineNo">273</span>         * @param gamma<a name="line.273"></a>
+<span class="sourceLineNo">274</span>         *            the gamma value. the standard kernels are 1-homogeneous, but<a name="line.274"></a>
+<span class="sourceLineNo">275</span>         *            smaller values can work better in practice.<a name="line.275"></a>
+<span class="sourceLineNo">276</span>         * @param order<a name="line.276"></a>
+<span class="sourceLineNo">277</span>         *            the approximation order (usually 1 is enough)<a name="line.277"></a>
+<span class="sourceLineNo">278</span>         * @param windowType<a name="line.278"></a>
+<span class="sourceLineNo">279</span>         *            the type of window (use {@link WindowType#Rectangular} if unsure)<a name="line.279"></a>
+<span class="sourceLineNo">280</span>         */<a name="line.280"></a>
+<span class="sourceLineNo">281</span>        public HomogeneousKernelMap(KernelType kernelType,<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                        double gamma,<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                        int order,<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                        WindowType windowType)<a name="line.284"></a>
+<span class="sourceLineNo">285</span>        {<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                this(kernelType, gamma, order, -1, windowType);<a name="line.286"></a>
+<span class="sourceLineNo">287</span>        }<a name="line.287"></a>
+<span class="sourceLineNo">288</span><a name="line.288"></a>
+<span class="sourceLineNo">289</span>        /**<a name="line.289"></a>
+<span class="sourceLineNo">290</span>         * Construct with the given kernel, gamma, order, period and window. If the<a name="line.290"></a>
+<span class="sourceLineNo">291</span>         * period is negative, it will be replaced by the default.<a name="line.291"></a>
+<span class="sourceLineNo">292</span>         *<a name="line.292"></a>
+<span class="sourceLineNo">293</span>         * @param kernelType<a name="line.293"></a>
+<span class="sourceLineNo">294</span>         *            the type of kernel<a name="line.294"></a>
+<span class="sourceLineNo">295</span>         * @param gamma<a name="line.295"></a>
+<span class="sourceLineNo">296</span>         *            the gamma value. the standard kernels are 1-homogeneous, but<a name="line.296"></a>
+<span class="sourceLineNo">297</span>         *            smaller values can work better in practice.<a name="line.297"></a>
+<span class="sourceLineNo">298</span>         * @param order<a name="line.298"></a>
+<span class="sourceLineNo">299</span>         *            the approximation order (usually 1 is enough)<a name="line.299"></a>
+<span class="sourceLineNo">300</span>         * @param period<a name="line.300"></a>
+<span class="sourceLineNo">301</span>         *            the periodicity of the kernel spectrum<a name="line.301"></a>
+<span class="sourceLineNo">302</span>         * @param windowType<a name="line.302"></a>
+<span class="sourceLineNo">303</span>         *            the type of window (use {@link WindowType#Rectangular} if unsure)<a name="line.303"></a>
+<span class="sourceLineNo">304</span>         */<a name="line.304"></a>
+<span class="sourceLineNo">305</span>        public HomogeneousKernelMap(KernelType kernelType,<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                        double gamma,<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                        int order,<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                        double period,<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                        WindowType windowType)<a name="line.309"></a>
+<span class="sourceLineNo">310</span>        {<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                if (gamma &lt;= 0)<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                        throw new IllegalArgumentException("Gamma must be &gt; 0");<a name="line.312"></a>
+<span class="sourceLineNo">313</span>                final int tableWidth, tableHeight;<a name="line.313"></a>
+<span class="sourceLineNo">314</span><a name="line.314"></a>
+<span class="sourceLineNo">315</span>                this.kernelType = kernelType;<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                this.gamma = gamma;<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                this.order = order;<a name="line.317"></a>
+<span class="sourceLineNo">318</span><a name="line.318"></a>
+<span class="sourceLineNo">319</span>                if (period &lt; 0) {<a name="line.319"></a>
+<span class="sourceLineNo">320</span>                        period = computeDefaultPeriod(windowType, kernelType);<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                }<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                this.period = period;<a name="line.322"></a>
+<span class="sourceLineNo">323</span><a name="line.323"></a>
+<span class="sourceLineNo">324</span>                this.numSubdivisions = 8 + 8 * order;<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                this.subdivision = 1.0 / this.numSubdivisions;<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                this.minExponent = -20;<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                this.maxExponent = 8;<a name="line.327"></a>
+<span class="sourceLineNo">328</span><a name="line.328"></a>
+<span class="sourceLineNo">329</span>                tableHeight = 2 * this.order + 1;<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                tableWidth = this.numSubdivisions * (this.maxExponent - this.minExponent + 1);<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                this.table = new double[tableHeight * tableWidth + 2 * (1 + this.order)];<a name="line.331"></a>
+<span class="sourceLineNo">332</span><a name="line.332"></a>
+<span class="sourceLineNo">333</span>                int tableOffset = 0;<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                final int kappaOffset = tableHeight * tableWidth;<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                final int freqOffset = kappaOffset + 1 + order;<a name="line.335"></a>
+<span class="sourceLineNo">336</span>                final double L = 2.0 * Math.PI / this.period;<a name="line.336"></a>
+<span class="sourceLineNo">337</span><a name="line.337"></a>
+<span class="sourceLineNo">338</span>                /* precompute the sampled periodicized spectrum */<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                int j = 0;<a name="line.339"></a>
+<span class="sourceLineNo">340</span>                int i = 0;<a name="line.340"></a>
+<span class="sourceLineNo">341</span>                while (i &lt;= this.order) {<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                        table[freqOffset + i] = j;<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                        table[kappaOffset + i] = windowType.getSmoothSpectrum(j * L, this);<a name="line.343"></a>
+<span class="sourceLineNo">344</span>                        j++;<a name="line.344"></a>
+<span class="sourceLineNo">345</span>                        if (table[kappaOffset + i] &gt; 0 || j &gt;= 3 * i)<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                                i++;<a name="line.346"></a>
+<span class="sourceLineNo">347</span>                }<a name="line.347"></a>
+<span class="sourceLineNo">348</span><a name="line.348"></a>
+<span class="sourceLineNo">349</span>                /* fill table */<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                for (int exponent = minExponent; exponent &lt;= maxExponent; exponent++) {<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                        double x, Lxgamma, Llogx, xgamma;<a name="line.351"></a>
+<span class="sourceLineNo">352</span>                        double sqrt2kappaLxgamma;<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                        double mantissa = 1.0;<a name="line.353"></a>
 <span class="sourceLineNo">354</span><a name="line.354"></a>
-<span class="sourceLineNo">355</span>                /* fill table */<a name="line.355"></a>
-<span class="sourceLineNo">356</span>                for (int exponent = minExponent; exponent &lt;= maxExponent; exponent++) {<a name="line.356"></a>
-<span class="sourceLineNo">357</span>                        double x, Lxgamma, Llogx, xgamma;<a name="line.357"></a>
-<span class="sourceLineNo">358</span>                        double sqrt2kappaLxgamma;<a name="line.358"></a>
-<span class="sourceLineNo">359</span>                        double mantissa = 1.0;<a name="line.359"></a>
+<span class="sourceLineNo">355</span>                        for (i = 0; i &lt; numSubdivisions; i++, mantissa += subdivision) {<a name="line.355"></a>
+<span class="sourceLineNo">356</span>                                x = mantissa * Math.pow(2, exponent);<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                                xgamma = Math.pow(x, this.gamma);<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                                Lxgamma = L * xgamma;<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                                Llogx = L * Math.log(x);<a name="line.359"></a>
 <span class="sourceLineNo">360</span><a name="line.360"></a>
-<span class="sourceLineNo">361</span>                        for (i = 0; i &lt; numSubdivisions; i++, mantissa += subdivision) {<a name="line.361"></a>
-<span class="sourceLineNo">362</span>                                x = mantissa * Math.pow(2, exponent);<a name="line.362"></a>
-<span class="sourceLineNo">363</span>                                xgamma = Math.pow(x, this.gamma);<a name="line.363"></a>
-<span class="sourceLineNo">364</span>                                Lxgamma = L * xgamma;<a name="line.364"></a>
-<span class="sourceLineNo">365</span>                                Llogx = L * Math.log(x);<a name="line.365"></a>
-<span class="sourceLineNo">366</span><a name="line.366"></a>
-<span class="sourceLineNo">367</span>                                table[tableOffset++] = Math.sqrt(Lxgamma * table[kappaOffset]);<a name="line.367"></a>
-<span class="sourceLineNo">368</span>                                for (j = 1; j &lt;= this.order; ++j) {<a name="line.368"></a>
-<span class="sourceLineNo">369</span>                                        sqrt2kappaLxgamma = Math.sqrt(2.0 * Lxgamma * table[kappaOffset + j]);<a name="line.369"></a>
-<span class="sourceLineNo">370</span>                                        table[tableOffset++] = sqrt2kappaLxgamma * Math.cos(table[freqOffset + j] * Llogx);<a name="line.370"></a>
-<span class="sourceLineNo">371</span>                                        table[tableOffset++] = sqrt2kappaLxgamma * Math.sin(table[freqOffset + j] * Llogx);<a name="line.371"></a>
-<span class="sourceLineNo">372</span>                                }<a name="line.372"></a>
-<span class="sourceLineNo">373</span>                        }<a name="line.373"></a>
-<span class="sourceLineNo">374</span>                }<a name="line.374"></a>
-<span class="sourceLineNo">375</span>        }<a name="line.375"></a>
-<span class="sourceLineNo">376</span><a name="line.376"></a>
-<span class="sourceLineNo">377</span>        private double computeDefaultPeriod(WindowType windowType, KernelType kernelType) {<a name="line.377"></a>
-<span class="sourceLineNo">378</span>                double period = 0;<a name="line.378"></a>
-<span class="sourceLineNo">379</span><a name="line.379"></a>
-<span class="sourceLineNo">380</span>                // compute default period<a name="line.380"></a>
-<span class="sourceLineNo">381</span>                switch (windowType) {<a name="line.381"></a>
-<span class="sourceLineNo">382</span>                case Uniform:<a name="line.382"></a>
-<span class="sourceLineNo">383</span>                        switch (kernelType) {<a name="line.383"></a>
-<span class="sourceLineNo">384</span>                        case Chi2:<a name="line.384"></a>
-<span class="sourceLineNo">385</span>                                period = 5.86 * Math.sqrt(order + 0) + 3.65;<a name="line.385"></a>
+<span class="sourceLineNo">361</span>                                table[tableOffset++] = Math.sqrt(Lxgamma * table[kappaOffset]);<a name="line.361"></a>
+<span class="sourceLineNo">362</span>                                for (j = 1; j &lt;= this.order; ++j) {<a name="line.362"></a>
+<span class="sourceLineNo">363</span>                                        sqrt2kappaLxgamma = Math.sqrt(2.0 * Lxgamma * table[kappaOffset + j]);<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                                        table[tableOffset++] = sqrt2kappaLxgamma * Math.cos(table[freqOffset + j] * Llogx);<a name="line.364"></a>
+<span class="sourceLineNo">365</span>                                        table[tableOffset++] = sqrt2kappaLxgamma * Math.sin(table[freqOffset + j] * Llogx);<a name="line.365"></a>
+<span class="sourceLineNo">366</span>                                }<a name="line.366"></a>
+<span class="sourceLineNo">367</span>                        }<a name="line.367"></a>
+<span class="sourceLineNo">368</span>                }<a name="line.368"></a>
+<span class="sourceLineNo">369</span>        }<a name="line.369"></a>
+<span class="sourceLineNo">370</span><a name="line.370"></a>
+<span class="sourceLineNo">371</span>        private double computeDefaultPeriod(WindowType windowType, KernelType kernelType) {<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                double period = 0;<a name="line.372"></a>
+<span class="sourceLineNo">373</span><a name="line.373"></a>
+<span class="sourceLineNo">374</span>                // compute default period<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                switch (windowType) {<a name="line.375"></a>
+<span class="sourceLineNo">376</span>                case Uniform:<a name="line.376"></a>
+<span class="sourceLineNo">377</span>                        switch (kernelType) {<a name="line.377"></a>
+<span class="sourceLineNo">378</span>                        case Chi2:<a name="line.378"></a>
+<span class="sourceLineNo">379</span>                                period = 5.86 * Math.sqrt(order + 0) + 3.65;<a name="line.379"></a>
+<span class="sourceLineNo">380</span>                                break;<a name="line.380"></a>
+<span class="sourceLineNo">381</span>                        case JensonShannon:<a name="line.381"></a>
+<span class="sourceLineNo">382</span>                                period = 6.64 * Math.sqrt(order + 0) + 7.24;<a name="line.382"></a>
+<span class="sourceLineNo">383</span>                                break;<a name="line.383"></a>
+<span class="sourceLineNo">384</span>                        case Intersection:<a name="line.384"></a>
+<span class="sourceLineNo">385</span>                                period = 2.38 * Math.log(order + 0.8) + 5.6;<a name="line.385"></a>
 <span class="sourceLineNo">386</span>                                break;<a name="line.386"></a>
-<span class="sourceLineNo">387</span>                        case JensonShannon:<a name="line.387"></a>
-<span class="sourceLineNo">388</span>                                period = 6.64 * Math.sqrt(order + 0) + 7.24;<a name="line.388"></a>
-<span class="sourceLineNo">389</span>                                break;<a name="line.389"></a>
-<span class="sourceLineNo">390</span>                        case Intersection:<a name="line.390"></a>
-<span class="sourceLineNo">391</span>                                period = 2.38 * Math.log(order + 0.8) + 5.6;<a name="line.391"></a>
-<span class="sourceLineNo">392</span>                                break;<a name="line.392"></a>
-<span class="sourceLineNo">393</span>                        }<a name="line.393"></a>
-<span class="sourceLineNo">394</span>                        break;<a name="line.394"></a>
-<span class="sourceLineNo">395</span>                case Rectangular:<a name="line.395"></a>
-<span class="sourceLineNo">396</span>                        switch (kernelType) {<a name="line.396"></a>
-<span class="sourceLineNo">397</span>                        case Chi2:<a name="line.397"></a>
-<span class="sourceLineNo">398</span>                                period = 8.80 * Math.sqrt(order + 4.44) - 12.6;<a name="line.398"></a>
+<span class="sourceLineNo">387</span>                        }<a name="line.387"></a>
+<span class="sourceLineNo">388</span>                        break;<a name="line.388"></a>
+<span class="sourceLineNo">389</span>                case Rectangular:<a name="line.389"></a>
+<span class="sourceLineNo">390</span>                        switch (kernelType) {<a name="line.390"></a>
+<span class="sourceLineNo">391</span>                        case Chi2:<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                                period = 8.80 * Math.sqrt(order + 4.44) - 12.6;<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                                break;<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                        case JensonShannon:<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                                period = 9.63 * Math.sqrt(order + 1.00) - 2.93;<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                                break;<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                        case Intersection:<a name="line.397"></a>
+<span class="sourceLineNo">398</span>                                period = 2.00 * Math.log(order + 0.99) + 3.52;<a name="line.398"></a>
 <span class="sourceLineNo">399</span>                                break;<a name="line.399"></a>
-<span class="sourceLineNo">400</span>                        case JensonShannon:<a name="line.400"></a>
-<span class="sourceLineNo">401</span>                                period = 9.63 * Math.sqrt(order + 1.00) - 2.93;<a name="line.401"></a>
-<span class="sourceLineNo">402</span>                                break;<a name="line.402"></a>
-<span class="sourceLineNo">403</span>                        case Intersection:<a name="line.403"></a>
-<span class="sourceLineNo">404</span>                                period = 2.00 * Math.log(order + 0.99) + 3.52;<a name="line.404"></a>
-<span class="sourceLineNo">405</span>                                break;<a name="line.405"></a>
-<span class="sourceLineNo">406</span>                        }<a name="line.406"></a>
-<span class="sourceLineNo">407</span>                        break;<a name="line.407"></a>
-<span class="sourceLineNo">408</span>                }<a name="line.408"></a>
-<span class="sourceLineNo">409</span>                return Math.max(period, 1.0);<a name="line.409"></a>
-<span class="sourceLineNo">410</span>        }<a name="line.410"></a>
-<span class="sourceLineNo">411</span><a name="line.411"></a>
-<span class="sourceLineNo">412</span>        /**<a name="line.412"></a>
-<span class="sourceLineNo">413</span>         * Evaluate the kernel for the given &lt;code&gt;x&lt;/code&gt; value. The output values<a name="line.413"></a>
-<span class="sourceLineNo">414</span>         * will be written into the destination array at<a name="line.414"></a>
-<span class="sourceLineNo">415</span>         * &lt;code&gt;offset + j*stride&lt;/code&gt; intervals where &lt;code&gt;j&lt;/code&gt; is between<a name="line.415"></a>
-<span class="sourceLineNo">416</span>         * 0 and &lt;code&gt;2 * order + 1&lt;/code&gt;.<a name="line.416"></a>
-<span class="sourceLineNo">417</span>         * <a name="line.417"></a>
-<span class="sourceLineNo">418</span>         * @param destination<a name="line.418"></a>
-<span class="sourceLineNo">419</span>         *            the destination array<a name="line.419"></a>
-<span class="sourceLineNo">420</span>         * @param stride<a name="line.420"></a>
-<span class="sourceLineNo">421</span>         *            the stride<a name="line.421"></a>
-<span class="sourceLineNo">422</span>         * @param offset<a name="line.422"></a>
-<span class="sourceLineNo">423</span>         *            the offset<a name="line.423"></a>
-<span class="sourceLineNo">424</span>         * @param x<a name="line.424"></a>
-<span class="sourceLineNo">425</span>         *            the value to compute the kernel approximation for<a name="line.425"></a>
-<span class="sourceLineNo">426</span>         */<a name="line.426"></a>
-<span class="sourceLineNo">427</span>        public void evaluate(double[] destination, int stride, int offset, double x) {<a name="line.427"></a>
-<span class="sourceLineNo">428</span>                final ExponentAndMantissa em = MathUtils.frexp(x);<a name="line.428"></a>
-<span class="sourceLineNo">429</span><a name="line.429"></a>
-<span class="sourceLineNo">430</span>                double mantissa = em.mantissa;<a name="line.430"></a>
-<span class="sourceLineNo">431</span>                int exponent = em.exponent;<a name="line.431"></a>
-<span class="sourceLineNo">432</span>                final double sign = (mantissa &gt;= 0.0) ? +1.0 : -1.0;<a name="line.432"></a>
-<span class="sourceLineNo">433</span>                mantissa *= 2 * sign;<a name="line.433"></a>
-<span class="sourceLineNo">434</span>                exponent--;<a name="line.434"></a>
+<span class="sourceLineNo">400</span>                        }<a name="line.400"></a>
+<span class="sourceLineNo">401</span>                        break;<a name="line.401"></a>
+<span class="sourceLineNo">402</span>                }<a name="line.402"></a>
+<span class="sourceLineNo">403</span>                return Math.max(period, 1.0);<a name="line.403"></a>
+<span class="sourceLineNo">404</span>        }<a name="line.404"></a>
+<span class="sourceLineNo">405</span><a name="line.405"></a>
+<span class="sourceLineNo">406</span>        /**<a name="line.406"></a>
+<span class="sourceLineNo">407</span>         * Evaluate the kernel for the given &lt;code&gt;x&lt;/code&gt; value. The output values<a name="line.407"></a>
+<span class="sourceLineNo">408</span>         * will be written into the destination array at &lt;code&gt;offset + j*stride&lt;/code&gt;<a name="line.408"></a>
+<span class="sourceLineNo">409</span>         * intervals where &lt;code&gt;j&lt;/code&gt; is between 0 and &lt;code&gt;2 * order + 1&lt;/code&gt;.<a name="line.409"></a>
+<span class="sourceLineNo">410</span>         *<a name="line.410"></a>
+<span class="sourceLineNo">411</span>         * @param destination<a name="line.411"></a>
+<span class="sourceLineNo">412</span>         *            the destination array<a name="line.412"></a>
+<span class="sourceLineNo">413</span>         * @param stride<a name="line.413"></a>
+<span class="sourceLineNo">414</span>         *            the stride<a name="line.414"></a>
+<span class="sourceLineNo">415</span>         * @param offset<a name="line.415"></a>
+<span class="sourceLineNo">416</span>         *            the offset<a name="line.416"></a>
+<span class="sourceLineNo">417</span>         * @param x<a name="line.417"></a>
+<span class="sourceLineNo">418</span>         *            the value to compute the kernel approximation for<a name="line.418"></a>
+<span class="sourceLineNo">419</span>         */<a name="line.419"></a>
+<span class="sourceLineNo">420</span>        public void evaluate(double[] destination, int stride, int offset, double x) {<a name="line.420"></a>
+<span class="sourceLineNo">421</span>                final ExponentAndMantissa em = MathUtils.frexp(x);<a name="line.421"></a>
+<span class="sourceLineNo">422</span><a name="line.422"></a>
+<span class="sourceLineNo">423</span>                double mantissa = em.mantissa;<a name="line.423"></a>
+<span class="sourceLineNo">424</span>                int exponent = em.exponent;<a name="line.424"></a>
+<span class="sourceLineNo">425</span>                final double sign = (mantissa &gt;= 0.0) ? +1.0 : -1.0;<a name="line.425"></a>
+<span class="sourceLineNo">426</span>                mantissa *= 2 * sign;<a name="line.426"></a>
+<span class="sourceLineNo">427</span>                exponent--;<a name="line.427"></a>
+<span class="sourceLineNo">428</span><a name="line.428"></a>
+<span class="sourceLineNo">429</span>                if (mantissa == 0 || exponent &lt;= minExponent || exponent &gt;= maxExponent) {<a name="line.429"></a>
+<span class="sourceLineNo">430</span>                        for (int j = 0; j &lt;= order; j++) {<a name="line.430"></a>
+<span class="sourceLineNo">431</span>                                destination[offset + j * stride] = 0.0;<a name="line.431"></a>
+<span class="sourceLineNo">432</span>                        }<a name="line.432"></a>
+<span class="sourceLineNo">433</span>                        return;<a name="line.433"></a>
+<span class="sourceLineNo">434</span>                }<a name="line.434"></a>
 <span class="sourceLineNo">435</span><a name="line.435"></a>
-<span class="sourceLineNo">436</span>                if (mantissa == 0 || exponent &lt;= minExponent || exponent &gt;= maxExponent) {<a name="line.436"></a>
-<span class="sourceLineNo">437</span>                        for (int j = 0; j &lt;= order; j++) {<a name="line.437"></a>
-<span class="sourceLineNo">438</span>                                destination[offset + j * stride] = 0.0;<a name="line.438"></a>
-<span class="sourceLineNo">439</span>                        }<a name="line.439"></a>
-<span class="sourceLineNo">440</span>                        return;<a name="line.440"></a>
-<span class="sourceLineNo">441</span>                }<a name="line.441"></a>
-<span class="sourceLineNo">442</span><a name="line.442"></a>
-<span class="sourceLineNo">443</span>                final int featureDimension = 2 * order + 1;<a name="line.443"></a>
-<span class="sourceLineNo">444</span>                int v1offset = (exponent - minExponent) * numSubdivisions * featureDimension;<a name="line.444"></a>
-<span class="sourceLineNo">445</span><a name="line.445"></a>
-<span class="sourceLineNo">446</span>                mantissa -= 1.0;<a name="line.446"></a>
-<span class="sourceLineNo">447</span>                while (mantissa &gt;= subdivision) {<a name="line.447"></a>
-<span class="sourceLineNo">448</span>                        mantissa -= subdivision;<a name="line.448"></a>
-<span class="sourceLineNo">449</span>                        v1offset += featureDimension;<a name="line.449"></a>
-<span class="sourceLineNo">450</span>                }<a name="line.450"></a>
-<span class="sourceLineNo">451</span><a name="line.451"></a>
-<span class="sourceLineNo">452</span>                int v2offset = v1offset + featureDimension;<a name="line.452"></a>
-<span class="sourceLineNo">453</span>                for (int j = 0; j &lt; featureDimension; j++) {<a name="line.453"></a>
-<span class="sourceLineNo">454</span>                        final double f1 = table[v1offset++];<a name="line.454"></a>
-<span class="sourceLineNo">455</span>                        final double f2 = table[v2offset++];<a name="line.455"></a>
-<span class="sourceLineNo">456</span><a name="line.456"></a>
-<span class="sourceLineNo">457</span>                        destination[offset + j * stride] = sign * ((f2 - f1) * (numSubdivisions * mantissa) + f1);<a name="line.457"></a>
-<span class="sourceLineNo">458</span>                }<a name="line.458"></a>
-<span class="sourceLineNo">459</span>        }<a name="line.459"></a>
-<span class="sourceLineNo">460</span><a name="line.460"></a>
-<span class="sourceLineNo">461</span>        /**<a name="line.461"></a>
-<span class="sourceLineNo">462</span>         * Compute the Homogeneous Kernel Map approximation of the given feature<a name="line.462"></a>
-<span class="sourceLineNo">463</span>         * vector<a name="line.463"></a>
-<span class="sourceLineNo">464</span>         * <a name="line.464"></a>
-<span class="sourceLineNo">465</span>         * @param in<a name="line.465"></a>
-<span class="sourceLineNo">466</span>         *            the feature vector<a name="line.466"></a>
-<span class="sourceLineNo">467</span>         * @return the expanded feature vector<a name="line.467"></a>
-<span class="sourceLineNo">468</span>         */<a name="line.468"></a>
-<span class="sourceLineNo">469</span>        public DoubleFV evaluate(DoubleFV in) {<a name="line.469"></a>
-<span class="sourceLineNo">470</span>                final int step = (2 * order + 1);<a name="line.470"></a>
-<span class="sourceLineNo">471</span>                final DoubleFV out = new DoubleFV(step * in.length());<a name="line.471"></a>
-<span class="sourceLineNo">472</span><a name="line.472"></a>
-<span class="sourceLineNo">473</span>                for (int i = 0; i &lt; in.length(); i++) {<a name="line.473"></a>
-<span class="sourceLineNo">474</span>                        evaluate(out.values, 1, i * step, in.values[i]);<a name="line.474"></a>
-<span class="sourceLineNo">475</span>                }<a name="line.475"></a>
-<span class="sourceLineNo">476</span><a name="line.476"></a>
-<span class="sourceLineNo">477</span>                return out;<a name="line.477"></a>
-<span class="sourceLineNo">478</span>        }<a name="line.478"></a>
-<span class="sourceLineNo">479</span><a name="line.479"></a>
-<span class="sourceLineNo">480</span>        /**<a name="line.480"></a>
-<span class="sourceLineNo">481</span>         * Construct a new {@link ExtractorWrapper} that applies the map to features<a name="line.481"></a>
-<span class="sourceLineNo">482</span>         * extracted by an internal extractor.<a name="line.482"></a>
-<span class="sourceLineNo">483</span>         * <a name="line.483"></a>
-<span class="sourceLineNo">484</span>         * @param inner<a name="line.484"></a>
-<span class="sourceLineNo">485</span>         *            the internal extractor<a name="line.485"></a>
-<span class="sourceLineNo">486</span>         * @return the wrapped {@link FeatureExtractor}<a name="line.486"></a>
-<span class="sourceLineNo">487</span>         * @param &lt;T&gt;<a name="line.487"></a>
-<span class="sourceLineNo">488</span>         *            Type of object that features can be extracted from<a name="line.488"></a>
-<span class="sourceLineNo">489</span>         */<a name="line.489"></a>
-<span class="sourceLineNo">490</span>        public &lt;T&gt; FeatureExtractor&lt;DoubleFV, T&gt; createWrappedExtractor(FeatureExtractor&lt;? extends FeatureVector, T&gt; inner) {<a name="line.490"></a>
-<span class="sourceLineNo">491</span>                return new ExtractorWrapper&lt;T&gt;(inner, this);<a name="line.491"></a>
-<span class="sourceLineNo">492</span>        }<a name="line.492"></a>
-<span class="sourceLineNo">493</span>}<a name="line.493"></a>
+<span class="sourceLineNo">436</span>                final int featureDimension = 2 * order + 1;<a name="line.436"></a>
+<span class="sourceLineNo">437</span>                int v1offset = (exponent - minExponent) * numSubdivisions * featureDimension;<a name="line.437"></a>
+<span class="sourceLineNo">438</span><a name="line.438"></a>
+<span class="sourceLineNo">439</span>                mantissa -= 1.0;<a name="line.439"></a>
+<span class="sourceLineNo">440</span>                while (mantissa &gt;= subdivision) {<a name="line.440"></a>
+<span class="sourceLineNo">441</span>                        mantissa -= subdivision;<a name="line.441"></a>
+<span class="sourceLineNo">442</span>                        v1offset += featureDimension;<a name="line.442"></a>
+<span class="sourceLineNo">443</span>                }<a name="line.443"></a>
+<span class="sourceLineNo">444</span><a name="line.444"></a>
+<span class="sourceLineNo">445</span>                int v2offset = v1offset + featureDimension;<a name="line.445"></a>
+<span class="sourceLineNo">446</span>                for (int j = 0; j &lt; featureDimension; j++) {<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                        final double f1 = table[v1offset++];<a name="line.447"></a>
+<span class="sourceLineNo">448</span>                        final double f2 = table[v2offset++];<a name="line.448"></a>
+<span class="sourceLineNo">449</span><a name="line.449"></a>
+<span class="sourceLineNo">450</span>                        destination[offset + j * stride] = sign * ((f2 - f1) * (numSubdivisions * mantissa) + f1);<a name="line.450"></a>
+<span class="sourceLineNo">451</span>                }<a name="line.451"></a>
+<span class="sourceLineNo">452</span>        }<a name="line.452"></a>
+<span class="sourceLineNo">453</span><a name="line.453"></a>
+<span class="sourceLineNo">454</span>        /**<a name="line.454"></a>
+<span class="sourceLineNo">455</span>         * Compute the Homogeneous Kernel Map approximation of the given feature vector<a name="line.455"></a>
+<span class="sourceLineNo">456</span>         *<a name="line.456"></a>
+<span class="sourceLineNo">457</span>         * @param in<a name="line.457"></a>
+<span class="sourceLineNo">458</span>         *            the feature vector<a name="line.458"></a>
+<span class="sourceLineNo">459</span>         * @return the expanded feature vector<a name="line.459"></a>
+<span class="sourceLineNo">460</span>         */<a name="line.460"></a>
+<span class="sourceLineNo">461</span>        public DoubleFV evaluate(DoubleFV in) {<a name="line.461"></a>
+<span class="sourceLineNo">462</span>                final int step = (2 * order + 1);<a name="line.462"></a>
+<span class="sourceLineNo">463</span>                final DoubleFV out = new DoubleFV(step * in.length());<a name="line.463"></a>
+<span class="sourceLineNo">464</span><a name="line.464"></a>
+<span class="sourceLineNo">465</span>                for (int i = 0; i &lt; in.length(); i++) {<a name="line.465"></a>
+<span class="sourceLineNo">466</span>                        evaluate(out.values, 1, i * step, in.values[i]);<a name="line.466"></a>
+<span class="sourceLineNo">467</span>                }<a name="line.467"></a>
+<span class="sourceLineNo">468</span><a name="line.468"></a>
+<span class="sourceLineNo">469</span>                return out;<a name="line.469"></a>
+<span class="sourceLineNo">470</span>        }<a name="line.470"></a>
+<span class="sourceLineNo">471</span><a name="line.471"></a>
+<span class="sourceLineNo">472</span>        /**<a name="line.472"></a>
+<span class="sourceLineNo">473</span>         * Construct a new {@link ExtractorWrapper} that applies the map to features<a name="line.473"></a>
+<span class="sourceLineNo">474</span>         * extracted by an internal extractor.<a name="line.474"></a>
+<span class="sourceLineNo">475</span>         *<a name="line.475"></a>
+<span class="sourceLineNo">476</span>         * @param inner<a name="line.476"></a>
+<span class="sourceLineNo">477</span>         *            the internal extractor<a name="line.477"></a>
+<span class="sourceLineNo">478</span>         * @return the wrapped {@link FeatureExtractor}<a name="line.478"></a>
+<span class="sourceLineNo">479</span>         * @param &lt;T&gt;<a name="line.479"></a>
+<span class="sourceLineNo">480</span>         *            Type of object that features can be extracted from<a name="line.480"></a>
+<span class="sourceLineNo">481</span>         */<a name="line.481"></a>
+<span class="sourceLineNo">482</span>        public &lt;T&gt; FeatureExtractor&lt;DoubleFV, T&gt; createWrappedExtractor(FeatureExtractor&lt;? extends FeatureVector, T&gt; inner) {<a name="line.482"></a>
+<span class="sourceLineNo">483</span>                return new ExtractorWrapper&lt;T&gt;(inner, this);<a name="line.483"></a>
+<span class="sourceLineNo">484</span>        }<a name="line.484"></a>
+<span class="sourceLineNo">485</span>}<a name="line.485"></a>
 
 
 

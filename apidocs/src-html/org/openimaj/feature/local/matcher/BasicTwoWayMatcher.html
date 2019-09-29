@@ -37,23 +37,23 @@
 <span class="sourceLineNo">029</span> */<a name="line.29"></a>
 <span class="sourceLineNo">030</span>package org.openimaj.feature.local.matcher;<a name="line.30"></a>
 <span class="sourceLineNo">031</span><a name="line.31"></a>
-<span class="sourceLineNo">032</span>import gnu.trove.map.hash.TObjectIntHashMap;<a name="line.32"></a>
-<span class="sourceLineNo">033</span>import gnu.trove.procedure.TObjectIntProcedure;<a name="line.33"></a>
+<span class="sourceLineNo">032</span>import java.util.ArrayList;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import java.util.List;<a name="line.33"></a>
 <span class="sourceLineNo">034</span><a name="line.34"></a>
-<span class="sourceLineNo">035</span>import java.util.ArrayList;<a name="line.35"></a>
-<span class="sourceLineNo">036</span>import java.util.List;<a name="line.36"></a>
-<span class="sourceLineNo">037</span><a name="line.37"></a>
-<span class="sourceLineNo">038</span>import org.openimaj.feature.DoubleFVComparison;<a name="line.38"></a>
-<span class="sourceLineNo">039</span>import org.openimaj.feature.local.LocalFeature;<a name="line.39"></a>
-<span class="sourceLineNo">040</span>import org.openimaj.util.pair.Pair;<a name="line.40"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.feature.DoubleFVComparison;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.feature.local.LocalFeature;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.util.pair.Pair;<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>import gnu.trove.map.hash.TObjectIntHashMap;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import gnu.trove.procedure.TObjectIntProcedure;<a name="line.40"></a>
 <span class="sourceLineNo">041</span><a name="line.41"></a>
 <span class="sourceLineNo">042</span>/**<a name="line.42"></a>
 <span class="sourceLineNo">043</span> * Matcher that uses minimum Euclidean distance to find matches. Model and<a name="line.43"></a>
 <span class="sourceLineNo">044</span> * object are compared both ways. Matches that are oneway are rejected, as are<a name="line.44"></a>
 <span class="sourceLineNo">045</span> * one-&gt;many matches.<a name="line.45"></a>
-<span class="sourceLineNo">046</span> * <a name="line.46"></a>
+<span class="sourceLineNo">046</span> *<a name="line.46"></a>
 <span class="sourceLineNo">047</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.47"></a>
-<span class="sourceLineNo">048</span> * <a name="line.48"></a>
+<span class="sourceLineNo">048</span> *<a name="line.48"></a>
 <span class="sourceLineNo">049</span> * @param &lt;T&gt;<a name="line.49"></a>
 <span class="sourceLineNo">050</span> */<a name="line.50"></a>
 <span class="sourceLineNo">051</span>public class BasicTwoWayMatcher&lt;T extends LocalFeature&lt;?, ?&gt;&gt; implements LocalFeatureMatcher&lt;T&gt; {<a name="line.51"></a>
@@ -66,71 +66,69 @@
 <span class="sourceLineNo">058</span>        }<a name="line.58"></a>
 <span class="sourceLineNo">059</span><a name="line.59"></a>
 <span class="sourceLineNo">060</span>        /**<a name="line.60"></a>
-<span class="sourceLineNo">061</span>         * This searches through the keypoints in klist for the closest match to<a name="line.61"></a>
-<span class="sourceLineNo">062</span>         * key.<a name="line.62"></a>
-<span class="sourceLineNo">063</span>         */<a name="line.63"></a>
-<span class="sourceLineNo">064</span>        protected T findMatch(T query, List&lt;T&gt; features)<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        {<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                double distsq = Double.MAX_VALUE;<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                T minkey = null;<a name="line.67"></a>
-<span class="sourceLineNo">068</span><a name="line.68"></a>
-<span class="sourceLineNo">069</span>                // find closest match<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                for (final T target : features) {<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                        final double dsq = target.getFeatureVector().asDoubleFV()<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                                        .compare(query.getFeatureVector().asDoubleFV(), DoubleFVComparison.EUCLIDEAN);<a name="line.72"></a>
-<span class="sourceLineNo">073</span><a name="line.73"></a>
-<span class="sourceLineNo">074</span>                        if (dsq &lt; distsq) {<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                                distsq = dsq;<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                                minkey = target;<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                        }<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                }<a name="line.78"></a>
-<span class="sourceLineNo">079</span><a name="line.79"></a>
-<span class="sourceLineNo">080</span>                return minkey;<a name="line.80"></a>
-<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
-<span class="sourceLineNo">082</span><a name="line.82"></a>
-<span class="sourceLineNo">083</span>        @Override<a name="line.83"></a>
-<span class="sourceLineNo">084</span>        public boolean findMatches(List&lt;T&gt; queryfeatures) {<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                matches = new ArrayList&lt;Pair&lt;T&gt;&gt;();<a name="line.85"></a>
+<span class="sourceLineNo">061</span>         * This searches through the keypoints in klist for the closest match to key.<a name="line.61"></a>
+<span class="sourceLineNo">062</span>         */<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        protected T findMatch(T query, List&lt;T&gt; features) {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                double distsq = Double.MAX_VALUE;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                T minkey = null;<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>                // find closest match<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                for (final T target : features) {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                        final double dsq = target.getFeatureVector().asDoubleFV()<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                                        .compare(query.getFeatureVector().asDoubleFV(), DoubleFVComparison.SUM_SQUARE);<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>                        if (dsq &lt; distsq) {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                                distsq = dsq;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                                minkey = target;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        }<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                }<a name="line.76"></a>
+<span class="sourceLineNo">077</span><a name="line.77"></a>
+<span class="sourceLineNo">078</span>                return minkey;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        }<a name="line.79"></a>
+<span class="sourceLineNo">080</span><a name="line.80"></a>
+<span class="sourceLineNo">081</span>        @Override<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        public boolean findMatches(List&lt;T&gt; queryfeatures) {<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                matches = new ArrayList&lt;Pair&lt;T&gt;&gt;();<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>                final TObjectIntHashMap&lt;T&gt; targets = new TObjectIntHashMap&lt;T&gt;();<a name="line.85"></a>
 <span class="sourceLineNo">086</span><a name="line.86"></a>
-<span class="sourceLineNo">087</span>                final TObjectIntHashMap&lt;T&gt; targets = new TObjectIntHashMap&lt;T&gt;();<a name="line.87"></a>
-<span class="sourceLineNo">088</span><a name="line.88"></a>
-<span class="sourceLineNo">089</span>                for (final T query : queryfeatures) {<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                        final T modeltarget = findMatch(query, modelKeypoints);<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                        if (modeltarget == null)<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                                continue;<a name="line.92"></a>
+<span class="sourceLineNo">087</span>                for (final T query : queryfeatures) {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        final T modeltarget = findMatch(query, modelKeypoints);<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                        if (modeltarget == null)<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                                continue;<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        final T querytarget = findMatch(modeltarget, queryfeatures);<a name="line.92"></a>
 <span class="sourceLineNo">093</span><a name="line.93"></a>
-<span class="sourceLineNo">094</span>                        final T querytarget = findMatch(modeltarget, queryfeatures);<a name="line.94"></a>
-<span class="sourceLineNo">095</span><a name="line.95"></a>
-<span class="sourceLineNo">096</span>                        if (querytarget == query) {<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                                matches.add(new Pair&lt;T&gt;(query, modeltarget));<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                                targets.adjustOrPutValue(modeltarget, 1, 1);<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                        }<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                }<a name="line.100"></a>
-<span class="sourceLineNo">101</span><a name="line.101"></a>
-<span class="sourceLineNo">102</span>                final ArrayList&lt;Pair&lt;T&gt;&gt; matchesToRemove = new ArrayList&lt;Pair&lt;T&gt;&gt;();<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                targets.forEachEntry(new TObjectIntProcedure&lt;T&gt;() {<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                        @Override<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                        public boolean execute(T a, int b) {<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                                if (b &gt; 1) {<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                                        for (final Pair&lt;T&gt; p : matches) {<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                                                if (p.secondObject() == a)<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                                                        matchesToRemove.add(p);<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                                        }<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                                }<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                                return true;<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                        }<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                });<a name="line.114"></a>
+<span class="sourceLineNo">094</span>                        if (querytarget == query) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                                matches.add(new Pair&lt;T&gt;(query, modeltarget));<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                targets.adjustOrPutValue(modeltarget, 1, 1);<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        }<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                }<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>                final ArrayList&lt;Pair&lt;T&gt;&gt; matchesToRemove = new ArrayList&lt;Pair&lt;T&gt;&gt;();<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                targets.forEachEntry(new TObjectIntProcedure&lt;T&gt;() {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                        @Override<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                        public boolean execute(T a, int b) {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                                if (b &gt; 1) {<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                        for (final Pair&lt;T&gt; p : matches) {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                                                if (p.secondObject() == a)<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                                                        matchesToRemove.add(p);<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                                        }<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                                }<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                                return true;<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                });<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>                matches.removeAll(matchesToRemove);<a name="line.114"></a>
 <span class="sourceLineNo">115</span><a name="line.115"></a>
-<span class="sourceLineNo">116</span>                matches.removeAll(matchesToRemove);<a name="line.116"></a>
-<span class="sourceLineNo">117</span><a name="line.117"></a>
-<span class="sourceLineNo">118</span>                return matches.size() &gt; 0;<a name="line.118"></a>
-<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
-<span class="sourceLineNo">120</span><a name="line.120"></a>
-<span class="sourceLineNo">121</span>        @Override<a name="line.121"></a>
-<span class="sourceLineNo">122</span>        public List&lt;Pair&lt;T&gt;&gt; getMatches() {<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                return matches;<a name="line.123"></a>
-<span class="sourceLineNo">124</span>        }<a name="line.124"></a>
-<span class="sourceLineNo">125</span>}<a name="line.125"></a>
+<span class="sourceLineNo">116</span>                return matches.size() &gt; 0;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        }<a name="line.117"></a>
+<span class="sourceLineNo">118</span><a name="line.118"></a>
+<span class="sourceLineNo">119</span>        @Override<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        public List&lt;Pair&lt;T&gt;&gt; getMatches() {<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                return matches;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        }<a name="line.122"></a>
+<span class="sourceLineNo">123</span>}<a name="line.123"></a>
 
 
 
