@@ -46,15 +46,15 @@
 <a class="jxr_linenumber" name="36" href="#36">36</a>  <strong class="jxr_keyword">import</strong> java.util.Stack;
 <a class="jxr_linenumber" name="37" href="#37">37</a>  <strong class="jxr_keyword">import</strong> java.util.TreeSet;
 <a class="jxr_linenumber" name="38" href="#38">38</a>  
-<a class="jxr_linenumber" name="39" href="#39">39</a>  <strong class="jxr_keyword">import</strong> odk.lang.FastMath;
-<a class="jxr_linenumber" name="40" href="#40">40</a>  
-<a class="jxr_linenumber" name="41" href="#41">41</a>  <strong class="jxr_keyword">import</strong> org.openimaj.math.geometry.point.Point2d;
-<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> org.openimaj.math.geometry.shape.Polygon;
+<a class="jxr_linenumber" name="39" href="#39">39</a>  <strong class="jxr_keyword">import</strong> org.openimaj.math.geometry.point.Point2d;
+<a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">import</strong> org.openimaj.math.geometry.shape.Polygon;
+<a class="jxr_linenumber" name="41" href="#41">41</a>  
+<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> net.jafama.FastMath;
 <a class="jxr_linenumber" name="43" href="#43">43</a>  
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> * Graham Scan convex hull algorithm, based on the implementation by &lt;a</em>
-<a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment"> * href="https://github.com/bkiers/GrahamScan"&gt;Bart Kiers&lt;/a&gt;.</em>
-<a class="jxr_linenumber" name="47" href="#47">47</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> * Graham Scan convex hull algorithm, based on the implementation by</em>
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment"> * &lt;a href="https://github.com/bkiers/GrahamScan"&gt;Bart Kiers&lt;/a&gt;.</em>
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="48" href="#48">48</a>  <em class="jxr_javadoccomment"> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="49" href="#49">49</a>  <em class="jxr_javadoccomment"> * @author Bart Kiers</em>
 <a class="jxr_linenumber" name="50" href="#50">50</a>  <em class="jxr_javadoccomment"> */</em>
@@ -68,7 +68,7 @@
 <a class="jxr_linenumber" name="58" href="#58">58</a>  
 <a class="jxr_linenumber" name="59" href="#59">59</a>  	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment">	 * Returns true iff all Point2ds in &lt;code&gt;Point2ds&lt;/code&gt; are collinear.</em>
-<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment">	 * @param Point2ds</em>
 <a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment">	 *            the list of Point2ds.</em>
 <a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment">	 * @return true iff all Point2ds in &lt;code&gt;Point2ds&lt;/code&gt; are collinear.</em>
@@ -96,9 +96,9 @@
 <a class="jxr_linenumber" name="86" href="#86">86</a>  
 <a class="jxr_linenumber" name="87" href="#87">87</a>  	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="88" href="#88">88</a>  <em class="jxr_javadoccomment">	 * Returns the convex hull of the Point2ds created from the list</em>
-<a class="jxr_linenumber" name="89" href="#89">89</a>  <em class="jxr_javadoccomment">	 * &lt;code&gt;Point2ds&lt;/code&gt;. Note that the first and last Point2d in the</em>
-<a class="jxr_linenumber" name="90" href="#90">90</a>  <em class="jxr_javadoccomment">	 * returned &lt;code&gt;List&amp;lt;java.awt.Point2d&amp;gt;&lt;/code&gt; are the same Point2d.</em>
-<a class="jxr_linenumber" name="91" href="#91">91</a>  <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="89" href="#89">89</a>  <em class="jxr_javadoccomment">	 * &lt;code&gt;Point2ds&lt;/code&gt;. Note that the first and last Point2d in the returned</em>
+<a class="jxr_linenumber" name="90" href="#90">90</a>  <em class="jxr_javadoccomment">	 * &lt;code&gt;List&amp;lt;java.awt.Point2d&amp;gt;&lt;/code&gt; are the same Point2d.</em>
+<a class="jxr_linenumber" name="91" href="#91">91</a>  <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="92" href="#92">92</a>  <em class="jxr_javadoccomment">	 * @param Point2ds</em>
 <a class="jxr_linenumber" name="93" href="#93">93</a>  <em class="jxr_javadoccomment">	 *            the list of Point2ds.</em>
 <a class="jxr_linenumber" name="94" href="#94">94</a>  <em class="jxr_javadoccomment">	 * @return the convex hull of the Point2ds created from the list</em>
@@ -149,125 +149,117 @@
 <a class="jxr_linenumber" name="139" href="#139">139</a> 	}
 <a class="jxr_linenumber" name="140" href="#140">140</a> 
 <a class="jxr_linenumber" name="141" href="#141">141</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="142" href="#142">142</a> <em class="jxr_javadoccomment">	 * Returns the Point2ds with the lowest y coordinate. In case more than 1</em>
-<a class="jxr_linenumber" name="143" href="#143">143</a> <em class="jxr_javadoccomment">	 * such Point2d exists, the one with the lowest x coordinate is returned.</em>
-<a class="jxr_linenumber" name="144" href="#144">144</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="142" href="#142">142</a> <em class="jxr_javadoccomment">	 * Returns the Point2ds with the lowest y coordinate. In case more than 1 such</em>
+<a class="jxr_linenumber" name="143" href="#143">143</a> <em class="jxr_javadoccomment">	 * Point2d exists, the one with the lowest x coordinate is returned.</em>
+<a class="jxr_linenumber" name="144" href="#144">144</a> <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="145" href="#145">145</a> <em class="jxr_javadoccomment">	 * @param Point2ds</em>
 <a class="jxr_linenumber" name="146" href="#146">146</a> <em class="jxr_javadoccomment">	 *            the list of Point2ds to return the lowest Point2d from.</em>
-<a class="jxr_linenumber" name="147" href="#147">147</a> <em class="jxr_javadoccomment">	 * @return the Point2ds with the lowest y coordinate. In case more than 1</em>
-<a class="jxr_linenumber" name="148" href="#148">148</a> <em class="jxr_javadoccomment">	 *         such Point2d exists, the one with the lowest x coordinate is</em>
-<a class="jxr_linenumber" name="149" href="#149">149</a> <em class="jxr_javadoccomment">	 *         returned.</em>
-<a class="jxr_linenumber" name="150" href="#150">150</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="151" href="#151">151</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> Point2d getLowestPoint2d(List&lt;Point2d&gt; Point2ds) {
-<a class="jxr_linenumber" name="152" href="#152">152</a> 
-<a class="jxr_linenumber" name="153" href="#153">153</a> 		Point2d lowest = Point2ds.get(0);
-<a class="jxr_linenumber" name="154" href="#154">154</a> 
-<a class="jxr_linenumber" name="155" href="#155">155</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt; Point2ds.size(); i++) {
-<a class="jxr_linenumber" name="156" href="#156">156</a> 
-<a class="jxr_linenumber" name="157" href="#157">157</a> 			<strong class="jxr_keyword">final</strong> Point2d temp = Point2ds.get(i);
-<a class="jxr_linenumber" name="158" href="#158">158</a> 
-<a class="jxr_linenumber" name="159" href="#159">159</a> 			<strong class="jxr_keyword">if</strong> (temp.getY() &lt; lowest.getY() || (temp.getY() == lowest.getY() &amp;&amp; temp.getX() &lt; lowest.getX())) {
-<a class="jxr_linenumber" name="160" href="#160">160</a> 				lowest = temp;
-<a class="jxr_linenumber" name="161" href="#161">161</a> 			}
-<a class="jxr_linenumber" name="162" href="#162">162</a> 		}
-<a class="jxr_linenumber" name="163" href="#163">163</a> 
-<a class="jxr_linenumber" name="164" href="#164">164</a> 		<strong class="jxr_keyword">return</strong> lowest;
-<a class="jxr_linenumber" name="165" href="#165">165</a> 	}
-<a class="jxr_linenumber" name="166" href="#166">166</a> 
-<a class="jxr_linenumber" name="167" href="#167">167</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="168" href="#168">168</a> <em class="jxr_javadoccomment">	 * Returns a sorted set of Point2ds from the list &lt;code&gt;Point2ds&lt;/code&gt;. The</em>
-<a class="jxr_linenumber" name="169" href="#169">169</a> <em class="jxr_javadoccomment">	 * set of Point2ds are sorted in increasing order of the angle they and the</em>
-<a class="jxr_linenumber" name="170" href="#170">170</a> <em class="jxr_javadoccomment">	 * lowest Point2d &lt;tt&gt;P&lt;/tt&gt; make with the x-axis. If two (or more) Point2ds</em>
-<a class="jxr_linenumber" name="171" href="#171">171</a> <em class="jxr_javadoccomment">	 * form the same angle towards &lt;tt&gt;P&lt;/tt&gt;, the one closest to &lt;tt&gt;P&lt;/tt&gt;</em>
-<a class="jxr_linenumber" name="172" href="#172">172</a> <em class="jxr_javadoccomment">	 * comes first.</em>
-<a class="jxr_linenumber" name="173" href="#173">173</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="174" href="#174">174</a> <em class="jxr_javadoccomment">	 * @param Point2ds</em>
-<a class="jxr_linenumber" name="175" href="#175">175</a> <em class="jxr_javadoccomment">	 *            the list of Point2ds to sort.</em>
-<a class="jxr_linenumber" name="176" href="#176">176</a> <em class="jxr_javadoccomment">	 * @return a sorted set of Point2ds from the list &lt;code&gt;Point2ds&lt;/code&gt;.</em>
-<a class="jxr_linenumber" name="177" href="#177">177</a> <em class="jxr_javadoccomment">	 * @see GrahamScan#getLowestPoint2d(java.util.List)</em>
-<a class="jxr_linenumber" name="178" href="#178">178</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="179" href="#179">179</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> Set&lt;Point2d&gt; getSortedPoint2dSet(List&lt;Point2d&gt; Point2ds) {
+<a class="jxr_linenumber" name="147" href="#147">147</a> <em class="jxr_javadoccomment">	 * @return the Point2ds with the lowest y coordinate. In case more than 1 such</em>
+<a class="jxr_linenumber" name="148" href="#148">148</a> <em class="jxr_javadoccomment">	 *         Point2d exists, the one with the lowest x coordinate is returned.</em>
+<a class="jxr_linenumber" name="149" href="#149">149</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="150" href="#150">150</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> Point2d getLowestPoint2d(List&lt;Point2d&gt; Point2ds) {
+<a class="jxr_linenumber" name="151" href="#151">151</a> 
+<a class="jxr_linenumber" name="152" href="#152">152</a> 		Point2d lowest = Point2ds.get(0);
+<a class="jxr_linenumber" name="153" href="#153">153</a> 
+<a class="jxr_linenumber" name="154" href="#154">154</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt; Point2ds.size(); i++) {
+<a class="jxr_linenumber" name="155" href="#155">155</a> 
+<a class="jxr_linenumber" name="156" href="#156">156</a> 			<strong class="jxr_keyword">final</strong> Point2d temp = Point2ds.get(i);
+<a class="jxr_linenumber" name="157" href="#157">157</a> 
+<a class="jxr_linenumber" name="158" href="#158">158</a> 			<strong class="jxr_keyword">if</strong> (temp.getY() &lt; lowest.getY() || (temp.getY() == lowest.getY() &amp;&amp; temp.getX() &lt; lowest.getX())) {
+<a class="jxr_linenumber" name="159" href="#159">159</a> 				lowest = temp;
+<a class="jxr_linenumber" name="160" href="#160">160</a> 			}
+<a class="jxr_linenumber" name="161" href="#161">161</a> 		}
+<a class="jxr_linenumber" name="162" href="#162">162</a> 
+<a class="jxr_linenumber" name="163" href="#163">163</a> 		<strong class="jxr_keyword">return</strong> lowest;
+<a class="jxr_linenumber" name="164" href="#164">164</a> 	}
+<a class="jxr_linenumber" name="165" href="#165">165</a> 
+<a class="jxr_linenumber" name="166" href="#166">166</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="167" href="#167">167</a> <em class="jxr_javadoccomment">	 * Returns a sorted set of Point2ds from the list &lt;code&gt;Point2ds&lt;/code&gt;. The set</em>
+<a class="jxr_linenumber" name="168" href="#168">168</a> <em class="jxr_javadoccomment">	 * of Point2ds are sorted in increasing order of the angle they and the lowest</em>
+<a class="jxr_linenumber" name="169" href="#169">169</a> <em class="jxr_javadoccomment">	 * Point2d &lt;tt&gt;P&lt;/tt&gt; make with the x-axis. If two (or more) Point2ds form the</em>
+<a class="jxr_linenumber" name="170" href="#170">170</a> <em class="jxr_javadoccomment">	 * same angle towards &lt;tt&gt;P&lt;/tt&gt;, the one closest to &lt;tt&gt;P&lt;/tt&gt; comes first.</em>
+<a class="jxr_linenumber" name="171" href="#171">171</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="172" href="#172">172</a> <em class="jxr_javadoccomment">	 * @param Point2ds</em>
+<a class="jxr_linenumber" name="173" href="#173">173</a> <em class="jxr_javadoccomment">	 *            the list of Point2ds to sort.</em>
+<a class="jxr_linenumber" name="174" href="#174">174</a> <em class="jxr_javadoccomment">	 * @return a sorted set of Point2ds from the list &lt;code&gt;Point2ds&lt;/code&gt;.</em>
+<a class="jxr_linenumber" name="175" href="#175">175</a> <em class="jxr_javadoccomment">	 * @see GrahamScan#getLowestPoint2d(java.util.List)</em>
+<a class="jxr_linenumber" name="176" href="#176">176</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="177" href="#177">177</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> Set&lt;Point2d&gt; getSortedPoint2dSet(List&lt;Point2d&gt; Point2ds) {
+<a class="jxr_linenumber" name="178" href="#178">178</a> 
+<a class="jxr_linenumber" name="179" href="#179">179</a> 		<strong class="jxr_keyword">final</strong> Point2d lowest = getLowestPoint2d(Point2ds);
 <a class="jxr_linenumber" name="180" href="#180">180</a> 
-<a class="jxr_linenumber" name="181" href="#181">181</a> 		<strong class="jxr_keyword">final</strong> Point2d lowest = getLowestPoint2d(Point2ds);
-<a class="jxr_linenumber" name="182" href="#182">182</a> 
-<a class="jxr_linenumber" name="183" href="#183">183</a> 		<strong class="jxr_keyword">final</strong> TreeSet&lt;Point2d&gt; set = <strong class="jxr_keyword">new</strong> TreeSet&lt;Point2d&gt;(<strong class="jxr_keyword">new</strong> Comparator&lt;Point2d&gt;() {
-<a class="jxr_linenumber" name="184" href="#184">184</a> 			@Override
-<a class="jxr_linenumber" name="185" href="#185">185</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compare(Point2d a, Point2d b) {
-<a class="jxr_linenumber" name="186" href="#186">186</a> 
-<a class="jxr_linenumber" name="187" href="#187">187</a> 				<strong class="jxr_keyword">if</strong> (a == b || a.equals(b)) {
-<a class="jxr_linenumber" name="188" href="#188">188</a> 					<strong class="jxr_keyword">return</strong> 0;
-<a class="jxr_linenumber" name="189" href="#189">189</a> 				}
-<a class="jxr_linenumber" name="190" href="#190">190</a> 
-<a class="jxr_linenumber" name="191" href="#191">191</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> thetaA = FastMath.atan2(a.getY() - lowest.getY(), a.getX() - lowest.getX());
-<a class="jxr_linenumber" name="192" href="#192">192</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> thetaB = FastMath.atan2(b.getY() - lowest.getY(), b.getX() - lowest.getX());
-<a class="jxr_linenumber" name="193" href="#193">193</a> 
-<a class="jxr_linenumber" name="194" href="#194">194</a> 				<strong class="jxr_keyword">if</strong> (thetaA &lt; thetaB) {
-<a class="jxr_linenumber" name="195" href="#195">195</a> 					<strong class="jxr_keyword">return</strong> -1;
-<a class="jxr_linenumber" name="196" href="#196">196</a> 				}
-<a class="jxr_linenumber" name="197" href="#197">197</a> 				<strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (thetaA &gt; thetaB) {
-<a class="jxr_linenumber" name="198" href="#198">198</a> 					<strong class="jxr_keyword">return</strong> 1;
-<a class="jxr_linenumber" name="199" href="#199">199</a> 				}
-<a class="jxr_linenumber" name="200" href="#200">200</a> 				<strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="201" href="#201">201</a> 					<em class="jxr_comment">// collinear with the 'lowest' Point2d, let the Point2d</em>
-<a class="jxr_linenumber" name="202" href="#202">202</a> 					<em class="jxr_comment">// closest to it come first</em>
-<a class="jxr_linenumber" name="203" href="#203">203</a> 					<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> distanceA = FastMath.sqrt(((lowest.getX() - a.getX()) * (lowest.getX() - a
-<a class="jxr_linenumber" name="204" href="#204">204</a> 							.getX())) +
-<a class="jxr_linenumber" name="205" href="#205">205</a> 							((lowest.getY() - a.getY()) * (lowest.getY() - a.getY())));
-<a class="jxr_linenumber" name="206" href="#206">206</a> 					<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> distanceB = FastMath.sqrt(((lowest.getX() - b.getX()) * (lowest.getX() - b
-<a class="jxr_linenumber" name="207" href="#207">207</a> 							.getX())) +
-<a class="jxr_linenumber" name="208" href="#208">208</a> 							((lowest.getY() - b.getY()) * (lowest.getY() - b.getY())));
-<a class="jxr_linenumber" name="209" href="#209">209</a> 
-<a class="jxr_linenumber" name="210" href="#210">210</a> 					<strong class="jxr_keyword">if</strong> (distanceA &lt; distanceB) {
-<a class="jxr_linenumber" name="211" href="#211">211</a> 						<strong class="jxr_keyword">return</strong> -1;
-<a class="jxr_linenumber" name="212" href="#212">212</a> 					}
-<a class="jxr_linenumber" name="213" href="#213">213</a> 					<strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="214" href="#214">214</a> 						<strong class="jxr_keyword">return</strong> 1;
-<a class="jxr_linenumber" name="215" href="#215">215</a> 					}
-<a class="jxr_linenumber" name="216" href="#216">216</a> 				}
-<a class="jxr_linenumber" name="217" href="#217">217</a> 			}
-<a class="jxr_linenumber" name="218" href="#218">218</a> 		});
+<a class="jxr_linenumber" name="181" href="#181">181</a> 		<strong class="jxr_keyword">final</strong> TreeSet&lt;Point2d&gt; set = <strong class="jxr_keyword">new</strong> TreeSet&lt;Point2d&gt;(<strong class="jxr_keyword">new</strong> Comparator&lt;Point2d&gt;() {
+<a class="jxr_linenumber" name="182" href="#182">182</a> 			@Override
+<a class="jxr_linenumber" name="183" href="#183">183</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compare(Point2d a, Point2d b) {
+<a class="jxr_linenumber" name="184" href="#184">184</a> 
+<a class="jxr_linenumber" name="185" href="#185">185</a> 				<strong class="jxr_keyword">if</strong> (a == b || a.equals(b)) {
+<a class="jxr_linenumber" name="186" href="#186">186</a> 					<strong class="jxr_keyword">return</strong> 0;
+<a class="jxr_linenumber" name="187" href="#187">187</a> 				}
+<a class="jxr_linenumber" name="188" href="#188">188</a> 
+<a class="jxr_linenumber" name="189" href="#189">189</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> thetaA = FastMath.atan2(a.getY() - lowest.getY(), a.getX() - lowest.getX());
+<a class="jxr_linenumber" name="190" href="#190">190</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> thetaB = FastMath.atan2(b.getY() - lowest.getY(), b.getX() - lowest.getX());
+<a class="jxr_linenumber" name="191" href="#191">191</a> 
+<a class="jxr_linenumber" name="192" href="#192">192</a> 				<strong class="jxr_keyword">if</strong> (thetaA &lt; thetaB) {
+<a class="jxr_linenumber" name="193" href="#193">193</a> 					<strong class="jxr_keyword">return</strong> -1;
+<a class="jxr_linenumber" name="194" href="#194">194</a> 				} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (thetaA &gt; thetaB) {
+<a class="jxr_linenumber" name="195" href="#195">195</a> 					<strong class="jxr_keyword">return</strong> 1;
+<a class="jxr_linenumber" name="196" href="#196">196</a> 				} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="197" href="#197">197</a> 					<em class="jxr_comment">// collinear with the 'lowest' Point2d, let the Point2d</em>
+<a class="jxr_linenumber" name="198" href="#198">198</a> 					<em class="jxr_comment">// closest to it come first</em>
+<a class="jxr_linenumber" name="199" href="#199">199</a> 					<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> distanceA = FastMath.sqrt(((lowest.getX() - a.getX()) * (lowest.getX() - a
+<a class="jxr_linenumber" name="200" href="#200">200</a> 							.getX())) +
+<a class="jxr_linenumber" name="201" href="#201">201</a> 							((lowest.getY() - a.getY()) * (lowest.getY() - a.getY())));
+<a class="jxr_linenumber" name="202" href="#202">202</a> 					<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> distanceB = FastMath.sqrt(((lowest.getX() - b.getX()) * (lowest.getX() - b
+<a class="jxr_linenumber" name="203" href="#203">203</a> 							.getX())) +
+<a class="jxr_linenumber" name="204" href="#204">204</a> 							((lowest.getY() - b.getY()) * (lowest.getY() - b.getY())));
+<a class="jxr_linenumber" name="205" href="#205">205</a> 
+<a class="jxr_linenumber" name="206" href="#206">206</a> 					<strong class="jxr_keyword">if</strong> (distanceA &lt; distanceB) {
+<a class="jxr_linenumber" name="207" href="#207">207</a> 						<strong class="jxr_keyword">return</strong> -1;
+<a class="jxr_linenumber" name="208" href="#208">208</a> 					} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="209" href="#209">209</a> 						<strong class="jxr_keyword">return</strong> 1;
+<a class="jxr_linenumber" name="210" href="#210">210</a> 					}
+<a class="jxr_linenumber" name="211" href="#211">211</a> 				}
+<a class="jxr_linenumber" name="212" href="#212">212</a> 			}
+<a class="jxr_linenumber" name="213" href="#213">213</a> 		});
+<a class="jxr_linenumber" name="214" href="#214">214</a> 
+<a class="jxr_linenumber" name="215" href="#215">215</a> 		set.addAll(Point2ds);
+<a class="jxr_linenumber" name="216" href="#216">216</a> 
+<a class="jxr_linenumber" name="217" href="#217">217</a> 		<strong class="jxr_keyword">return</strong> set;
+<a class="jxr_linenumber" name="218" href="#218">218</a> 	}
 <a class="jxr_linenumber" name="219" href="#219">219</a> 
-<a class="jxr_linenumber" name="220" href="#220">220</a> 		set.addAll(Point2ds);
-<a class="jxr_linenumber" name="221" href="#221">221</a> 
-<a class="jxr_linenumber" name="222" href="#222">222</a> 		<strong class="jxr_keyword">return</strong> set;
-<a class="jxr_linenumber" name="223" href="#223">223</a> 	}
-<a class="jxr_linenumber" name="224" href="#224">224</a> 
-<a class="jxr_linenumber" name="225" href="#225">225</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="226" href="#226">226</a> <em class="jxr_javadoccomment">	 * Returns the GrahamScan#Turn formed by traversing through the ordered</em>
-<a class="jxr_linenumber" name="227" href="#227">227</a> <em class="jxr_javadoccomment">	 * Point2ds &lt;code&gt;a&lt;/code&gt;, &lt;code&gt;b&lt;/code&gt; and &lt;code&gt;c&lt;/code&gt;. More</em>
-<a class="jxr_linenumber" name="228" href="#228">228</a> <em class="jxr_javadoccomment">	 * specifically, the cross product &lt;tt&gt;C&lt;/tt&gt; between the 3 Point2ds</em>
-<a class="jxr_linenumber" name="229" href="#229">229</a> <em class="jxr_javadoccomment">	 * (vectors) is calculated:</em>
-<a class="jxr_linenumber" name="230" href="#230">230</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="231" href="#231">231</a> <em class="jxr_javadoccomment">	 * &lt;tt&gt;(b.getX()-a.getX() * c.getY()-a.getY()) - (b.getY()-a.getY() * c.getX()-a.getX())&lt;/tt&gt;</em>
-<a class="jxr_linenumber" name="232" href="#232">232</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="233" href="#233">233</a> <em class="jxr_javadoccomment">	 * and if &lt;tt&gt;C&lt;/tt&gt; is less than 0, the turn is CLOCKWISE, if &lt;tt&gt;C&lt;/tt&gt; is</em>
-<a class="jxr_linenumber" name="234" href="#234">234</a> <em class="jxr_javadoccomment">	 * more than 0, the turn is COUNTER_CLOCKWISE, else the three Point2ds are</em>
-<a class="jxr_linenumber" name="235" href="#235">235</a> <em class="jxr_javadoccomment">	 * COLLINEAR.</em>
-<a class="jxr_linenumber" name="236" href="#236">236</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="237" href="#237">237</a> <em class="jxr_javadoccomment">	 * @param a</em>
-<a class="jxr_linenumber" name="238" href="#238">238</a> <em class="jxr_javadoccomment">	 *            the starting Point2d.</em>
-<a class="jxr_linenumber" name="239" href="#239">239</a> <em class="jxr_javadoccomment">	 * @param b</em>
-<a class="jxr_linenumber" name="240" href="#240">240</a> <em class="jxr_javadoccomment">	 *            the second Point2d.</em>
-<a class="jxr_linenumber" name="241" href="#241">241</a> <em class="jxr_javadoccomment">	 * @param c</em>
-<a class="jxr_linenumber" name="242" href="#242">242</a> <em class="jxr_javadoccomment">	 *            the end Point2d.</em>
-<a class="jxr_linenumber" name="243" href="#243">243</a> <em class="jxr_javadoccomment">	 * @return the GrahamScan#Turn formed by traversing through the ordered</em>
-<a class="jxr_linenumber" name="244" href="#244">244</a> <em class="jxr_javadoccomment">	 *         Point2ds &lt;code&gt;a&lt;/code&gt;, &lt;code&gt;b&lt;/code&gt; and &lt;code&gt;c&lt;/code&gt;.</em>
-<a class="jxr_linenumber" name="245" href="#245">245</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="246" href="#246">246</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../../../org/openimaj/math/geometry/shape/util/GrahamScan.html">Turn</a> getTurn(Point2d a, Point2d b, Point2d c) {
-<a class="jxr_linenumber" name="247" href="#247">247</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> crossProduct = ((b.getX() - a.getX()) * (c.getY() - a.getY())) -
-<a class="jxr_linenumber" name="248" href="#248">248</a> 				((b.getY() - a.getY()) * (c.getX() - a.getX()));
-<a class="jxr_linenumber" name="249" href="#249">249</a> 
-<a class="jxr_linenumber" name="250" href="#250">250</a> 		<strong class="jxr_keyword">if</strong> (crossProduct &gt; 0) {
-<a class="jxr_linenumber" name="251" href="#251">251</a> 			<strong class="jxr_keyword">return</strong> Turn.COUNTER_CLOCKWISE;
-<a class="jxr_linenumber" name="252" href="#252">252</a> 		}
-<a class="jxr_linenumber" name="253" href="#253">253</a> 		<strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (crossProduct &lt; 0) {
-<a class="jxr_linenumber" name="254" href="#254">254</a> 			<strong class="jxr_keyword">return</strong> Turn.CLOCKWISE;
-<a class="jxr_linenumber" name="255" href="#255">255</a> 		}
-<a class="jxr_linenumber" name="256" href="#256">256</a> 		<strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="257" href="#257">257</a> 			<strong class="jxr_keyword">return</strong> Turn.COLLINEAR;
-<a class="jxr_linenumber" name="258" href="#258">258</a> 		}
-<a class="jxr_linenumber" name="259" href="#259">259</a> 	}
-<a class="jxr_linenumber" name="260" href="#260">260</a> }
+<a class="jxr_linenumber" name="220" href="#220">220</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="221" href="#221">221</a> <em class="jxr_javadoccomment">	 * Returns the GrahamScan#Turn formed by traversing through the ordered Point2ds</em>
+<a class="jxr_linenumber" name="222" href="#222">222</a> <em class="jxr_javadoccomment">	 * &lt;code&gt;a&lt;/code&gt;, &lt;code&gt;b&lt;/code&gt; and &lt;code&gt;c&lt;/code&gt;. More specifically, the</em>
+<a class="jxr_linenumber" name="223" href="#223">223</a> <em class="jxr_javadoccomment">	 * cross product &lt;tt&gt;C&lt;/tt&gt; between the 3 Point2ds (vectors) is calculated:</em>
+<a class="jxr_linenumber" name="224" href="#224">224</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="225" href="#225">225</a> <em class="jxr_javadoccomment">	 * &lt;tt&gt;(b.getX()-a.getX() * c.getY()-a.getY()) - (b.getY()-a.getY() * c.getX()-a.getX())&lt;/tt&gt;</em>
+<a class="jxr_linenumber" name="226" href="#226">226</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="227" href="#227">227</a> <em class="jxr_javadoccomment">	 * and if &lt;tt&gt;C&lt;/tt&gt; is less than 0, the turn is CLOCKWISE, if &lt;tt&gt;C&lt;/tt&gt; is</em>
+<a class="jxr_linenumber" name="228" href="#228">228</a> <em class="jxr_javadoccomment">	 * more than 0, the turn is COUNTER_CLOCKWISE, else the three Point2ds are</em>
+<a class="jxr_linenumber" name="229" href="#229">229</a> <em class="jxr_javadoccomment">	 * COLLINEAR.</em>
+<a class="jxr_linenumber" name="230" href="#230">230</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="231" href="#231">231</a> <em class="jxr_javadoccomment">	 * @param a</em>
+<a class="jxr_linenumber" name="232" href="#232">232</a> <em class="jxr_javadoccomment">	 *            the starting Point2d.</em>
+<a class="jxr_linenumber" name="233" href="#233">233</a> <em class="jxr_javadoccomment">	 * @param b</em>
+<a class="jxr_linenumber" name="234" href="#234">234</a> <em class="jxr_javadoccomment">	 *            the second Point2d.</em>
+<a class="jxr_linenumber" name="235" href="#235">235</a> <em class="jxr_javadoccomment">	 * @param c</em>
+<a class="jxr_linenumber" name="236" href="#236">236</a> <em class="jxr_javadoccomment">	 *            the end Point2d.</em>
+<a class="jxr_linenumber" name="237" href="#237">237</a> <em class="jxr_javadoccomment">	 * @return the GrahamScan#Turn formed by traversing through the ordered Point2ds</em>
+<a class="jxr_linenumber" name="238" href="#238">238</a> <em class="jxr_javadoccomment">	 *         &lt;code&gt;a&lt;/code&gt;, &lt;code&gt;b&lt;/code&gt; and &lt;code&gt;c&lt;/code&gt;.</em>
+<a class="jxr_linenumber" name="239" href="#239">239</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="240" href="#240">240</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../../../org/openimaj/math/geometry/shape/util/GrahamScan.html">Turn</a> getTurn(Point2d a, Point2d b, Point2d c) {
+<a class="jxr_linenumber" name="241" href="#241">241</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> crossProduct = ((b.getX() - a.getX()) * (c.getY() - a.getY())) -
+<a class="jxr_linenumber" name="242" href="#242">242</a> 				((b.getY() - a.getY()) * (c.getX() - a.getX()));
+<a class="jxr_linenumber" name="243" href="#243">243</a> 
+<a class="jxr_linenumber" name="244" href="#244">244</a> 		<strong class="jxr_keyword">if</strong> (crossProduct &gt; 0) {
+<a class="jxr_linenumber" name="245" href="#245">245</a> 			<strong class="jxr_keyword">return</strong> Turn.COUNTER_CLOCKWISE;
+<a class="jxr_linenumber" name="246" href="#246">246</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (crossProduct &lt; 0) {
+<a class="jxr_linenumber" name="247" href="#247">247</a> 			<strong class="jxr_keyword">return</strong> Turn.CLOCKWISE;
+<a class="jxr_linenumber" name="248" href="#248">248</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="249" href="#249">249</a> 			<strong class="jxr_keyword">return</strong> Turn.COLLINEAR;
+<a class="jxr_linenumber" name="250" href="#250">250</a> 		}
+<a class="jxr_linenumber" name="251" href="#251">251</a> 	}
+<a class="jxr_linenumber" name="252" href="#252">252</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
