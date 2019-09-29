@@ -39,18 +39,18 @@
 <a class="jxr_linenumber" name="29" href="#29">29</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="30" href="#30">30</a>  <strong class="jxr_keyword">package</strong> org.openimaj.image.processing.algorithm;
 <a class="jxr_linenumber" name="31" href="#31">31</a>  
-<a class="jxr_linenumber" name="32" href="#32">32</a>  <strong class="jxr_keyword">import</strong> odk.lang.FastMath;
-<a class="jxr_linenumber" name="33" href="#33">33</a>  
-<a class="jxr_linenumber" name="34" href="#34">34</a>  <strong class="jxr_keyword">import</strong> org.openimaj.citation.annotation.Reference;
-<a class="jxr_linenumber" name="35" href="#35">35</a>  <strong class="jxr_keyword">import</strong> org.openimaj.citation.annotation.ReferenceType;
-<a class="jxr_linenumber" name="36" href="#36">36</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.FImage;
-<a class="jxr_linenumber" name="37" href="#37">37</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.pixel.ConnectedComponent;
-<a class="jxr_linenumber" name="38" href="#38">38</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
-<a class="jxr_linenumber" name="39" href="#39">39</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.processor.SinglebandImageProcessor;
+<a class="jxr_linenumber" name="32" href="#32">32</a>  <strong class="jxr_keyword">import</strong> org.openimaj.citation.annotation.Reference;
+<a class="jxr_linenumber" name="33" href="#33">33</a>  <strong class="jxr_keyword">import</strong> org.openimaj.citation.annotation.ReferenceType;
+<a class="jxr_linenumber" name="34" href="#34">34</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.FImage;
+<a class="jxr_linenumber" name="35" href="#35">35</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.pixel.ConnectedComponent;
+<a class="jxr_linenumber" name="36" href="#36">36</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
+<a class="jxr_linenumber" name="37" href="#37">37</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.processor.SinglebandImageProcessor;
+<a class="jxr_linenumber" name="38" href="#38">38</a>  
+<a class="jxr_linenumber" name="39" href="#39">39</a>  <strong class="jxr_keyword">import</strong> net.jafama.FastMath;
 <a class="jxr_linenumber" name="40" href="#40">40</a>  
 <a class="jxr_linenumber" name="41" href="#41">41</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="42" href="#42">42</a>  <em class="jxr_javadoccomment"> * Implementation of Perona &amp;amp; Malik's image filtering by anisotropic diffusion.</em>
-<a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment"> * Enables edge-preserving image smoothing.</em>
+<a class="jxr_linenumber" name="42" href="#42">42</a>  <em class="jxr_javadoccomment"> * Implementation of Perona &amp;amp; Malik's image filtering by anisotropic</em>
+<a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment"> * diffusion. Enables edge-preserving image smoothing.</em>
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment"> */</em>
@@ -76,8 +76,8 @@
 <a class="jxr_linenumber" name="66" href="#66">66</a>  		})
 <a class="jxr_linenumber" name="67" href="#67">67</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/image/processing/algorithm/AnisotropicDiffusion.html">AnisotropicDiffusion</a> <strong class="jxr_keyword">implements</strong> SinglebandImageProcessor&lt;Float, FImage&gt; {
 <a class="jxr_linenumber" name="68" href="#68">68</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="69" href="#69">69</a>  <em class="jxr_javadoccomment">	 * Interface describing a function that computes the conduction coefficient</em>
-<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment">	 * as a function of space and gradient magnitude.</em>
+<a class="jxr_linenumber" name="69" href="#69">69</a>  <em class="jxr_javadoccomment">	 * Interface describing a function that computes the conduction coefficient as a</em>
+<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment">	 * function of space and gradient magnitude.</em>
 <a class="jxr_linenumber" name="71" href="#71">71</a>  <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="72" href="#72">72</a>  <em class="jxr_javadoccomment">	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="73" href="#73">73</a>  <em class="jxr_javadoccomment">	 *</em>
@@ -191,113 +191,112 @@
 <a class="jxr_linenumber" name="181" href="#181">181</a> <em class="jxr_javadoccomment">	 * @param numIterations</em>
 <a class="jxr_linenumber" name="182" href="#182">182</a> <em class="jxr_javadoccomment">	 *            number of iterations of filtering to apply</em>
 <a class="jxr_linenumber" name="183" href="#183">183</a> <em class="jxr_javadoccomment">	 * @param lambda</em>
-<a class="jxr_linenumber" name="184" href="#184">184</a> <em class="jxr_javadoccomment">	 *            the integration constant (bigger than 0 and less than or equal</em>
-<a class="jxr_linenumber" name="185" href="#185">185</a> <em class="jxr_javadoccomment">	 *            to 1/4)</em>
+<a class="jxr_linenumber" name="184" href="#184">184</a> <em class="jxr_javadoccomment">	 *            the integration constant (bigger than 0 and less than or equal to</em>
+<a class="jxr_linenumber" name="185" href="#185">185</a> <em class="jxr_javadoccomment">	 *            1/4)</em>
 <a class="jxr_linenumber" name="186" href="#186">186</a> <em class="jxr_javadoccomment">	 * @param function</em>
 <a class="jxr_linenumber" name="187" href="#187">187</a> <em class="jxr_javadoccomment">	 *            the conduction coefficient function</em>
 <a class="jxr_linenumber" name="188" href="#188">188</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="189" href="#189">189</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/openimaj/image/processing/algorithm/AnisotropicDiffusion.html">AnisotropicDiffusion</a>(<strong class="jxr_keyword">int</strong> numIterations, <strong class="jxr_keyword">float</strong> lambda, <a href="../../../../../org/openimaj/image/processing/algorithm/AnisotropicDiffusion.html">ConductionCoefficientFunction</a> function)
-<a class="jxr_linenumber" name="190" href="#190">190</a> 	{
-<a class="jxr_linenumber" name="191" href="#191">191</a> 		<strong class="jxr_keyword">this</strong>.numIterations = numIterations;
-<a class="jxr_linenumber" name="192" href="#192">192</a> 		<strong class="jxr_keyword">this</strong>.lambda = lambda;
-<a class="jxr_linenumber" name="193" href="#193">193</a> 		<strong class="jxr_keyword">this</strong>.function = function;
-<a class="jxr_linenumber" name="194" href="#194">194</a> 		<strong class="jxr_keyword">this</strong>.neighbourMode = ConnectMode.CONNECT_4;
-<a class="jxr_linenumber" name="195" href="#195">195</a> 	}
-<a class="jxr_linenumber" name="196" href="#196">196</a> 
-<a class="jxr_linenumber" name="197" href="#197">197</a> 	@Override
-<a class="jxr_linenumber" name="198" href="#198">198</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> processImage(FImage image) {
-<a class="jxr_linenumber" name="199" href="#199">199</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; numIterations; i++) {
-<a class="jxr_linenumber" name="200" href="#200">200</a> 			processImageOneIteration(image);
-<a class="jxr_linenumber" name="201" href="#201">201</a> 		}
-<a class="jxr_linenumber" name="202" href="#202">202</a> 	}
-<a class="jxr_linenumber" name="203" href="#203">203</a> 
-<a class="jxr_linenumber" name="204" href="#204">204</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="205" href="#205">205</a> <em class="jxr_javadoccomment">	 * Perform a single iteration of anisotropic diffusion</em>
-<a class="jxr_linenumber" name="206" href="#206">206</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="207" href="#207">207</a> <em class="jxr_javadoccomment">	 * @param image</em>
-<a class="jxr_linenumber" name="208" href="#208">208</a> <em class="jxr_javadoccomment">	 *            the image</em>
-<a class="jxr_linenumber" name="209" href="#209">209</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="210" href="#210">210</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> processImageOneIteration(FImage image) {
-<a class="jxr_linenumber" name="211" href="#211">211</a> 		<strong class="jxr_keyword">switch</strong> (neighbourMode) {
-<a class="jxr_linenumber" name="212" href="#212">212</a> 		<strong class="jxr_keyword">case</strong> CONNECT_4:
-<a class="jxr_linenumber" name="213" href="#213">213</a> 			processImageOneIteration4(image);
-<a class="jxr_linenumber" name="214" href="#214">214</a> 		<strong class="jxr_keyword">case</strong> CONNECT_8:
-<a class="jxr_linenumber" name="215" href="#215">215</a> 			processImageOneIteration8(image);
-<a class="jxr_linenumber" name="216" href="#216">216</a> 		}
-<a class="jxr_linenumber" name="217" href="#217">217</a> 	}
-<a class="jxr_linenumber" name="218" href="#218">218</a> 
-<a class="jxr_linenumber" name="219" href="#219">219</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> processImageOneIteration4(FImage image) {
-<a class="jxr_linenumber" name="220" href="#220">220</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong>[][] tmp = image.clone().pixels;
-<a class="jxr_linenumber" name="221" href="#221">221</a> 
-<a class="jxr_linenumber" name="222" href="#222">222</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> y = 0; y &lt; image.height; y++) {
-<a class="jxr_linenumber" name="223" href="#223">223</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> ym = Math.max(y - 1, 0);
-<a class="jxr_linenumber" name="224" href="#224">224</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> yp = Math.min(y + 1, image.height - 1);
-<a class="jxr_linenumber" name="225" href="#225">225</a> 
-<a class="jxr_linenumber" name="226" href="#226">226</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> x = 0; x &lt; image.width; x++) {
-<a class="jxr_linenumber" name="227" href="#227">227</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> xm = Math.max(x - 1, 0);
-<a class="jxr_linenumber" name="228" href="#228">228</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> xp = Math.min(x + 1, image.width - 1);
-<a class="jxr_linenumber" name="229" href="#229">229</a> 
-<a class="jxr_linenumber" name="230" href="#230">230</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dN = tmp[ym][x] - tmp[y][x];
-<a class="jxr_linenumber" name="231" href="#231">231</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dS = tmp[yp][x] - tmp[y][x];
-<a class="jxr_linenumber" name="232" href="#232">232</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dE = tmp[y][xm] - tmp[y][x];
-<a class="jxr_linenumber" name="233" href="#233">233</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dW = tmp[y][xp] - tmp[y][x];
-<a class="jxr_linenumber" name="234" href="#234">234</a> 
-<a class="jxr_linenumber" name="235" href="#235">235</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cN = function.apply(Math.abs(dN), x, y);
-<a class="jxr_linenumber" name="236" href="#236">236</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cS = function.apply(Math.abs(dS), x, y);
-<a class="jxr_linenumber" name="237" href="#237">237</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cE = function.apply(Math.abs(dE), x, y);
-<a class="jxr_linenumber" name="238" href="#238">238</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cW = function.apply(Math.abs(dW), x, y);
-<a class="jxr_linenumber" name="239" href="#239">239</a> 
-<a class="jxr_linenumber" name="240" href="#240">240</a> 				image.pixels[y][x] += lambda * (cN * dN + cS * dS + cE * dE + cW * dW);
-<a class="jxr_linenumber" name="241" href="#241">241</a> 			}
-<a class="jxr_linenumber" name="242" href="#242">242</a> 		}
-<a class="jxr_linenumber" name="243" href="#243">243</a> 	}
-<a class="jxr_linenumber" name="244" href="#244">244</a> 
-<a class="jxr_linenumber" name="245" href="#245">245</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> processImageOneIteration8(FImage image) {
-<a class="jxr_linenumber" name="246" href="#246">246</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong>[][] tmp = image.clone().pixels;
-<a class="jxr_linenumber" name="247" href="#247">247</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> wt = 0.5f;
-<a class="jxr_linenumber" name="248" href="#248">248</a> 
-<a class="jxr_linenumber" name="249" href="#249">249</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> y = 0; y &lt; image.height; y++) {
-<a class="jxr_linenumber" name="250" href="#250">250</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> ym = Math.max(y - 1, 0);
-<a class="jxr_linenumber" name="251" href="#251">251</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> yp = Math.min(y + 1, image.height - 1);
-<a class="jxr_linenumber" name="252" href="#252">252</a> 
-<a class="jxr_linenumber" name="253" href="#253">253</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> x = 0; x &lt; image.width; x++) {
-<a class="jxr_linenumber" name="254" href="#254">254</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> xm = Math.max(x - 1, 0);
-<a class="jxr_linenumber" name="255" href="#255">255</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> xp = Math.min(x + 1, image.width - 1);
-<a class="jxr_linenumber" name="256" href="#256">256</a> 
-<a class="jxr_linenumber" name="257" href="#257">257</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dN = tmp[ym][x] - tmp[y][x];
-<a class="jxr_linenumber" name="258" href="#258">258</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dS = tmp[yp][x] - tmp[y][x];
-<a class="jxr_linenumber" name="259" href="#259">259</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dE = tmp[y][xm] - tmp[y][x];
-<a class="jxr_linenumber" name="260" href="#260">260</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dW = tmp[y][xp] - tmp[y][x];
-<a class="jxr_linenumber" name="261" href="#261">261</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dNE = tmp[ym][xm] - tmp[y][x];
-<a class="jxr_linenumber" name="262" href="#262">262</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dSE = tmp[yp][xm] - tmp[y][x];
-<a class="jxr_linenumber" name="263" href="#263">263</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dSW = tmp[ym][xp] - tmp[y][x];
-<a class="jxr_linenumber" name="264" href="#264">264</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dNW = tmp[ym][xp] - tmp[y][x];
-<a class="jxr_linenumber" name="265" href="#265">265</a> 
-<a class="jxr_linenumber" name="266" href="#266">266</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cN = function.apply(Math.abs(dN), x, y);
-<a class="jxr_linenumber" name="267" href="#267">267</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cS = function.apply(Math.abs(dS), x, y);
-<a class="jxr_linenumber" name="268" href="#268">268</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cE = function.apply(Math.abs(dE), x, y);
-<a class="jxr_linenumber" name="269" href="#269">269</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cW = function.apply(Math.abs(dW), x, y);
-<a class="jxr_linenumber" name="270" href="#270">270</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cNE = function.apply(Math.abs(dNE), x, y);
-<a class="jxr_linenumber" name="271" href="#271">271</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cSE = function.apply(Math.abs(dSE), x, y);
-<a class="jxr_linenumber" name="272" href="#272">272</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cSW = function.apply(Math.abs(dSW), x, y);
-<a class="jxr_linenumber" name="273" href="#273">273</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cNW = function.apply(Math.abs(dNW), x, y);
-<a class="jxr_linenumber" name="274" href="#274">274</a> 
-<a class="jxr_linenumber" name="275" href="#275">275</a> 				image.pixels[y][x] += lambda
-<a class="jxr_linenumber" name="276" href="#276">276</a> 						* (cN * dN + cS * dS + cE * dE + cW * dW + wt * (cNE * dNE + cSE * dSE + cSW * dSW + cNW * dNW));
-<a class="jxr_linenumber" name="277" href="#277">277</a> 			}
-<a class="jxr_linenumber" name="278" href="#278">278</a> 		}
-<a class="jxr_linenumber" name="279" href="#279">279</a> 	}
-<a class="jxr_linenumber" name="280" href="#280">280</a> 
-<a class="jxr_linenumber" name="281" href="#281">281</a> 	<em class="jxr_comment">// public static void main(String[] args) throws Exception {</em>
-<a class="jxr_linenumber" name="282" href="#282">282</a> 	<em class="jxr_comment">// final MBFImage img = ImageUtilities.readMBF(new</em>
-<a class="jxr_linenumber" name="283" href="#283">283</a> 	<em class="jxr_comment">// File("/Users/jon/veg.jpg"));</em>
-<a class="jxr_linenumber" name="284" href="#284">284</a> 	<em class="jxr_comment">// final AnisotropicDiffusion ad = new AnisotropicDiffusion(20, 0.1f, new</em>
-<a class="jxr_linenumber" name="285" href="#285">285</a> 	<em class="jxr_comment">// HighConstrastEdgeFunction(30f / 255));</em>
-<a class="jxr_linenumber" name="286" href="#286">286</a> 	<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="287" href="#287">287</a> 	<em class="jxr_comment">// DisplayUtilities.display(img);</em>
-<a class="jxr_linenumber" name="288" href="#288">288</a> 	<em class="jxr_comment">// DisplayUtilities.display(img.process(ad));</em>
-<a class="jxr_linenumber" name="289" href="#289">289</a> 	<em class="jxr_comment">// }</em>
-<a class="jxr_linenumber" name="290" href="#290">290</a> }
+<a class="jxr_linenumber" name="189" href="#189">189</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/openimaj/image/processing/algorithm/AnisotropicDiffusion.html">AnisotropicDiffusion</a>(<strong class="jxr_keyword">int</strong> numIterations, <strong class="jxr_keyword">float</strong> lambda, <a href="../../../../../org/openimaj/image/processing/algorithm/AnisotropicDiffusion.html">ConductionCoefficientFunction</a> function) {
+<a class="jxr_linenumber" name="190" href="#190">190</a> 		<strong class="jxr_keyword">this</strong>.numIterations = numIterations;
+<a class="jxr_linenumber" name="191" href="#191">191</a> 		<strong class="jxr_keyword">this</strong>.lambda = lambda;
+<a class="jxr_linenumber" name="192" href="#192">192</a> 		<strong class="jxr_keyword">this</strong>.function = function;
+<a class="jxr_linenumber" name="193" href="#193">193</a> 		<strong class="jxr_keyword">this</strong>.neighbourMode = ConnectMode.CONNECT_4;
+<a class="jxr_linenumber" name="194" href="#194">194</a> 	}
+<a class="jxr_linenumber" name="195" href="#195">195</a> 
+<a class="jxr_linenumber" name="196" href="#196">196</a> 	@Override
+<a class="jxr_linenumber" name="197" href="#197">197</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> processImage(FImage image) {
+<a class="jxr_linenumber" name="198" href="#198">198</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; numIterations; i++) {
+<a class="jxr_linenumber" name="199" href="#199">199</a> 			processImageOneIteration(image);
+<a class="jxr_linenumber" name="200" href="#200">200</a> 		}
+<a class="jxr_linenumber" name="201" href="#201">201</a> 	}
+<a class="jxr_linenumber" name="202" href="#202">202</a> 
+<a class="jxr_linenumber" name="203" href="#203">203</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="204" href="#204">204</a> <em class="jxr_javadoccomment">	 * Perform a single iteration of anisotropic diffusion</em>
+<a class="jxr_linenumber" name="205" href="#205">205</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="206" href="#206">206</a> <em class="jxr_javadoccomment">	 * @param image</em>
+<a class="jxr_linenumber" name="207" href="#207">207</a> <em class="jxr_javadoccomment">	 *            the image</em>
+<a class="jxr_linenumber" name="208" href="#208">208</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="209" href="#209">209</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> processImageOneIteration(FImage image) {
+<a class="jxr_linenumber" name="210" href="#210">210</a> 		<strong class="jxr_keyword">switch</strong> (neighbourMode) {
+<a class="jxr_linenumber" name="211" href="#211">211</a> 		<strong class="jxr_keyword">case</strong> CONNECT_4:
+<a class="jxr_linenumber" name="212" href="#212">212</a> 			processImageOneIteration4(image);
+<a class="jxr_linenumber" name="213" href="#213">213</a> 		<strong class="jxr_keyword">case</strong> CONNECT_8:
+<a class="jxr_linenumber" name="214" href="#214">214</a> 			processImageOneIteration8(image);
+<a class="jxr_linenumber" name="215" href="#215">215</a> 		}
+<a class="jxr_linenumber" name="216" href="#216">216</a> 	}
+<a class="jxr_linenumber" name="217" href="#217">217</a> 
+<a class="jxr_linenumber" name="218" href="#218">218</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> processImageOneIteration4(FImage image) {
+<a class="jxr_linenumber" name="219" href="#219">219</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong>[][] tmp = image.clone().pixels;
+<a class="jxr_linenumber" name="220" href="#220">220</a> 
+<a class="jxr_linenumber" name="221" href="#221">221</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> y = 0; y &lt; image.height; y++) {
+<a class="jxr_linenumber" name="222" href="#222">222</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> ym = Math.max(y - 1, 0);
+<a class="jxr_linenumber" name="223" href="#223">223</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> yp = Math.min(y + 1, image.height - 1);
+<a class="jxr_linenumber" name="224" href="#224">224</a> 
+<a class="jxr_linenumber" name="225" href="#225">225</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> x = 0; x &lt; image.width; x++) {
+<a class="jxr_linenumber" name="226" href="#226">226</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> xm = Math.max(x - 1, 0);
+<a class="jxr_linenumber" name="227" href="#227">227</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> xp = Math.min(x + 1, image.width - 1);
+<a class="jxr_linenumber" name="228" href="#228">228</a> 
+<a class="jxr_linenumber" name="229" href="#229">229</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dN = tmp[ym][x] - tmp[y][x];
+<a class="jxr_linenumber" name="230" href="#230">230</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dS = tmp[yp][x] - tmp[y][x];
+<a class="jxr_linenumber" name="231" href="#231">231</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dE = tmp[y][xm] - tmp[y][x];
+<a class="jxr_linenumber" name="232" href="#232">232</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dW = tmp[y][xp] - tmp[y][x];
+<a class="jxr_linenumber" name="233" href="#233">233</a> 
+<a class="jxr_linenumber" name="234" href="#234">234</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cN = function.apply(Math.abs(dN), x, y);
+<a class="jxr_linenumber" name="235" href="#235">235</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cS = function.apply(Math.abs(dS), x, y);
+<a class="jxr_linenumber" name="236" href="#236">236</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cE = function.apply(Math.abs(dE), x, y);
+<a class="jxr_linenumber" name="237" href="#237">237</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cW = function.apply(Math.abs(dW), x, y);
+<a class="jxr_linenumber" name="238" href="#238">238</a> 
+<a class="jxr_linenumber" name="239" href="#239">239</a> 				image.pixels[y][x] += lambda * (cN * dN + cS * dS + cE * dE + cW * dW);
+<a class="jxr_linenumber" name="240" href="#240">240</a> 			}
+<a class="jxr_linenumber" name="241" href="#241">241</a> 		}
+<a class="jxr_linenumber" name="242" href="#242">242</a> 	}
+<a class="jxr_linenumber" name="243" href="#243">243</a> 
+<a class="jxr_linenumber" name="244" href="#244">244</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> processImageOneIteration8(FImage image) {
+<a class="jxr_linenumber" name="245" href="#245">245</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong>[][] tmp = image.clone().pixels;
+<a class="jxr_linenumber" name="246" href="#246">246</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> wt = 0.5f;
+<a class="jxr_linenumber" name="247" href="#247">247</a> 
+<a class="jxr_linenumber" name="248" href="#248">248</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> y = 0; y &lt; image.height; y++) {
+<a class="jxr_linenumber" name="249" href="#249">249</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> ym = Math.max(y - 1, 0);
+<a class="jxr_linenumber" name="250" href="#250">250</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> yp = Math.min(y + 1, image.height - 1);
+<a class="jxr_linenumber" name="251" href="#251">251</a> 
+<a class="jxr_linenumber" name="252" href="#252">252</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> x = 0; x &lt; image.width; x++) {
+<a class="jxr_linenumber" name="253" href="#253">253</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> xm = Math.max(x - 1, 0);
+<a class="jxr_linenumber" name="254" href="#254">254</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> xp = Math.min(x + 1, image.width - 1);
+<a class="jxr_linenumber" name="255" href="#255">255</a> 
+<a class="jxr_linenumber" name="256" href="#256">256</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dN = tmp[ym][x] - tmp[y][x];
+<a class="jxr_linenumber" name="257" href="#257">257</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dS = tmp[yp][x] - tmp[y][x];
+<a class="jxr_linenumber" name="258" href="#258">258</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dE = tmp[y][xm] - tmp[y][x];
+<a class="jxr_linenumber" name="259" href="#259">259</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dW = tmp[y][xp] - tmp[y][x];
+<a class="jxr_linenumber" name="260" href="#260">260</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dNE = tmp[ym][xm] - tmp[y][x];
+<a class="jxr_linenumber" name="261" href="#261">261</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dSE = tmp[yp][xm] - tmp[y][x];
+<a class="jxr_linenumber" name="262" href="#262">262</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dSW = tmp[ym][xp] - tmp[y][x];
+<a class="jxr_linenumber" name="263" href="#263">263</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> dNW = tmp[ym][xp] - tmp[y][x];
+<a class="jxr_linenumber" name="264" href="#264">264</a> 
+<a class="jxr_linenumber" name="265" href="#265">265</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cN = function.apply(Math.abs(dN), x, y);
+<a class="jxr_linenumber" name="266" href="#266">266</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cS = function.apply(Math.abs(dS), x, y);
+<a class="jxr_linenumber" name="267" href="#267">267</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cE = function.apply(Math.abs(dE), x, y);
+<a class="jxr_linenumber" name="268" href="#268">268</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cW = function.apply(Math.abs(dW), x, y);
+<a class="jxr_linenumber" name="269" href="#269">269</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cNE = function.apply(Math.abs(dNE), x, y);
+<a class="jxr_linenumber" name="270" href="#270">270</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cSE = function.apply(Math.abs(dSE), x, y);
+<a class="jxr_linenumber" name="271" href="#271">271</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cSW = function.apply(Math.abs(dSW), x, y);
+<a class="jxr_linenumber" name="272" href="#272">272</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cNW = function.apply(Math.abs(dNW), x, y);
+<a class="jxr_linenumber" name="273" href="#273">273</a> 
+<a class="jxr_linenumber" name="274" href="#274">274</a> 				image.pixels[y][x] += lambda
+<a class="jxr_linenumber" name="275" href="#275">275</a> 						* (cN * dN + cS * dS + cE * dE + cW * dW + wt * (cNE * dNE + cSE * dSE + cSW * dSW + cNW * dNW));
+<a class="jxr_linenumber" name="276" href="#276">276</a> 			}
+<a class="jxr_linenumber" name="277" href="#277">277</a> 		}
+<a class="jxr_linenumber" name="278" href="#278">278</a> 	}
+<a class="jxr_linenumber" name="279" href="#279">279</a> 
+<a class="jxr_linenumber" name="280" href="#280">280</a> 	<em class="jxr_comment">// public static void main(String[] args) throws Exception {</em>
+<a class="jxr_linenumber" name="281" href="#281">281</a> 	<em class="jxr_comment">// final MBFImage img = ImageUtilities.readMBF(new</em>
+<a class="jxr_linenumber" name="282" href="#282">282</a> 	<em class="jxr_comment">// File("/Users/jon/veg.jpg"));</em>
+<a class="jxr_linenumber" name="283" href="#283">283</a> 	<em class="jxr_comment">// final AnisotropicDiffusion ad = new AnisotropicDiffusion(20, 0.1f, new</em>
+<a class="jxr_linenumber" name="284" href="#284">284</a> 	<em class="jxr_comment">// HighConstrastEdgeFunction(30f / 255));</em>
+<a class="jxr_linenumber" name="285" href="#285">285</a> 	<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="286" href="#286">286</a> 	<em class="jxr_comment">// DisplayUtilities.display(img);</em>
+<a class="jxr_linenumber" name="287" href="#287">287</a> 	<em class="jxr_comment">// DisplayUtilities.display(img.process(ad));</em>
+<a class="jxr_linenumber" name="288" href="#288">288</a> 	<em class="jxr_comment">// }</em>
+<a class="jxr_linenumber" name="289" href="#289">289</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
