@@ -107,7 +107,7 @@ DisplayUtilities.display(basicMatches);</programlisting>
   <para>
     We’ll now set up a RANSAC model fitter configured to find Affine Transforms (using the <code>RobustAffineTransformEstimator</code> helper class) and our consistent matcher:
   </para>
-  <programlisting>RobustAffineTransformEstimator modelFitter = new RobustAffineTransformEstimator(5.0, 1500,
+  <programlisting>RobustAffineTransformEstimator modelFitter = new RobustAffineTransformEstimator(50.0, 1500,
   new RANSAC.PercentageInliersStoppingCondition(0.5));
 matcher = new ConsistentLocalFeatureMatcher2d&lt;Keypoint&gt;(
   new FastBasicKeypointMatcher&lt;Keypoint&gt;(8), modelFitter);
