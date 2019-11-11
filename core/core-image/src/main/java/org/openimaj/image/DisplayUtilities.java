@@ -75,8 +75,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class DisplayUtilities
-{
+public class DisplayUtilities {
 	private static int windowCount = 0;
 
 	private static int windowOpenCount = 0;
@@ -88,8 +87,7 @@ public class DisplayUtilities
 	 *
 	 * @return number of open windows
 	 */
-	public static int openWindowCount()
-	{
+	public static int openWindowCount() {
 		return DisplayUtilities.windowOpenCount;
 	}
 
@@ -100,8 +98,7 @@ public class DisplayUtilities
 	 *            the image
 	 * @return frame containing the image
 	 */
-	public static JFrame display(final Image<?, ?> image)
-	{
+	public static JFrame display(final Image<?, ?> image) {
 		return DisplayUtilities.display(image, "Image: "
 				+ DisplayUtilities.windowCount);
 	}
@@ -113,8 +110,7 @@ public class DisplayUtilities
 	 *            the image
 	 * @return frame containing the image
 	 */
-	public static JFrame display(final BufferedImage image)
-	{
+	public static JFrame display(final BufferedImage image) {
 		return DisplayUtilities.display(image, "Image: "
 				+ DisplayUtilities.windowCount);
 	}
@@ -128,44 +124,41 @@ public class DisplayUtilities
 	 *            the title
 	 * @return frame containing the image
 	 */
-	public static JFrame display(final Image<?, ?> image, final String title)
-	{
+	public static JFrame display(final Image<?, ?> image, final String title) {
 		return DisplayUtilities.display(
 				ImageUtilities.createBufferedImageForDisplay(image), title,
 				image);
 	}
 
 	/**
-	 * Display an image with the default name No additional functionality, such
-	 * as zooming, is enabled.
+	 * Display an image with the default name No additional functionality, such as
+	 * zooming, is enabled.
 	 *
 	 * @param image
 	 *            the image
 	 * @return frame containing the image
 	 */
-	public static JFrame displaySimple(final Image<?, ?> image)
-	{
+	public static JFrame displaySimple(final Image<?, ?> image) {
 		return DisplayUtilities.displaySimple(image, "Image: "
 				+ DisplayUtilities.windowCount);
 	}
 
 	/**
-	 * Display an image with the default name. No additional functionality, such
-	 * as zooming, is enabled.
+	 * Display an image with the default name. No additional functionality, such as
+	 * zooming, is enabled.
 	 *
 	 * @param image
 	 *            the image
 	 * @return frame containing the image
 	 */
-	public static JFrame displaySimple(final BufferedImage image)
-	{
+	public static JFrame displaySimple(final BufferedImage image) {
 		return DisplayUtilities.displaySimple(image, "Image: "
 				+ DisplayUtilities.windowCount);
 	}
 
 	/**
-	 * Display an image with the given title. No additional functionality, such
-	 * as zooming, is enabled.
+	 * Display an image with the given title. No additional functionality, such as
+	 * zooming, is enabled.
 	 *
 	 * @param image
 	 *            the image
@@ -181,8 +174,7 @@ public class DisplayUtilities
 				image);
 	}
 
-	private static BufferedImage getImage(final JFrame frame)
-	{
+	private static BufferedImage getImage(final JFrame frame) {
 		if (frame == null)
 			return null;
 
@@ -204,8 +196,7 @@ public class DisplayUtilities
 	 *            the frame
 	 * @return the frame
 	 */
-	public static JFrame display(final Image<?, ?> image, final JFrame frame)
-	{
+	public static JFrame display(final Image<?, ?> image, final JFrame frame) {
 		final BufferedImage bimg = DisplayUtilities.getImage(frame);
 		return DisplayUtilities.display(
 				ImageUtilities.createBufferedImageForDisplay(image, bimg),
@@ -256,8 +247,7 @@ public class DisplayUtilities
 	 * @param name
 	 * @return the window
 	 */
-	public static JFrame createNamedWindow(final String name)
-	{
+	public static JFrame createNamedWindow(final String name) {
 		return DisplayUtilities.createNamedWindow(name, name, false);
 	}
 
@@ -296,8 +286,8 @@ public class DisplayUtilities
 	}
 
 	/**
-	 * Display an image in the given frame by name (will be created if not
-	 * already done so using {@link #createNamedWindow(String)}
+	 * Display an image in the given frame by name (will be created if not already
+	 * done so using {@link #createNamedWindow(String)}
 	 *
 	 * @param image
 	 *            the image
@@ -305,8 +295,10 @@ public class DisplayUtilities
 	 *            the name of the frame
 	 * @return the frame
 	 */
-	public static JFrame displayName(final Image<?, ?> image, final String name)
-	{
+	public static JFrame displayName(final Image<?, ?> image, final String name) {
+		if (GraphicsEnvironment.isHeadless())
+			return null;
+
 		final JFrame frame = DisplayUtilities.createNamedWindow(name);
 		final BufferedImage bimg = DisplayUtilities.getImage(frame);
 		return DisplayUtilities.display(
@@ -315,8 +307,8 @@ public class DisplayUtilities
 	}
 
 	/**
-	 * Display an image in the given frame by name (will be created if not
-	 * already done so using {@link #createNamedWindow(String)}
+	 * Display an image in the given frame by name (will be created if not already
+	 * done so using {@link #createNamedWindow(String)}
 	 *
 	 * @param image
 	 *            the image
@@ -329,6 +321,9 @@ public class DisplayUtilities
 	public static JFrame displayName(final Image<?, ?> image,
 			final String name, final boolean autoResize)
 	{
+		if (GraphicsEnvironment.isHeadless())
+			return null;
+
 		final JFrame frame = DisplayUtilities.createNamedWindow(name, name,
 				autoResize);
 		final BufferedImage bimg = DisplayUtilities.getImage(frame);
@@ -341,14 +336,16 @@ public class DisplayUtilities
 	 * An image viewer that displays and image and allows zooming and panning of
 	 * images.
 	 * <p>
-	 * When allowZooming is TRUE, clicking in the image will zoom in. CTRL-click
-	 * in the image to zoom out.
+	 * When allowZooming is TRUE, clicking in the image will zoom in. CTRL-click in
+	 * the image to zoom out.
 	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
-	public static class ImageComponent extends JComponent implements
-			MouseListener, MouseMotionListener
+	public static class ImageComponent extends JComponent
+			implements
+				MouseListener,
+				MouseMotionListener
 	{
 		/**
 		 * Listener for zoom and pan events
@@ -357,8 +354,7 @@ public class DisplayUtilities
 		 * @created 25 Jul 2012
 		 * @version $Author$, $Revision$, $Date$
 		 */
-		public static interface ImageComponentListener
-		{
+		public static interface ImageComponentListener {
 			/**
 			 * Called when the image has been zoomed to the new zoom factor.
 			 *
@@ -451,8 +447,7 @@ public class DisplayUtilities
 		private Float[] currentPixelColour = null;
 
 		/** List of listeners */
-		private final ArrayList<ImageComponentListener> listeners =
-				new ArrayList<ImageComponentListener>();
+		private final ArrayList<ImageComponentListener> listeners = new ArrayList<ImageComponentListener>();
 
 		/** The last displayed image */
 		private BufferedImage displayedImage = null;
@@ -460,20 +455,18 @@ public class DisplayUtilities
 		/**
 		 * Default constructor
 		 */
-		public ImageComponent()
-		{
+		public ImageComponent() {
 			this(false, false);
 		}
 
 		/**
-		 * Default constructor. Allows setting of the autoResize parameter which
-		 * if true changes the size of the component to fit the contents.
+		 * Default constructor. Allows setting of the autoResize parameter which if true
+		 * changes the size of the component to fit the contents.
 		 *
 		 * @param autoResize
 		 *            automatically resize the component to the content size
 		 */
-		public ImageComponent(final boolean autoResize)
-		{
+		public ImageComponent(final boolean autoResize) {
 			this(autoResize, true);
 		}
 
@@ -483,33 +476,31 @@ public class DisplayUtilities
 		 * @param image
 		 *            the image
 		 */
-		public ImageComponent(final BufferedImage image)
-		{
+		public ImageComponent(final BufferedImage image) {
 			this(true, true);
 			this.setImage(image);
 		}
 
 		/**
-		 * Default constructor. Allows setting of the autoResize parameter which
-		 * if true changes the size of the component to fit the contents, and
-		 * the autoPack parameter which automatically packs the containers root
-		 * (if its a JFrame) whenever it is resized.
+		 * Default constructor. Allows setting of the autoResize parameter which if true
+		 * changes the size of the component to fit the contents, and the autoPack
+		 * parameter which automatically packs the containers root (if its a JFrame)
+		 * whenever it is resized.
 		 *
 		 * @param autoResize
 		 *            automatically resize the component to the content size
 		 * @param autoPack
 		 *            automatically pack the root component on resize
 		 */
-		public ImageComponent(final boolean autoResize, final boolean autoPack)
-		{
+		public ImageComponent(final boolean autoResize, final boolean autoPack) {
 			this(1f, autoResize, autoPack);
 		}
 
 		/**
-		 * Default constructor. Allows setting of the autoResize parameter which
-		 * if true changes the size of the component to fit the contents, and
-		 * the autoPack parameter which automatically packs the containers root
-		 * (if its a JFrame) whenever it is resized.
+		 * Default constructor. Allows setting of the autoResize parameter which if true
+		 * changes the size of the component to fit the contents, and the autoPack
+		 * parameter which automatically packs the containers root (if its a JFrame)
+		 * whenever it is resized.
 		 *
 		 * @param initialScale
 		 *            initial scale of the image
@@ -531,11 +522,9 @@ public class DisplayUtilities
 
 			// Add a component listener so that we can detect when the
 			// component has been resized so that we can update
-			this.addComponentListener(new ComponentAdapter()
-			{
+			this.addComponentListener(new ComponentAdapter() {
 				@Override
-				public void componentResized(final ComponentEvent e)
-				{
+				public void componentResized(final ComponentEvent e) {
 					ImageComponent.this.calculateScaleFactorsToFit(
 							ImageComponent.this.image, ImageComponent.this.getBounds());
 				};
@@ -548,8 +537,7 @@ public class DisplayUtilities
 		 * @param l
 		 *            The listener to add
 		 */
-		public void addImageComponentListener(final ImageComponentListener l)
-		{
+		public void addImageComponentListener(final ImageComponentListener l) {
 			this.listeners.add(l);
 		}
 
@@ -559,8 +547,7 @@ public class DisplayUtilities
 		 * @param l
 		 *            The listener to remove.
 		 */
-		public void removeImageComponentListener(final ImageComponentListener l)
-		{
+		public void removeImageComponentListener(final ImageComponentListener l) {
 			this.listeners.remove(l);
 		}
 
@@ -570,8 +557,7 @@ public class DisplayUtilities
 		 * @param allowZoom
 		 *            TRUE to allow zooming
 		 */
-		public void setAllowZoom(final boolean allowZoom)
-		{
+		public void setAllowZoom(final boolean allowZoom) {
 			this.allowZooming = allowZoom;
 			if (allowZoom)
 				this.autoFit = false;
@@ -583,8 +569,7 @@ public class DisplayUtilities
 		 * @param allowPan
 		 *            TRUE to allow panning
 		 */
-		public void setAllowPanning(final boolean allowPan)
-		{
+		public void setAllowPanning(final boolean allowPan) {
 			this.allowDragging = allowPan;
 			if (allowPan)
 				this.autoFit = false;
@@ -596,8 +581,7 @@ public class DisplayUtilities
 		 * @param drawGrid
 		 *            TRUE draws the grid
 		 */
-		public void setTransparencyGrid(final boolean drawGrid)
-		{
+		public void setTransparencyGrid(final boolean drawGrid) {
 			this.drawTransparencyGrid = drawGrid;
 			this.repaint();
 		}
@@ -608,8 +592,7 @@ public class DisplayUtilities
 		 * @param showPixelColours
 		 *            TRUE to show pixel colours
 		 */
-		public void setShowPixelColours(final boolean showPixelColours)
-		{
+		public void setShowPixelColours(final boolean showPixelColours) {
 			this.showPixelColours = showPixelColours;
 			this.repaint();
 		}
@@ -620,8 +603,7 @@ public class DisplayUtilities
 		 * @param showXYPosition
 		 *            TRUE to show XY position
 		 */
-		public void setShowXYPosition(final boolean showXYPosition)
-		{
+		public void setShowXYPosition(final boolean showXYPosition) {
 			this.showXY = showXYPosition;
 			this.repaint();
 		}
@@ -632,16 +614,12 @@ public class DisplayUtilities
 		 * @param image
 		 *            the image
 		 */
-		public void setImage(final BufferedImage image)
-		{
+		public void setImage(final BufferedImage image) {
 			this.image = image;
 
-			if (this.autoFit)
-			{
+			if (this.autoFit) {
 				this.calculateScaleFactorsToFit(image, this.getBounds());
-			}
-			else if (this.autoResize)
-			{
+			} else if (this.autoResize) {
 				// If the component isn't the right shape, we'll resize the
 				// component.
 				if (image.getWidth() != this.getWidth() ||
@@ -660,8 +638,7 @@ public class DisplayUtilities
 					return;
 				c.validate();
 
-				if (c instanceof JFrame && this.autoPack)
-				{
+				if (c instanceof JFrame && this.autoPack) {
 					final JFrame f = (JFrame) c;
 					f.pack();
 				}
@@ -675,9 +652,8 @@ public class DisplayUtilities
 		}
 
 		/**
-		 * Given an image, will calculate two scale factors for the X and Y
-		 * dimensions of the image, such that the image will fit within the
-		 * bounds.
+		 * Given an image, will calculate two scale factors for the X and Y dimensions
+		 * of the image, such that the image will fit within the bounds.
 		 *
 		 * @param image
 		 *            The image to fit
@@ -690,18 +666,15 @@ public class DisplayUtilities
 			if (image == null || bounds == null)
 				return;
 
-			if (this.autoFit)
-			{
+			if (this.autoFit) {
 				// If we can stretch the image it's pretty simple.
-				if (!this.keepAspect)
-				{
+				if (!this.keepAspect) {
 					this.scaleFactorX = bounds.width / (double) image.getWidth();
 					this.scaleFactorY = bounds.height / (double) image.getHeight();
 				}
 				// Otherwise we need to find the ratios to fit while keeping
 				// aspect
-				else
-				{
+				else {
 					this.scaleFactorX = this.scaleFactorY = Math.min(
 							bounds.width / (double) image.getWidth(),
 							bounds.height / (double) image.getHeight());
@@ -717,10 +690,8 @@ public class DisplayUtilities
 		 * @param y
 		 *            The y image coordinate
 		 */
-		public void moveTo(final double x, final double y)
-		{
-			if (this.drawX != x || this.drawY != y)
-			{
+		public void moveTo(final double x, final double y) {
+			if (this.drawX != x || this.drawY != y) {
 				this.drawX = x;
 				this.drawY = y;
 				this.repaint();
@@ -736,8 +707,7 @@ public class DisplayUtilities
 		 * @param sf
 		 *            The scale factor
 		 */
-		public void zoom(final double sf)
-		{
+		public void zoom(final double sf) {
 			this.scaleFactorX = this.scaleFactorY = sf;
 			this.repaint();
 
@@ -746,65 +716,58 @@ public class DisplayUtilities
 		}
 
 		/**
-		 * Set the scale factor to draw the image in the x-direction. Allows the
-		 * image to be stretched or shrunk horizontally.
+		 * Set the scale factor to draw the image in the x-direction. Allows the image
+		 * to be stretched or shrunk horizontally.
 		 *
 		 * @param sf
 		 *            The new scale factor
 		 */
-		public void setScaleFactorX(final double sf)
-		{
+		public void setScaleFactorX(final double sf) {
 			this.scaleFactorX = sf;
 		}
 
 		/**
-		 * Set the scale factor to draw the image in the y-direction. Allows the
-		 * image to be stretched or shrunk vertically.
+		 * Set the scale factor to draw the image in the y-direction. Allows the image
+		 * to be stretched or shrunk vertically.
 		 *
 		 * @param sf
 		 *            The new scale factor
 		 */
-		public void setScaleFactorY(final double sf)
-		{
+		public void setScaleFactorY(final double sf) {
 			this.scaleFactorY = sf;
 		}
 
 		/**
-		 * Set the scale factor to draw the image. Allows the image to be
-		 * stretched or shrunk both horizontall or vertically.
+		 * Set the scale factor to draw the image. Allows the image to be stretched or
+		 * shrunk both horizontall or vertically.
 		 *
 		 * @param sfx
 		 *            The new x scale factor
 		 * @param sfy
 		 *            The new y scale factor
 		 */
-		public void setScaleFactor(final double sfx, final double sfy)
-		{
+		public void setScaleFactor(final double sfx, final double sfy) {
 			this.setScaleFactorX(sfx);
 			this.setScaleFactorY(sfy);
 		}
 
 		/**
-		 * If you want to be able to inspect the original image's pixel values
-		 * (rather than the generated BufferedImage) set the original image
-		 * here. Use null to enforce showing the BufferedImage pixel values.
-		 * This does not set the BufferedImage that is being used for the
-		 * display.
+		 * If you want to be able to inspect the original image's pixel values (rather
+		 * than the generated BufferedImage) set the original image here. Use null to
+		 * enforce showing the BufferedImage pixel values. This does not set the
+		 * BufferedImage that is being used for the display.
 		 *
 		 * @param image
 		 *            The original image.
 		 */
-		public void setOriginalImage(final Image<?, ?> image)
-		{
+		public void setOriginalImage(final Image<?, ?> image) {
 			this.originalImage = image;
 		}
 
 		/**
-		 * Make sure the x and y position we're drawing the image in is not
-		 * going mad.
+		 * Make sure the x and y position we're drawing the image in is not going mad.
 		 */
-		private void sanitiseVars()
-		{
+		private void sanitiseVars() {
 			// Make sure we're not going out of the space
 			// this.moveTo(
 			// Math.max(
@@ -826,14 +789,12 @@ public class DisplayUtilities
 		 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 		 */
 		@Override
-		public void paint(final Graphics gfx)
-		{
+		public void paint(final Graphics gfx) {
 			// Create a double buffer into which we'll draw first.
 			final BufferedImage img = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 			final Graphics2D g = (Graphics2D) img.getGraphics();
 
-			if (this.drawTransparencyGrid)
-			{
+			if (this.drawTransparencyGrid) {
 				final BufferedImage transparencyGrid = new BufferedImage(
 						this.getWidth(), this.getHeight(),
 						BufferedImage.TYPE_3BYTE_BGR);
@@ -841,10 +802,8 @@ public class DisplayUtilities
 
 				final int gridSizeX = (int) (20 * this.scaleFactorX);
 				final int gridSizeY = (int) (20 * this.scaleFactorY);
-				for (int y = 0; y < this.getHeight(); y += gridSizeY)
-				{
-					for (int x = 0; x < this.getWidth(); x += gridSizeX)
-					{
+				for (int y = 0; y < this.getHeight(); y += gridSizeY) {
+					for (int x = 0; x < this.getWidth(); x += gridSizeX) {
 						final int c = (x / gridSizeX + y / gridSizeY) % 2;
 						if (c == 0)
 							tg.setColor(new Color(220, 220, 220));
@@ -859,8 +818,7 @@ public class DisplayUtilities
 			}
 
 			// Draw the image
-			if (this.image != null)
-			{
+			if (this.image != null) {
 				// Scale and translate to the image drawing coordinates
 				g.scale(this.scaleFactorX, this.scaleFactorY);
 				g.translate(-this.drawX, -this.drawY);
@@ -926,12 +884,9 @@ public class DisplayUtilities
 		 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
 		 */
 		@Override
-		public void mouseClicked(final MouseEvent e)
-		{
-			if (e.getButton() == MouseEvent.BUTTON1 && this.allowZooming)
-			{
-				if (e.isControlDown())
-				{
+		public void mouseClicked(final MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1 && this.allowZooming) {
+				if (e.isControlDown()) {
 					// Scale the scalars down
 					this.scaleFactorX /= 2;
 					this.scaleFactorY /= 2;
@@ -942,9 +897,7 @@ public class DisplayUtilities
 						this.moveTo(moveX, moveY);
 					else
 						this.moveTo(0, 0);
-				}
-				else
-				{
+				} else {
 					// Scale the scalars up
 					this.scaleFactorX *= 2;
 					this.scaleFactorY *= 2;
@@ -966,35 +919,29 @@ public class DisplayUtilities
 		}
 
 		@Override
-		public void mousePressed(final MouseEvent e)
-		{
-			if (this.allowDragging)
-			{
+		public void mousePressed(final MouseEvent e) {
+			if (this.allowDragging) {
 				this.dragStartX = e.getX();
 				this.dragStartY = e.getY();
 			}
 		}
 
 		@Override
-		public void mouseReleased(final MouseEvent e)
-		{
+		public void mouseReleased(final MouseEvent e) {
 		}
 
 		@Override
-		public void mouseEntered(final MouseEvent e)
-		{
+		public void mouseEntered(final MouseEvent e) {
 		}
 
 		@Override
-		public void mouseExited(final MouseEvent e)
-		{
+		public void mouseExited(final MouseEvent e) {
 			this.drawPixelColour = false;
 			this.repaint();
 		}
 
 		@Override
-		public void mouseDragged(final MouseEvent e)
-		{
+		public void mouseDragged(final MouseEvent e) {
 			if (!this.allowDragging)
 				return;
 
@@ -1020,8 +967,7 @@ public class DisplayUtilities
 		}
 
 		@Override
-		public void mouseMoved(final MouseEvent e)
-		{
+		public void mouseMoved(final MouseEvent e) {
 			if (this.image == null)
 				return;
 
@@ -1051,22 +997,17 @@ public class DisplayUtilities
 		/**
 		 * Update the display of pixel colours
 		 */
-		protected void updatePixelColours()
-		{
-			if (this.showPixelColours && this.image != null)
-			{
+		protected void updatePixelColours() {
+			if (this.showPixelColours && this.image != null) {
 				// If we don't have the original image, we'll just use the
 				// colours from the BufferedImage
-				if (this.originalImage == null)
-				{
+				if (this.originalImage == null) {
 					final int colour = this.image.getRGB(this.pixelX, this.pixelY);
 					this.currentPixelColour = new Float[3];
 					this.currentPixelColour[0] = (float) ((colour & 0x00ff0000) >> 16);
 					this.currentPixelColour[1] = (float) ((colour & 0x0000ff00) >> 8);
 					this.currentPixelColour[2] = (float) ((colour & 0x000000ff));
-				}
-				else
-				{
+				} else {
 					// If we're outside of the original image's coordinates,
 					// we don't need to do anything else..
 					if (this.pixelX >= this.originalImage.getWidth() || this.pixelX < 0 ||
@@ -1075,14 +1016,11 @@ public class DisplayUtilities
 
 					// If we have the original image we get each of the bands
 					// from it and update the current pixel colour member
-					if (this.originalImage instanceof FImage)
-					{
+					if (this.originalImage instanceof FImage) {
 						final Object o = this.originalImage.getPixel(this.pixelX, this.pixelY);
 						this.currentPixelColour = new Float[1];
 						this.currentPixelColour[0] = (Float) o;
-					}
-					else if (this.originalImage instanceof MBFImage)
-					{
+					} else if (this.originalImage instanceof MBFImage) {
 						final MBFImage i = (MBFImage) this.originalImage;
 						this.currentPixelColour = new Float[i.numBands()];
 						for (int b = 0; b < i.numBands(); b++)
@@ -1095,122 +1033,109 @@ public class DisplayUtilities
 				this.repaint();
 			}
 
-			if (this.showXY)
-			{
+			if (this.showXY) {
 				this.drawPixelColour = true;
 				this.repaint();
 			}
 		}
 
 		/**
-		 * Sets whether to automatically size the image to fit within the bounds
-		 * of the image component which is being sized externally. This
-		 * shouldn't be used in combination with autoResize. When this method is
-		 * called with TRUE, zooming and dragging are disabled.
+		 * Sets whether to automatically size the image to fit within the bounds of the
+		 * image component which is being sized externally. This shouldn't be used in
+		 * combination with autoResize. When this method is called with TRUE, zooming
+		 * and dragging are disabled.
 		 *
 		 * @param tf
 		 *            TRUE to auto fit the image.
 		 */
-		public void setAutoFit(final boolean tf)
-		{
+		public void setAutoFit(final boolean tf) {
 			this.autoFit = tf;
-			if (this.autoFit)
-			{
+			if (this.autoFit) {
 				this.allowZooming = false;
 				this.allowDragging = false;
 			}
 		}
 
 		/**
-		 * Sets whether to keep the aspect ratio of the image constant when the
-		 * image is being autoFit into the component.
+		 * Sets whether to keep the aspect ratio of the image constant when the image is
+		 * being autoFit into the component.
 		 *
 		 * @param tf
 		 *            TRUE to keep the aspect ratio constant
 		 */
-		public void setKeepAspect(final boolean tf)
-		{
+		public void setKeepAspect(final boolean tf) {
 			this.keepAspect = tf;
 		}
 
 		/**
-		 * Sets whether to automatically resize the component to fit image (at
-		 * it's given scale factor) within it. Note that in certain
-		 * circumstances, where the image component is being sized by external
-		 * forces (such as a layout manager), setting this to true can cause
-		 * weird results where the image is pulled out and in constantly. This
-		 * shouldn't be used in combination with autoFit.
+		 * Sets whether to automatically resize the component to fit image (at it's
+		 * given scale factor) within it. Note that in certain circumstances, where the
+		 * image component is being sized by external forces (such as a layout manager),
+		 * setting this to true can cause weird results where the image is pulled out
+		 * and in constantly. This shouldn't be used in combination with autoFit.
 		 *
 		 * @param tf
 		 *            TRUE to resize the component.
 		 */
-		public void setAutoResize(final boolean tf)
-		{
+		public void setAutoResize(final boolean tf) {
 			this.autoResize = tf;
 		}
 
 		/**
-		 * Sets whether the component is to attempt to pack a frame into which
-		 * it is added. If it is not in a frame this will have no effect. This
-		 * allows the frame to resize with the component.
+		 * Sets whether the component is to attempt to pack a frame into which it is
+		 * added. If it is not in a frame this will have no effect. This allows the
+		 * frame to resize with the component.
 		 *
 		 * @param tf
 		 *            TRUE to auto pack the parent frame.
 		 */
-		public void setAutoPack(final boolean tf)
-		{
+		public void setAutoPack(final boolean tf) {
 			this.autoPack = tf;
 		}
 
 		/**
-		 * Returns the current mouse position in pixels within the viewport.
-		 * Will return the last known position if the mouse is no longer within
-		 * the viewport.
+		 * Returns the current mouse position in pixels within the viewport. Will return
+		 * the last known position if the mouse is no longer within the viewport.
 		 *
 		 * @return The position in pixels
 		 */
-		public Point2d getCurrentMousePosition()
-		{
+		public Point2d getCurrentMousePosition() {
 			return new Point2dImpl(this.mouseX, this.mouseY);
 		}
 
 		/**
-		 * Returns the current mouse position in the coordinates of the image
-		 * and is determined by the scaling factors and the position of the
-		 * image within the viewport. If the mouse is no longer in the viewport,
-		 * the last known mouse position will be returned.
+		 * Returns the current mouse position in the coordinates of the image and is
+		 * determined by the scaling factors and the position of the image within the
+		 * viewport. If the mouse is no longer in the viewport, the last known mouse
+		 * position will be returned.
 		 *
 		 * @return The position in image coordinates.
 		 */
-		public Point2d getCurrentMouseImagePosition()
-		{
+		public Point2d getCurrentMouseImagePosition() {
 			return new Point2dImpl(this.pixelX, this.pixelY);
 		}
 
 		/**
-		 * Returns the current pixel colour at the point of the mouse. The
-		 * number of elements in the array will equal be 3, if no original has
-		 * been supplied to the image component. The values will be between 0
-		 * and 255 and ordered red, green and blue. If the original has been
-		 * supplied, then the number of elements will be equal to the number of
-		 * bands in the original image and the values will be the original pixel
-		 * values in the original image.
+		 * Returns the current pixel colour at the point of the mouse. The number of
+		 * elements in the array will equal be 3, if no original has been supplied to
+		 * the image component. The values will be between 0 and 255 and ordered red,
+		 * green and blue. If the original has been supplied, then the number of
+		 * elements will be equal to the number of bands in the original image and the
+		 * values will be the original pixel values in the original image.
 		 *
 		 * @return The current pixel colour.
 		 */
-		public Float[] getCurrentPixelColour()
-		{
+		public Float[] getCurrentPixelColour() {
 			return this.currentPixelColour;
 		}
 
 		/**
-		 * Returns the current displayed pixel colour (as an RGB encoded int)
-		 * from the currently displayed image.
+		 * Returns the current displayed pixel colour (as an RGB encoded int) from the
+		 * currently displayed image.
 		 *
 		 * @return The current displayed pixel colour.
 		 */
-		public int getCurrentDisplayedPixelColour()
-		{
+		public int getCurrentDisplayedPixelColour() {
 			return this.displayedImage.getRGB(this.mouseX, this.mouseY);
 		}
 
@@ -1219,8 +1144,7 @@ public class DisplayUtilities
 		 *
 		 * @return The displayed image.
 		 */
-		public BufferedImage getDisplayedImage()
-		{
+		public BufferedImage getDisplayedImage() {
 			return this.displayedImage;
 		}
 	}
@@ -1231,8 +1155,7 @@ public class DisplayUtilities
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
-	public static class ScalingImageComponent extends ImageComponent
-	{
+	public static class ScalingImageComponent extends ImageComponent {
 		/**
 		 *
 		 */
@@ -1246,8 +1169,8 @@ public class DisplayUtilities
 		}
 
 		/**
-		 * Construct the ScalingImageComponent, choosing between fast scaling or
-		 * high quality scaling
+		 * Construct the ScalingImageComponent, choosing between fast scaling or high
+		 * quality scaling
 		 *
 		 * @param hq
 		 *            true if high quality scaling is required.
@@ -1257,8 +1180,7 @@ public class DisplayUtilities
 		}
 
 		@Override
-		public void paint(final Graphics g)
-		{
+		public void paint(final Graphics g) {
 			if (hq)
 				((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING,
 						RenderingHints.VALUE_RENDER_QUALITY);
@@ -1279,8 +1201,7 @@ public class DisplayUtilities
 	 *            the frame
 	 * @return the frame
 	 */
-	public static JFrame display(final BufferedImage image, final JFrame frame)
-	{
+	public static JFrame display(final BufferedImage image, final JFrame frame) {
 		return DisplayUtilities.display(image, frame, null);
 	}
 
@@ -1293,11 +1214,12 @@ public class DisplayUtilities
 	 *            The name of the window
 	 * @return The frame that was created.
 	 */
-	public static JFrame displayName(final BufferedImage image, final String name)
-	{
+	public static JFrame displayName(final BufferedImage image, final String name) {
+		if (GraphicsEnvironment.isHeadless())
+			return null;
+
 		final JFrame f = DisplayUtilities.createNamedWindow(name);
 		return DisplayUtilities.display(image, f);
-
 	}
 
 	/**
@@ -1324,8 +1246,7 @@ public class DisplayUtilities
 		{
 			final ImageComponent cmp = ((ImageComponent) frame.getContentPane()
 					.getComponent(0));
-			if (!frame.isVisible())
-			{
+			if (!frame.isVisible()) {
 				final boolean ar = cmp.autoResize;
 				final boolean ap = cmp.autoPack;
 				cmp.autoResize = true;
@@ -1335,15 +1256,11 @@ public class DisplayUtilities
 				cmp.autoResize = ar;
 				cmp.autoPack = ap;
 				frame.setVisible(true);
-			}
-			else
-			{
+			} else {
 				cmp.setImage(image);
 				cmp.setOriginalImage(originalImage);
 			}
-		}
-		else
-		{
+		} else {
 			frame.getContentPane().removeAll();
 
 			final ImageComponent c = new ImageComponent(image);
@@ -1363,17 +1280,14 @@ public class DisplayUtilities
 	 *            the title
 	 * @return the frame
 	 */
-	public static JFrame makeFrame(final String title)
-	{
+	public static JFrame makeFrame(final String title) {
 		final JFrame f = new JFrame(title);
 		f.setResizable(false);
 		f.setUndecorated(false);
 
-		f.addWindowListener(new WindowAdapter()
-		{
+		f.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing(final WindowEvent evt)
-			{
+			public void windowClosing(final WindowEvent evt) {
 				DisplayUtilities.windowOpenCount = DisplayUtilities.windowCount - 1;
 				f.dispose();
 			}
@@ -1382,8 +1296,8 @@ public class DisplayUtilities
 	}
 
 	/**
-	 * Display an image with the given title. No additional functionality, such
-	 * as zooming, is enabled.
+	 * Display an image with the given title. No additional functionality, such as
+	 * zooming, is enabled.
 	 *
 	 * @param image
 	 *            the image
@@ -1406,14 +1320,13 @@ public class DisplayUtilities
 	 *            the title
 	 * @return frame containing the image
 	 */
-	public static JFrame display(final BufferedImage image, final String title)
-	{
+	public static JFrame display(final BufferedImage image, final String title) {
 		return DisplayUtilities.display(image, title, null);
 	}
 
 	/**
-	 * Display an image with the given title. No additional functionality, such
-	 * as zooming, is enabled.
+	 * Display an image with the given title. No additional functionality, such as
+	 * zooming, is enabled.
 	 *
 	 * @param image
 	 *            the image
@@ -1434,8 +1347,8 @@ public class DisplayUtilities
 	}
 
 	/**
-	 * Get a frame that will display an image. No additional functionality, such
-	 * as zooming, is enabled.
+	 * Get a frame that will display an image. No additional functionality, such as
+	 * zooming, is enabled.
 	 *
 	 * @param title
 	 *            the frame title
@@ -1581,8 +1494,7 @@ public class DisplayUtilities
 	 *            the connected component
 	 * @return frame containing the rendered image
 	 */
-	public static JFrame display(final ConnectedComponent input)
-	{
+	public static JFrame display(final ConnectedComponent input) {
 		return DisplayUtilities.display(input, 1.0f);
 	}
 
@@ -1619,8 +1531,7 @@ public class DisplayUtilities
 	 *            the polygon
 	 * @return the frame
 	 */
-	public static JFrame display(final Polygon input)
-	{
+	public static JFrame display(final Polygon input) {
 		return DisplayUtilities.display(input, 1.0f);
 	}
 
@@ -1633,8 +1544,7 @@ public class DisplayUtilities
 	 *            the grey level
 	 * @return frame containing the rendered image
 	 */
-	public static JFrame display(final Polygon input, final float col)
-	{
+	public static JFrame display(final Polygon input, final float col) {
 		final Polygon p = input.clone();
 
 		final Rectangle bb = p.calculateRegularBoundingBox();
@@ -1709,10 +1619,8 @@ public class DisplayUtilities
 
 		f.getContentPane().setLayout(new GridLayout(0, cols));
 
-		for (final Image<?, ?> image : images)
-		{
-			if (image != null)
-			{
+		for (final Image<?, ?> image : images) {
+			if (image != null) {
 				final ImageComponent ic = new ImageComponent(
 						ImageUtilities.createBufferedImageForDisplay(image));
 				ic.setOriginalImage(image);
@@ -1745,20 +1653,15 @@ public class DisplayUtilities
 		f.getContentPane().setLayout(new GridLayout(0, cols));
 
 		ImageComponent ic = null;
-		for (final Image<?, ?> image : images)
-		{
-			if (image != null)
-			{
+		for (final Image<?, ?> image : images) {
+			if (image != null) {
 				final ImageComponent ic2 = new ImageComponent(
 						ImageUtilities.createBufferedImageForDisplay(image));
 
-				if (ic != null)
-				{
-					ic.addImageComponentListener(new ImageComponentListener()
-					{
+				if (ic != null) {
+					ic.addImageComponentListener(new ImageComponentListener() {
 						@Override
-						public void imageZoomed(final double newScaleFactor)
-						{
+						public void imageZoomed(final double newScaleFactor) {
 							ic2.zoom(newScaleFactor);
 						}
 
@@ -1807,11 +1710,9 @@ public class DisplayUtilities
 		final int width = n_boxes_x * box_size;
 		final int height = box_size * n_images / n_boxes_x;
 
-		f.addWindowListener(new WindowAdapter()
-		{
+		f.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing(final WindowEvent evt)
-			{
+			public void windowClosing(final WindowEvent evt) {
 				DisplayUtilities.windowOpenCount = DisplayUtilities.windowCount - 1;
 				f.dispose();
 			}
@@ -1826,32 +1727,24 @@ public class DisplayUtilities
 		container.setLayout(new GridLayout(0, n_boxes_x));
 		scrollContainer.add(container);
 
-		for (final BufferedImage img : images)
-		{
-			final JComponent c = new JComponent()
-			{
+		for (final BufferedImage img : images) {
+			final JComponent c = new JComponent() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public void paint(final Graphics g)
-				{
+				public void paint(final Graphics g) {
 					final int cw = this.getWidth();
 					final int ch = this.getHeight();
-					if (img.getWidth() < cw && img.getHeight() < ch)
-					{
+					if (img.getWidth() < cw && img.getHeight() < ch) {
 						final int x = (cw - img.getWidth()) / 2;
 						final int y = (ch - img.getHeight()) / 2;
 						g.drawImage(img, x, y, img.getWidth(),
 								img.getHeight(), f);
-					}
-					else if (img.getWidth() > img.getHeight())
-					{
+					} else if (img.getWidth() > img.getHeight()) {
 						final float sf = (float) cw / (float) img.getWidth();
 						final int h = Math.round(sf * img.getHeight());
 						g.drawImage(img, 0, (ch - h) / 2, cw, h, f);
-					}
-					else
-					{
+					} else {
 						final float sf = (float) ch / (float) img.getHeight();
 						final int w = Math.round(sf * img.getWidth());
 						g.drawImage(img, (cw - w) / 2, 0, w, ch, f);

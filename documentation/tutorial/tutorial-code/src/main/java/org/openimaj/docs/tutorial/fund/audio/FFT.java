@@ -42,22 +42,20 @@ import org.openimaj.vis.general.BarVisualisation;
 /**
  * Example that demonstrates the processing of audio to extract the FFT
  * magnitudes and then visualise it.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 18 Jun 2013
  * @version $Author$, $Revision$, $Date$
  */
-public class FFT
-{
+public class FFT {
 	/**
 	 * Main method
-	 * 
+	 *
 	 * @param args
 	 *            Command-line args (unused)
 	 * @throws MalformedURLException
 	 */
-	public static void main(final String[] args) throws MalformedURLException
-	{
+	public static void main(final String[] args) throws MalformedURLException {
 		// Open a URL to the sine wave sweep. If you have downloaded
 		// this file you should use a new File(<filename>) here.
 		final XuggleAudio xa = new XuggleAudio(
@@ -75,8 +73,7 @@ public class FFT
 		// Loop through the sample chunks from the audio capture thread
 		// sending each one through the feature extractor and displaying
 		// the results in the visualisation.
-		while (fft.nextSampleChunk() != null)
-		{
+		while (fft.nextSampleChunk() != null) {
 			final float[][] ffts = fft.getMagnitudes();
 			bv.setData(ffts[0]);
 		}
