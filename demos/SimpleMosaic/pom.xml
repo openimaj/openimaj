@@ -4,7 +4,7 @@
   <parent>
     <artifactId>openimaj-demos</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.10</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj.demos</groupId>
@@ -19,7 +19,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>demos</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.10</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
