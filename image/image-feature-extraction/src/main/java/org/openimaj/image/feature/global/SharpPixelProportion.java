@@ -34,7 +34,6 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.citation.annotation.References;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.processing.algorithm.FourierTransform;
@@ -126,8 +125,6 @@ public class SharpPixelProportion implements ImageAnalyser<FImage>, FeatureVecto
 			}
 		}
 		bpp = (double) count / (double) (mag.height * mag.width);
-
-		DisplayUtilities.display(image, "" + bpp);
 	}
 
 	/**
