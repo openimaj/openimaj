@@ -503,7 +503,7 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 			//if the URL is malformed, something went wrong with programming
 			throw new RuntimeException(e);
 		} catch (final IOException e) {
-			if (e.getCause() instanceof org.apache.sanselan.ImageReadException) {
+			if (e.getCause() instanceof org.apache.commons.imaging.ImageReadException) {
 				// image urls that redirect to html pages will have this error (eg tinypic.com)
 				System.out.println("The following URL didn't redirect to an image: " + imageURL);
 			} else {

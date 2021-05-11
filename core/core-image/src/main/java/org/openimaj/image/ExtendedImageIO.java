@@ -46,10 +46,7 @@ import javax.imageio.spi.IIORegistry;
 import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 
-import org.apache.sanselan.ImageFormat;
-import org.apache.sanselan.ImageInfo;
-import org.apache.sanselan.ImageReadException;
-import org.apache.sanselan.Sanselan;
+import org.apache.commons.imaging.*;
 
 import com.sun.media.jai.codec.SeekableStream;
 
@@ -184,7 +181,7 @@ class ExtendedImageIO {
 		if (bi == null) {
 			buffer.reset();
 			try {
-				bi = Sanselan.getBufferedImage(buffer);
+				bi = Imaging.getBufferedImage(buffer);
 			} catch (final Throwable e) {
 				throw new IOException(e);
 			}
@@ -245,7 +242,7 @@ class ExtendedImageIO {
 	 * <code>ImageReader</code> claims to be able to read the stream,
 	 * <code>null</code> is returned.
 	 *
-	 * @param input
+	 * @param binput
 	 *            an <code>ImageInputStream</code> to read from.
 	 *
 	 * @return a <code>BufferedImage</code> containing the decoded contents of
@@ -264,15 +261,15 @@ class ExtendedImageIO {
 
 		ImageInfo info;
 		try {
-			info = Sanselan.getImageInfo(binput, null);
+			info = Imaging.getImageInfo(binput, null);
 		} catch (final ImageReadException ire) {
 			info = null;
 		} finally {
 			binput.reset();
 		}
 
-		if (info != null && info.getFormat() == ImageFormat.IMAGE_FORMAT_JPEG) {
-			if (info.getColorType() == ImageInfo.COLOR_TYPE_CMYK) {
+		if (info != null && info.getFormat() == ImageFormats.JPEG) {
+			if (info.getColorType() == ImageInfo.ColorType.CMYK) {
 				final ImageReader reader = getMonkeyReader();
 
 				if (reader == null) {
