@@ -496,7 +496,7 @@
 							</div>
 							]]></bottom>
 							<linksource>true</linksource>
-							<additionalparam>-Xdoclint:none</additionalparam>
+							<additionalparam>-Xdoclint:none --allow-script-in-comments</additionalparam>
 						</configuration>
 						<executions>
 							<execution>
