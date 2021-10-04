@@ -81,7 +81,7 @@ public class HadoopClusterQuantiserToolTest {
 		featureSeqFile = folder.newFile("seq.features");
 		featureSeqFile.delete();
 		codebookFile = folder.newFile("codebook.temp");
-		hadoopQuantisedOutput = folder.newFile("seq.quantised");
+		hadoopQuantisedOutput = folder.newFile("hseq.quantised");
 		normalQuantisedOutput = folder.newFile("normal.quantised");
 		keypointOut = folder.newFile("keypoint.out");
 		quantisedKeypointOut = folder.newFile("seq.quantised");
@@ -115,7 +115,7 @@ public class HadoopClusterQuantiserToolTest {
 			
 			
 			// Write a image to a location
-			File imageFile = folder.newFile("image.jpg");
+			File imageFile = folder.newFile("image"+i+".jpg");
 			ByteArrayInputStream imageBytes = new ByteArrayInputStream(imageData);
 			FileOutputStream imageOutput = new FileOutputStream(imageFile);
 			IOUtils.copyBytes(imageBytes, imageOutput, new Configuration(), false);

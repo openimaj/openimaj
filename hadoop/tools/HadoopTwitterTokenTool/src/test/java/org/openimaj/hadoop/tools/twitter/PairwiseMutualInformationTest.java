@@ -63,7 +63,7 @@ public class PairwiseMutualInformationTest {
 	public void setup() throws IOException {
 		hadoopCommand = "-i %s -o %s -m %s -j %s";
 		jsonTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER),folder.newFile("tweets.json"));
-		jsonTweetsMonth = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER_MONTH),folder.newFile("tweets.json"));
+		jsonTweetsMonth = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER_MONTH),folder.newFile("tweets-mn.json"));
 		outputLocation = folder.newFile("out.counted");
 		outputLocation.delete();
 	}
