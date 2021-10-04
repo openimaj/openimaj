@@ -63,11 +63,11 @@
       <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
-		<dependency>
-		   <groupId>org.apache.sanselan</groupId>
-		   <artifactId>sanselan</artifactId>
-		   <version>0.97-incubator</version>
-		</dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-imaging</artifactId>
+      <version>1.0-alpha2</version>
+    </dependency>
     <dependency>
       <groupId>com.caffeineowl</groupId>
       <artifactId>bezier-utils</artifactId>

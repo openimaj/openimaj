@@ -842,7 +842,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Sanitize the colour given to fit this image's pixel type.
 	 *
-	 * @param size
+	 * @param colour
 	 *            The colour to sanitize
 	 * @return The array
 	 */

@@ -52,11 +52,11 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 
+import org.apache.commons.imaging.ImageFormats;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.sanselan.ImageFormat;
-import org.apache.sanselan.Sanselan;
-import org.apache.sanselan.common.byteSources.ByteSource;
-import org.apache.sanselan.common.byteSources.ByteSourceInputStream;
+import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.common.bytesource.ByteSource;
+import org.apache.commons.imaging.common.bytesource.ByteSourceInputStream;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.io.InputStreamObjectReader;
 
@@ -80,7 +80,7 @@ public class ImageUtilities {
 			try {
 				final ByteSource src = new ByteSourceInputStream(stream, name);
 
-				return Sanselan.guessFormat(src) != ImageFormat.IMAGE_FORMAT_UNKNOWN;
+				return Imaging.guessFormat(src) != ImageFormats.UNKNOWN;
 			} catch (final Exception e) {
 				return false;
 			}
@@ -101,14 +101,14 @@ public class ImageUtilities {
 			try {
 				final ByteSource src = new ByteSourceInputStream(stream, name);
 
-				return Sanselan.guessFormat(src) != ImageFormat.IMAGE_FORMAT_UNKNOWN;
+				return Imaging.guessFormat(src) != ImageFormats.UNKNOWN;
 			} catch (final Exception e) {
 				return false;
 			}
 		}
 	};
 
-	/** Lookup table for byte->float conversion */
+	/** Lookup table for byte-&gt;float conversion */
 	public final static float[] BYTE_TO_FLOAT_LUT;
 
 	// Static initialisation
