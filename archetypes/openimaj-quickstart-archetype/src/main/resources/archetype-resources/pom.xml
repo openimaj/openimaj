@@ -124,11 +124,11 @@
   <repositories>
     <repository>
       <id>openimaj-maven</id>
-      <url>http://maven.openimaj.org/</url>
+      <url>https://maven.openimaj.org/</url>
     </repository>
     <repository>
       <id>openimaj-snapshots</id>
-      <url>http://snapshots.openimaj.org/</url>
+      <url>https://snapshots.openimaj.org/</url>
     </repository>
   </repositories>
   <build>

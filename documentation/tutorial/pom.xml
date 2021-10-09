@@ -36,7 +36,7 @@
         <enabled>true</enabled>
       </snapshots>
       <id>Codehaus Snapshots</id>
-      <url>http://snapshots.repository.codehaus.org</url>
+      <url>https://snapshots.repository.codehaus.org</url>
     </pluginRepository>
   </pluginRepositories>
 </project>
