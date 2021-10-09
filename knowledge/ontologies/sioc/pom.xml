@@ -34,12 +34,12 @@
     <repository>
       <id>openimaj-releases</id>
       <name>openimaj-releases</name>
-      <url>http://maven.openimaj.org</url>
+      <url>https://maven.openimaj.org</url>
     </repository>
     <repository>
       <id>openimaj-snapshots</id>
       <name>openimaj-snapshots</name>
-      <url>http://snapshots.openimaj.org</url>
+      <url>https://snapshots.openimaj.org</url>
     </repository>
   </repositories>
 </project>
