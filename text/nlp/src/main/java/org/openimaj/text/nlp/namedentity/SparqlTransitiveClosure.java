@@ -32,7 +32,7 @@ package org.openimaj.text.nlp.namedentity;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import com.hp.hpl.jena.query.QuerySolution;
+import org.apache.jena.query.QuerySolution;
 
 /**
  * Given an endpoint, resolve transitive relationships of a root entity.
