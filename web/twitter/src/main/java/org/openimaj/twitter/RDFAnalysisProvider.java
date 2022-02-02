@@ -29,8 +29,8 @@
  */
 package org.openimaj.twitter;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 
 /**
  * The analysis held in {@link GeneralJSON} can be translated to JSON very
@@ -42,16 +42,16 @@ import com.hp.hpl.jena.rdf.model.Resource;
  * {@link GeneralJSONRDF} instance, they should register with
  * {@link GeneralJSONRDF#registerRDFAnalysisProvider(String, RDFAnalysisProvider)}
  * want to
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public interface RDFAnalysisProvider {
 	/**
 	 * When given this analysis, fill the model with triples representing its
 	 * existence. The IRI of the status the analysis is against is also provided
 	 * and must be added to the model with the IRI of the analysis also.
-	 * 
+	 *
 	 * @param m
 	 *            the model to add triples to
 	 * @param analysis
@@ -62,7 +62,7 @@ public interface RDFAnalysisProvider {
 	public void addAnalysis(Model m, Resource analysis, GeneralJSON analysisSource);
 
 	/**
-	 * Prepare yourself. Called once at the beggining of a write of a batch.
+	 * Prepare yourself. Called once at the beginning of a write of a batch.
 	 */
 	public void init();
 }

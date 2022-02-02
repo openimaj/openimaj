@@ -40,25 +40,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.riot.IO_Jena;
+import org.apache.jena.update.UpdateAction;
+import org.apache.jena.update.UpdateRequest;
 import org.openimaj.io.FileUtils;
 import org.openimaj.rdf.utils.PQUtils;
 import org.openimaj.twitter.USMFStatus.Link;
 import org.openimaj.twitter.USMFStatus.User;
-import org.openjena.riot.SysRIOT;
-
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.update.UpdateAction;
-import com.hp.hpl.jena.update.UpdateRequest;
 
 /**
  * Holds an internal Jena Graph of the USMF status. The default language used is
  * NTriples
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class GeneralJSONRDF extends GeneralJSON {
 
@@ -86,7 +85,10 @@ public class GeneralJSONRDF extends GeneralJSON {
 		DESC("description"),
 		CAT("category"),
 		FAV("favourites"),
-		USER_POSTS("postings"), LINK("link"), KEYWORD("keyword"), ;
+		USER_POSTS("postings"),
+		LINK("link"),
+		KEYWORD("keyword"),;
+
 		public String name;
 
 		private Variables(String name) {
@@ -105,7 +107,7 @@ public class GeneralJSONRDF extends GeneralJSON {
 	private static Map<String, String> queryCache;
 
 	static {
-		SysRIOT.wireIntoJena();
+		IO_Jena.wireIntoJena();
 	}
 
 	private Model m;
@@ -123,7 +125,7 @@ public class GeneralJSONRDF extends GeneralJSON {
 
 	/**
 	 * Registers an analysis provider to be used when some analysis key is met
-	 * 
+	 *
 	 * @param analysis
 	 * @param analysisProvider
 	 */
