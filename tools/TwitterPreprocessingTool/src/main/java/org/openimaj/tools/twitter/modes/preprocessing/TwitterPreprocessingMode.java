@@ -29,28 +29,27 @@
  */
 package org.openimaj.tools.twitter.modes.preprocessing;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.RDFAnalysisProvider;
 import org.openimaj.twitter.USMFStatus;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-
 /**
  * A processing mode that is able to process a tweet and also typed on the data
  * which it analyses from the tweet (so it can return this data if required)
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <T>
  *            The type of the analysis result
- * 
+ *
  */
 public abstract class TwitterPreprocessingMode<T> {
 
 	/**
 	 * Alters the twitter status in place with the analysis that is required to
 	 * be performed
-	 * 
+	 *
 	 * @param twitterStatus
 	 * @return for conveniance also returns the analysis
 	 */
@@ -82,7 +81,7 @@ public abstract class TwitterPreprocessingMode<T> {
 	 * create the analysis. If the provided mode is null a new mode is created.
 	 * This mode creation might be slow, be careful about using this in this
 	 * way.
-	 * 
+	 *
 	 * @param <Q>
 	 * @param status
 	 *            the twitter status to be analysed

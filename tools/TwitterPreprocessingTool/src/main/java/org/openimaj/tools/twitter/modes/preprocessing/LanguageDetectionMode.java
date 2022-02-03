@@ -32,6 +32,10 @@ package org.openimaj.tools.twitter.modes.preprocessing;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.update.UpdateAction;
 import org.openimaj.io.FileUtils;
 import org.openimaj.text.nlp.language.LanguageDetector;
 import org.openimaj.twitter.GeneralJSON;
@@ -39,16 +43,11 @@ import org.openimaj.twitter.GeneralJSONRDF;
 import org.openimaj.twitter.RDFAnalysisProvider;
 import org.openimaj.twitter.USMFStatus;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.update.UpdateAction;
-
 /**
  * A gateway class which loads and uses the #LanguageDetector
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class LanguageDetectionMode extends TwitterPreprocessingMode<Map<String, Object>> {
 
@@ -57,7 +56,7 @@ public class LanguageDetectionMode extends TwitterPreprocessingMode<Map<String, 
 
 	/**
 	 * Loads the language detector
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public LanguageDetectionMode() throws IOException {

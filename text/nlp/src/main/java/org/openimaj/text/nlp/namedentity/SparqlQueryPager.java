@@ -59,7 +59,7 @@ public class SparqlQueryPager {
 	/**
 	 * Process a query in the form of a string.
 	 * @param queryString = SELECT with no LIMIT or OFFSET clauses.
-	 * @return List of com.hp.hpl.jena.query.QuerySolution.
+	 * @return List of org.apache.jena.query.QuerySolution.
 	 */
 	public ArrayList<QuerySolution> pageQuery(String queryString){
 		int rollBacks=0;
