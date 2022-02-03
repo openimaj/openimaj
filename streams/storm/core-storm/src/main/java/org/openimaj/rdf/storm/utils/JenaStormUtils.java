@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
+import org.apache.jena.graph.BlankNodeId;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
@@ -46,7 +47,6 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.graph.compose.MultiUnion;
 import org.apache.jena.graph.impl.LiteralLabel;
 import org.apache.jena.mem.GraphMem;
-import org.apache.jena.rdf.model.AnonId;
 import org.apache.jena.reasoner.rulesys.Rule;
 import org.apache.jena.shared.AddDeniedException;
 import org.apache.jena.sparql.core.BasicPattern;
@@ -156,7 +156,7 @@ public class JenaStormUtils {
 		@Override
 		public Node_Blank read(Kryo kryo, Input input, Class<Node_Blank> type) {
 			final String label = input.readString();
-			final Node_Blank retNode = (Node_Blank) Node.createAnon(AnonId.create(label));
+			final Node_Blank retNode = (Node_Blank) NodeFactory.createBlankNode(BlankNodeId.create(label));
 			return retNode;
 		}
 
