@@ -33,45 +33,46 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.TypeMapper;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Node_Blank;
+import org.apache.jena.graph.Node_Literal;
+import org.apache.jena.graph.Node_URI;
+import org.apache.jena.graph.Node_Variable;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.graph.compose.MultiUnion;
+import org.apache.jena.graph.impl.LiteralLabel;
+import org.apache.jena.mem.GraphMem;
+import org.apache.jena.rdf.model.AnonId;
+import org.apache.jena.reasoner.rulesys.Rule;
+import org.apache.jena.shared.AddDeniedException;
+import org.apache.jena.sparql.core.BasicPattern;
+import org.apache.jena.sparql.syntax.ElementFilter;
+import org.apache.jena.sparql.syntax.Template;
 import org.openimaj.kestrel.KestrelServerSpec;
-
-import backtype.storm.Config;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.TypeMapper;
-import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Node_Blank;
-import com.hp.hpl.jena.graph.Node_Literal;
-import com.hp.hpl.jena.graph.Node_URI;
-import com.hp.hpl.jena.graph.Node_Variable;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.graph.compose.MultiUnion;
-import com.hp.hpl.jena.graph.impl.LiteralLabel;
-import com.hp.hpl.jena.mem.GraphMem;
-import com.hp.hpl.jena.rdf.model.AnonId;
-import com.hp.hpl.jena.reasoner.rulesys.Rule;
-import com.hp.hpl.jena.shared.AddDeniedException;
-import com.hp.hpl.jena.sparql.core.BasicPattern;
-import com.hp.hpl.jena.sparql.syntax.ElementFilter;
-import com.hp.hpl.jena.sparql.syntax.Template;
+
+import backtype.storm.Config;
 
 /**
  * A collections to tools for letting Jena play nicely with Storm
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author David Monks (dm11g08@ecs.soton.ac.uk)
- * 
+ *
  */
 public class JenaStormUtils {
 
 	/**
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_URI extends Serializer<Node_URI> {
 
@@ -82,14 +83,14 @@ public class JenaStormUtils {
 
 		@Override
 		public Node_URI read(Kryo kryo, Input input, Class<Node_URI> type) {
-			return (Node_URI) Node.createURI(input.readString());
+			return (Node_URI) NodeFactory.createURI(input.readString());
 		}
 
 	}
 
 	/**
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class TemplateSerialiser extends Serializer<Template> {
 
@@ -116,7 +117,7 @@ public class JenaStormUtils {
 
 	/**
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_Literal extends Serializer<Node_Literal> {
 
@@ -134,7 +135,7 @@ public class JenaStormUtils {
 			final String langauge = input.readString();
 			final String datatypeURI = input.readString();
 			final RDFDatatype dtype = TypeMapper.getInstance().getSafeTypeByName(datatypeURI);
-			return (Node_Literal) Node.createLiteral(lexicalForm, langauge, dtype);
+			return (Node_Literal) NodeFactory.createLiteral(lexicalForm, langauge, dtype);
 
 		}
 
@@ -142,7 +143,7 @@ public class JenaStormUtils {
 
 	/**
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_Blank extends Serializer<Node_Blank> {
 
@@ -163,7 +164,7 @@ public class JenaStormUtils {
 
 	/**
 	 * @author David Monks<dm11g08@ecs.soton.ac.uk>
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_Variable extends Serializer<Node_Variable> {
 
@@ -176,7 +177,7 @@ public class JenaStormUtils {
 		@Override
 		public Node_Variable read(Kryo kryo, Input input, Class<Node_Variable> type) {
 			final String label = input.readString();
-			final Node_Variable retNode = (Node_Variable) Node.createVariable(label.replaceFirst("\\?", ""));
+			final Node_Variable retNode = (Node_Variable) NodeFactory.createVariable(label.replaceFirst("\\?", ""));
 			return retNode;
 		}
 
@@ -184,7 +185,7 @@ public class JenaStormUtils {
 
 	/**
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class TripleSerialiser extends Serializer<Triple> {
 
@@ -209,7 +210,7 @@ public class JenaStormUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @author David Monks <dm11g08@ecs.soton.ac.uk>
 	 */
 	public static class GraphSerialiser extends Serializer<Graph> {
@@ -255,7 +256,7 @@ public class JenaStormUtils {
 
 	/**
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_ARRAY extends Serializer<Node[]> {
 
@@ -280,7 +281,7 @@ public class JenaStormUtils {
 
 	/**
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class KestrelServerSpec_Serializer extends Serializer<KestrelServerSpec> {
 
@@ -299,7 +300,7 @@ public class JenaStormUtils {
 
 	/**
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class RuleSerializer extends Serializer<Rule> {
 
